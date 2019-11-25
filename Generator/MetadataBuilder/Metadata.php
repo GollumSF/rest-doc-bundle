@@ -24,6 +24,12 @@ class Metadata
 	/** @var bool */
 	private $collection;
 
+	/** @var string[] */
+	private $serializeGroups;
+
+	/** @var string[] */
+	private $unserializeGroups;
+
 	/** @var Serialize */
 	private $serialize;
 
@@ -36,6 +42,8 @@ class Metadata
 		string $action, 
 		string $entity, 
 		bool $collection,
+		array $serializeGroups,
+		array $unserializeGroups,
 		?Serialize $serialize,
 		?Unserialize $unserialize
 	) {
@@ -44,6 +52,8 @@ class Metadata
 		$this->action = $action;
 		$this->entity = $entity;
 		$this->collection = $collection;
+		$this->serializeGroups = $serializeGroups;
+		$this->unserializeGroups = $unserializeGroups;
 		$this->serialize = $serialize;
 		$this->unserialize = $unserialize;
 	}
@@ -66,6 +76,16 @@ class Metadata
 
 	public function isCollection(): bool {
 		return $this->collection;
+	}
+
+	public function getSerializeGroups(): array
+	{
+		return $this->serializeGroups;
+	}
+
+	public function getUnserializeGroups(): array
+	{
+		return $this->unserializeGroups;
 	}
 
 	public function getSerialize(): ?Serialize {

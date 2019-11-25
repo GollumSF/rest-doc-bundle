@@ -96,12 +96,28 @@ class AnnotationHandler implements HandlerInterface
 			$annoSerialize = $this->reader->getMethodAnnotation($rMethod, Serialize::class);
 			$annoUnserialize = $this->reader->getMethodAnnotation($rMethod, Unserialize::class);
 
+			$serializeGroups   = $annoSerialize   && $annoSerialize->groups   ? $annoSerialize->groups   : [];
+			$unserializeGroups = $annoUnserialize && $annoUnserialize->groups ? $annoUnserialize->groups : [];
+			if (!is_array($serializeGroups))   $serializeGroups   = [$serializeGroups];
+			if (!is_array($unserializeGroups)) $unserializeGroups = [$unserializeGroups];
+
+			if ($describeClass  && $describeClass ->serializeGroups) $serializeGroups = array_merge($serializeGroups, $describeClass ->serializeGroups);
+			if ($describeMethod && $describeMethod->serializeGroups) $serializeGroups = array_merge($serializeGroups, $describeMethod->serializeGroups);
+
+			if ($describeClass  && $describeClass ->unserializeGroups) $unserializeGroups = array_merge($unserializeGroups, $describeClass ->unserializeGroups);
+			if ($describeMethod && $describeMethod->unserializeGroups) $unserializeGroups = array_merge($unserializeGroups, $describeMethod->unserializeGroups);
+
+			$serializeGroups   = array_unique($serializeGroups);
+			$unserializeGroups = array_unique($unserializeGroups);
+			
 			return new Metadata(
 				$route,
 				$controller,
 				$action,
 				$entity,
 				!!$isCollection,
+				$serializeGroups,
+				$unserializeGroups,
 				$annoSerialize,
 				$annoUnserialize
 			);

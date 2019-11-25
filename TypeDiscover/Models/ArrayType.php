@@ -22,9 +22,7 @@ class ArrayType implements TypeInterface {
 	public function toJson(): array {
 		return [
 			'type' => $this->getType(),
-			'items' => [
-				'type' => $this->getSubType()->toJson(),
-			]
+			'items' => $this->getSubType()->toJson()
 		];
 	}
 }

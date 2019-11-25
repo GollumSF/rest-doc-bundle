@@ -40,12 +40,11 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		
 		foreach ($this->metadataBuilder->getMetadataCollection() as $metadata) {
 
-
+			/** @var Serialize $annoSerialize */
 			$route           = $metadata->getRoute();
 			$entity          = $metadata->getEntity();
 			$isCollection    = $metadata->isCollection();
 			$annoSerialize   = $metadata->getSerialize();
-			$annoUnserialize = $metadata->getUnserialize();
 			
 			$tag = $this->tagbuilder->gettag($entity);
 			$model = $this->modelbuilder->getModel($entity);
@@ -61,8 +60,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				$paths[$url] = [];
 			}
 
-			/** @var Serialize $annoSerialize */
-			/** @var Unserialize $annoUnserialize */
 			
 			if ($annoSerialize) {
 				$responses[$annoSerialize->code] = [
@@ -118,23 +115,14 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			foreach ($methods as $method) {
 
 
-				if ($annoUnserialize) {
-					$groups = [ strtolower($method) ];
-					if ($annoUnserialize->groups) {
-						$annoGroups = $annoUnserialize->groups;
-						if (!\is_array($annoGroups)) {
-							$annoGroups= [ $annoGroups ];
-						}
-						$groups = array_merge($groups, $annoGroups);	
-					}
+				if ($metadata->getUnserializeGroups()) {
+					$groups = array_merge([ strtolower($method) ], $metadata->getUnserializeGroups());
+					$groups = array_unique($groups);
 					
 					$properties = [];
 					foreach ($model->getProperties() as $property) {
 						if (count(array_intersect($property->getGroups(), $groups))) {
-							$property = [
-								'type' => $property->getType()
-							];
-							$properties[$property->getSerializeName()] = $property;
+							$properties[$property->getSerializeName()] = $property->getType()->toJson();
 							
 						}
 					}
