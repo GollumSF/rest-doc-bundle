@@ -26,8 +26,14 @@ class ApiDescribe {
 	public function __construct ($param) {
 		$this->entity            = isset ($param['entity'])            ? $param['entity']            : null;
 		$this->collection        = isset ($param['collection'])        ? $param['collection']        : null;
-		$this->serializeGroups   = isset ($param['serializeGroups'])   ? $param['serializeGroups']   : null;
-		$this->unserializeGroups = isset ($param['unserializeGroups']) ? $param['unserializeGroups'] : null;
+		$this->serializeGroups   = isset ($param['serializeGroups'])   ? $param['serializeGroups']   : [];
+		$this->unserializeGroups = isset ($param['unserializeGroups']) ? $param['unserializeGroups'] : [];
+		if (!$this->serializeGroups) {
+			$this->serializeGroups = [];
+		}
+		if (!$this->unserializeGroups) {
+			$this->unserializeGroups = [];
+		}
 		if (!is_array($this->serializeGroups)) {
 			$this->serializeGroups = [ $this->serializeGroups ];
 		}

@@ -113,8 +113,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			}
 			
 			foreach ($methods as $method) {
-
-
+				
 				if ($metadata->getUnserializeGroups()) {
 					$groups = array_merge([ strtolower($method) ], $metadata->getUnserializeGroups());
 					$groups = array_unique($groups);
@@ -123,7 +122,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 					foreach ($model->getProperties() as $property) {
 						if (count(array_intersect($property->getGroups(), $groups))) {
 							$properties[$property->getSerializeName()] = $property->getType()->toJson();
-							
 						}
 					}
 					$parameters[] = [

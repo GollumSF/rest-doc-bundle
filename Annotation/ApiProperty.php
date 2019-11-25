@@ -19,6 +19,6 @@ class ApiProperty
 	 */
 	public function __construct ($param) {
 		$this->type       = isset($param['type'])       ? $param['type']       : null;
-		$this->collection = isset($param['collection']) ? $param['collection'] : null;
+		$this->collection = isset($param['collection']) ? $param['collection'] : false;
 	}
 }

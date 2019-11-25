@@ -98,8 +98,9 @@ class AnnotationHandler implements HandlerInterface
 
 			$serializeGroups   = $annoSerialize   && $annoSerialize->groups   ? $annoSerialize->groups   : [];
 			$unserializeGroups = $annoUnserialize && $annoUnserialize->groups ? $annoUnserialize->groups : [];
-			if (!is_array($serializeGroups))   $serializeGroups   = [$serializeGroups];
-			if (!is_array($unserializeGroups)) $unserializeGroups = [$unserializeGroups];
+			
+			if ($serializeGroups   && !is_array($serializeGroups  )) $serializeGroups   = [$serializeGroups];
+			if ($unserializeGroups && !is_array($unserializeGroups)) $unserializeGroups = [$unserializeGroups];
 
 			if ($describeClass  && $describeClass ->serializeGroups) $serializeGroups = array_merge($serializeGroups, $describeClass ->serializeGroups);
 			if ($describeMethod && $describeMethod->serializeGroups) $serializeGroups = array_merge($serializeGroups, $describeMethod->serializeGroups);
