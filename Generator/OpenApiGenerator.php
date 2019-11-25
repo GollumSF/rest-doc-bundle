@@ -5,8 +5,12 @@ namespace GollumSF\RestDocBundle\Generator;
 use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestBundle\Annotation\Unserialize;
-use GollumSF\RestDocBundle\Annotation\Describe;
-use GollumSF\RestDocBundle\Metadata\MetadataFactoryInterface;
+use GollumSF\RestDocBundle\Annotation\ApiDescribe;
+use GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilderInterface;
+use GollumSF\RestDocBundle\Generator\ModelBuilder\Model;
+use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface;
+use GollumSF\RestDocBundle\Generator\TagBuilder\Tag;
+use GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilderInterface;
 use GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
@@ -14,23 +18,23 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 class OpenApiGenerator implements OpenApiGeneratorInterface {
 
-	/** @var MetadataFactoryInterface */
-	private $metadataFactory;
+	/** @var MetadataBuilderInterface */
+	private $metadataBuilder;
+
+	/** @var ModelbuilderInterface */
+	private $modelbuilder;
 	
-	/** @var ClassMetadataFactoryInterface */
-	private $classMetadataFactory;
-	
-	/** @var NameConverterInterface  */
-	private $nameConverter;
+	/** @var TagbuilderInterface */
+	private $tagbuilder;
 	
 	public function __construct(
-		MetadataFactoryInterface $metadataFactoryInterface,
-		NameConverterInterface $nameConverter,
-		ClassMetadataFactoryInterface $classMetadataFactory
+		MetadataBuilderInterface      $metadataBuilderInterface,
+		ModelBuilderInterface         $modelbuilder,
+		TagBuilderInterface           $tagbuilder
 	) {
-		$this->metadataFactory = $metadataFactoryInterface;
-		$this->nameConverter = $nameConverter;
-		$this->classMetadataFactory = $classMetadataFactory;
+		$this->metadataBuilder = $metadataBuilderInterface;
+		$this->modelbuilder    = $modelbuilder;
+		$this->tagbuilder      = $tagbuilder;
 	}
 
 	
@@ -39,7 +43,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 		$paths = [];
 		
-		foreach ($this->metadataFactory->getMetadataCollection() as $metadata) {
+		foreach ($this->metadataBuilder->getMetadataCollection() as $metadata) {
 
 
 			$route           = $metadata->getRoute();
@@ -47,7 +51,10 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			$isCollection    = $metadata->isCollection();
 			$annoSerialize   = $metadata->getSerialize();
 			$annoUnserialize = $metadata->getUnserialize();
-
+			
+			$tag = $this->tagbuilder->gettag($entity);
+			$model = $this->modelbuilder->getModel($entity);
+			
 			$url = $route->getPath();
 			$methods = $route->getMethods();
 			$url = substr($url, strlen('/api'));
@@ -66,7 +73,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				$responses[$annoSerialize->code] = [
 //						'description' => 'successful operation',
 					'schema' => [
-						'ref' => '#/definitions/User'
+						'ref' => '#/definitions/'.$model->getClass()
 					]
 				];
 			}
@@ -126,21 +133,13 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 						$groups = array_merge($groups, $annoGroups);	
 					}
 					
-					$metadata = $this->classMetadataFactory->getMetadataFor($entity);
-
 					$properties = [];
-					foreach ($metadata->getAttributesMetadata() as $attributesMetadatum) {
-						if (count(array_intersect($attributesMetadatum->getGroups(), $groups))) {
-							$serializeName = $attributesMetadatum->getSerializedName();
-							if (!$serializeName) {
-								$serializeName = $this->nameConverter->normalize(
-									$attributesMetadatum->getName()
-								);
-							}
+					foreach ($model->getProperties() as $property) {
+						if (count(array_intersect($property->getGroups(), $groups))) {
 							$property = [
-								'type' => 'string'
+								'type' => $property->getType()
 							];
-							$properties[$serializeName] = $property;
+							$properties[$property->getSerializeName()] = $property;
 							
 						}
 					}
@@ -156,7 +155,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				}
 				
 				$paths[$url][strtolower($method)] = [
-//						'tags' => [ 'User' ],
+						'tags' => [ $tag->getClass() ],
 						'parameters' => $parameters,
 						'responses' => $responses,
 //							'responses' => [
@@ -176,26 +175,14 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			'swagger' => "2.0",
 			'info' => [
 				'description' => 'description API',
-				'version' => '1.0.3',
-				'title' => 'Swagger Petstore'
+				'version' => '1.0.0',
+				'title' => 'Swagger Title'
 			],
 			'host' => "dev.teambudd.io",
 			'basePath' => "/api",
 			'schemes' => [ 'https' ],
 
-			'tags' => [
-				[
-					'name' => 'User',
-					'description' => 'Description User',
-					'externalDocs' => [
-						'description' => "Find out more about our store",
-						'url' => "https://teambudd.io"
-					]
-				],
-				[
-					'name' => 'Game',
-				],
-			],
+			'tags' => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
 			'paths' => $paths,
 //			'paths' => [
 //				'/users/me' => [
@@ -220,23 +207,24 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			'securityDefinitions' => [
 
 			],
-			'definitions' => [
-				'User' => [
-					'type' => 'object',
-					'properties' => [
-						'id' => [
-							'type' => 'integer',
-							'format' => 'int64'
-						],
-						'email' => [
-							'type' => 'string'
-						]
-					],
-					'xml' => [
-						'name' => 'User'
-					]
-				]
-			],
+			'definitions' => array_map(function (Model $model) { return $model->toJson(); }, $this->modelbuilder->getAllModels()),
+//			'definitions' => [
+//				'User' => [
+//					'type' => 'object',
+//					'properties' => [
+//						'id' => [
+//							'type' => 'integer',
+//							'format' => 'int64'
+//						],
+//						'email' => [
+//							'type' => 'string'
+//						]
+//					],
+//					'xml' => [
+//						'name' => 'User'
+//					]
+//				]
+//			],
 
 			'externalDocs' => [
 				'description' => 'Descript doc externe',

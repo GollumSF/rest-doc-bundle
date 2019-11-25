@@ -1,12 +1,12 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Metadata\Handler;
+namespace GollumSF\RestDocBundle\Generator\MetadataBuilder\Handler;
 
 use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestBundle\Annotation\Unserialize;
-use GollumSF\RestDocBundle\Annotation\Describe;
-use GollumSF\RestDocBundle\Metadata\Metadata;
+use GollumSF\RestDocBundle\Annotation\ApiDescribe;
+use GollumSF\RestDocBundle\Generator\MetadataBuilder\Metadata;
 use GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
@@ -68,10 +68,10 @@ class AnnotationHandler implements HandlerInterface
 		$rClass = new \ReflectionClass($controller);
 		$rMethod = $rClass->getMethod($action);
 
-		/** @var Describe $describeClass */
-		/** @var Describe $describeMethod */
-		$describeClass = $this->reader->getClassAnnotation($rClass, Describe::class);
-		$describeMethod = $this->reader->getMethodAnnotation($rMethod, Describe::class);
+		/** @var ApiDescribe $describeClass */
+		/** @var ApiDescribe $describeMethod */
+		$describeClass = $this->reader->getClassAnnotation($rClass, ApiDescribe::class);
+		$describeMethod = $this->reader->getMethodAnnotation($rMethod, ApiDescribe::class);
 
 		$entity = null;
 		$isCollection = null;

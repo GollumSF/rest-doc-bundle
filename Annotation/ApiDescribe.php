@@ -6,8 +6,8 @@ namespace GollumSF\RestDocBundle\Annotation;
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class Describe
-{
+class ApiDescribe {
+	
 	/** @var string */
 	public $entity;
 	

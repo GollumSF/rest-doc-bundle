@@ -13,17 +13,31 @@ services:
         resource: '../../Controller'
         tags: ['controller.service_arguments']
 
-    GollumSF\RestDocBundle\Generator\OpenApiGeneratorInterface:
-        class: GollumSF\RestDocBundle\Generator\OpenApiGenerator
-        arguments:
-            $nameConverter: '@serializer.name_converter.metadata_aware'
-
     GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface:
         class: GollumSF\RestDocBundle\Reflection\ControllerActionExtractor
 
-    GollumSF\RestDocBundle\Metadata\MetadataFactoryInterface:
-        class: GollumSF\RestDocBundle\Metadata\MetadataFactory
+    GollumSF\RestDocBundle\Generator\OpenApiGeneratorInterface:
+        class: GollumSF\RestDocBundle\Generator\OpenApiGenerator
 
-    GollumSF\RestDocBundle\Metadata\Handler\AnnotationHandler:
+    GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilderInterface:
+        class: GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilder
+
+    GollumSF\RestDocBundle\Generator\MetadataBuilder\Handler\AnnotationHandler:
         tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\Metadata\MetadataFactoryInterface::HANDLER_TAG' }
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilderInterface::HANDLER_TAG' }
+
+    GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface:
+        class: GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilder
+
+    GollumSF\RestDocBundle\Generator\ModelBuilder\Decorator\PropertyDecorator:
+        arguments:
+            $nameConverter: '@serializer.name_converter.metadata_aware'
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface::DECORATOR_TAG' }
+        
+    GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilderInterface:
+        class: GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilder
+        
+    GollumSF\RestDocBundle\Generator\TagBuilder\Decorator\AnnotationDecorator:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilderInterface::DECORATOR_TAG' }

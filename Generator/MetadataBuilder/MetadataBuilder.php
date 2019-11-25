@@ -1,10 +1,10 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Metadata;
+namespace GollumSF\RestDocBundle\Generator\MetadataBuilder;
 
-use GollumSF\RestDocBundle\Metadata\Handler\HandlerInterface;
+use GollumSF\RestDocBundle\Generator\MetadataBuilder\Handler\HandlerInterface;
 
-class MetadataFactory implements MetadataFactoryInterface {
+class MetadataBuilder implements MetadataBuilderInterface {
 
 	/** @var HandlerInterface[] */
 	private $handlers = [];

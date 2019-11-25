@@ -1,6 +1,6 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Metadata;
+namespace GollumSF\RestDocBundle\Generator\MetadataBuilder;
 
 use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestBundle\Annotation\Unserialize;

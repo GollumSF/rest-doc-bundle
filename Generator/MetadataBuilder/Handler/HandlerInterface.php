@@ -1,6 +1,6 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Metadata\Handler;
+namespace GollumSF\RestDocBundle\Generator\MetadataBuilder\Handler;
 
 interface HandlerInterface
 {
