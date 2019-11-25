@@ -1,0 +1,3 @@
+gsf_restbundle.swagger:
+    controller: GollumSF\RestDocBundle\Controller\SwaggerUIController
+    path: ''

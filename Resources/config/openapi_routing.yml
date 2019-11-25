@@ -1,0 +1,3 @@
+gsf_restbundle.openapi:
+    controller: GollumSF\RestDocBundle\Controller\OpenApiController
+    path: ''
