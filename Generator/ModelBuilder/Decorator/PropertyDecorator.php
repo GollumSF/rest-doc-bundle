@@ -4,6 +4,7 @@ namespace GollumSF\RestDocBundle\Generator\ModelBuilder\Decorator;
 
 use GollumSF\RestDocBundle\Generator\ModelBuilder\Model;
 use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelProperty;
+use GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
@@ -15,12 +16,17 @@ class PropertyDecorator implements DecoratorInterface
 	/** @var ClassMetadataFactoryInterface */
 	private $classMetadataFactory;
 	
+	/** @var TypeDiscoverInterface */
+	private $typeDiscover;
+	
 	public function __construct(
 		NameConverterInterface        $nameConverter,
-		ClassMetadataFactoryInterface $classMetadataFactory
+		ClassMetadataFactoryInterface $classMetadataFactory,
+		TypeDiscoverInterface $typeDiscover
 	) {
 		$this->nameConverter = $nameConverter;
 		$this->classMetadataFactory = $classMetadataFactory;
+		$this->typeDiscover = $typeDiscover;
 	}
 	
 	public function decorateModel(Model $model): Model {
@@ -34,9 +40,9 @@ class PropertyDecorator implements DecoratorInterface
 			if (!$serializeName) {
 				$serializeName = $this->nameConverter->normalize($name);
 			}
-
-			$type = 'string';
-
+			
+			$type = $this->typeDiscover->getType($class, $name);
+			
 			$property = new ModelProperty(
 				$name,
 				$serializeName,

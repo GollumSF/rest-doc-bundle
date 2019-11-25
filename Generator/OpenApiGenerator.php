@@ -178,6 +178,11 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				'version' => '1.0.0',
 				'title' => 'Swagger Title'
 			],
+			'externalDocs' => [
+				'description' => 'Descript doc externe',
+				'url' => 'https://teambudd.io'
+			],
+			
 			'host' => "dev.teambudd.io",
 			'basePath' => "/api",
 			'schemes' => [ 'https' ],
@@ -208,28 +213,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 			],
 			'definitions' => array_map(function (Model $model) { return $model->toJson(); }, $this->modelbuilder->getAllModels()),
-//			'definitions' => [
-//				'User' => [
-//					'type' => 'object',
-//					'properties' => [
-//						'id' => [
-//							'type' => 'integer',
-//							'format' => 'int64'
-//						],
-//						'email' => [
-//							'type' => 'string'
-//						]
-//					],
-//					'xml' => [
-//						'name' => 'User'
-//					]
-//				]
-//			],
-
-			'externalDocs' => [
-				'description' => 'Descript doc externe',
-				'url' => 'https://teambudd.io'
-			]
 		];
 	}
 }

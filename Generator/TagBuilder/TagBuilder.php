@@ -12,7 +12,7 @@ class TagBuilder implements TagBuilderInterface {
 	/** @var Tag[] */
 	private $tags = [];
 
-	public function addDecorator(DecoratorInterface $decorator) {
+	public function addDecorator(DecoratorInterface $decorator): void {
 		$this->decorators[] = $decorator;
 	}
 	

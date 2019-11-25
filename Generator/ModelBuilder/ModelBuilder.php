@@ -12,7 +12,7 @@ class ModelBuilder implements ModelBuilderInterface {
 	/** @var Model[] */
 	private $models = [];
 
-	public function addDecorator(DecoratorInterface $decorator) {
+	public function addDecorator(DecoratorInterface $decorator): void {
 		$this->decorators[] = $decorator;
 	}
 	

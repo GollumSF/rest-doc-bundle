@@ -46,29 +46,6 @@ class Model
 				'name' => $this->getXMLName()
 			]
 		];
-		//[
-////					'type' => 'object',
-////					'properties' => [
-////						'id' => [
-////							'type' => 'integer',
-////							'format' => 'int64'
-////						],
-////						'email' => [
-////							'type' => 'string'
-////						]
-////					],
-////					'xml' => [
-////						'name' => 'User'
-////					]
-////				]
-//		[
-//			'name' => 'User',
-//			'description' => 'Description User',
-//			'externalDocs' => [
-//				'description' => "Find out more about our store",
-//				'url' => "https://teambudd.io"
-//			]
-//		],
 		return $json;
 	}
 }

@@ -4,6 +4,7 @@ namespace GollumSF\RestDocBundle;
 use GollumSF\RestDocBundle\DependencyInjection\Compiler\MetadataBuilderPass;
 use GollumSF\RestDocBundle\DependencyInjection\Compiler\ModelBuilderPass;
 use GollumSF\RestDocBundle\DependencyInjection\Compiler\TagBuilderPass;
+use GollumSF\RestDocBundle\DependencyInjection\Compiler\TypeDiscoverPass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -18,5 +19,6 @@ class GollumSFRestDocBundle extends Bundle {
 		$container->addCompilerPass(new MetadataBuilderPass());
 		$container->addCompilerPass(new TagBuilderPass());
 		$container->addCompilerPass(new ModelBuilderPass());
+		$container->addCompilerPass(new TypeDiscoverPass());
 	}
 }

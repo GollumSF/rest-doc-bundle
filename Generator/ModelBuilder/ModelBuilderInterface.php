@@ -8,7 +8,7 @@ interface ModelBuilderInterface {
 
 	const DECORATOR_TAG = 'gollumsf.rest_doc.model_builder.decorator';
 
-	public function addDecorator(DecoratorInterface $decorator);
+	public function addDecorator(DecoratorInterface $decorator): void;
 
 	public function getModel(string $lass): Model;
 

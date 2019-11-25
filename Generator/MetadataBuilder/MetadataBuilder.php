@@ -12,7 +12,7 @@ class MetadataBuilder implements MetadataBuilderInterface {
 	/** @var Metadata[] */
 	private $cacheMetadataCollection = null;
 
-	public function addHandler(HandlerInterface $handler)
+	public function addHandler(HandlerInterface $handler): void
 	{
 		$this->handlers[] = $handler;
 	}

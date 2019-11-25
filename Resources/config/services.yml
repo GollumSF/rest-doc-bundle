@@ -13,6 +13,25 @@ services:
         resource: '../../Controller'
         tags: ['controller.service_arguments']
 
+    GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface:
+        class: GollumSF\RestDocBundle\TypeDiscover\TypeDiscover
+
+    GollumSF\RestDocBundle\TypeDiscover\Handler\AnnotationHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 10 }
+
+    GollumSF\RestDocBundle\TypeDiscover\Handler\DoctrineHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 20 }
+
+    GollumSF\RestDocBundle\TypeDiscover\Handler\PhpDocHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 30 }
+
+    GollumSF\RestDocBundle\TypeDiscover\Handler\PhpTypeHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 30 }
+
     GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface:
         class: GollumSF\RestDocBundle\Reflection\ControllerActionExtractor
 

@@ -8,7 +8,7 @@ interface TagBuilderInterface {
 	
 	const DECORATOR_TAG = 'gollumsf.rest_doc.tag_builder.decorator';
 
-	public function addDecorator(DecoratorInterface $decorator);
+	public function addDecorator(DecoratorInterface $decorator): void;
 
 	public function getTag(string $lass): Tag;
 

@@ -8,7 +8,7 @@ interface MetadataBuilderInterface
 {
 	const HANDLER_TAG = 'gollumsf.rest_doc.metadata_builder.handler';
 
-	public function addHandler(HandlerInterface $handler);
+	public function addHandler(HandlerInterface $handler): void;
 	
 	/**
 	 * @return Metadata[]
