@@ -1,17 +1,21 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\ModelBuilder;
+namespace GollumSF\RestDocBundle\TypeDiscover\Models;
 
-class Model
-{
+class ObjectType implements TypeInterface {
+	
 	/** @var string */
 	private $class;
 
-	/** @var ModelProperty[] */
+	/** @var ObjectProperty[] */
 	private $properties = [];
 
 	public function __construct(string $class) {
 		$this->class = $class;
+	}
+
+	public function getType(): string {
+		return 'object';
 	}
 
 	public function getClass(): string {
@@ -25,14 +29,14 @@ class Model
 		}
 		return $xmlName;
 	}
-
-	public function addProperty(ModelProperty $property): self {
+ 
+	public function addProperty(ObjectProperty $property): self {
 		$this->properties[$property->getSerializeName()] = $property;
 		return $this;
 	}
 
 	/**
-	 * @return ModelProperty[]
+	 * @return ObjectProperty[]
 	 */
 	public function getProperties(): array {
 		return $this->properties;
@@ -40,8 +44,8 @@ class Model
 
 	public function toJson(): array {
 		$json = [
-			'type' => 'object',
-			'properties' => array_map(function (ModelProperty $property){ return $property->toJson(); }, $this->getProperties()),
+			'type' => $this->getType(),
+			'properties' => array_map(function (ObjectProperty $property){ return $property->toJson(); }, $this->getProperties()),
 			'xml' => [
 				'name' => $this->getXMLName()
 			]

@@ -2,8 +2,8 @@
 
 namespace GollumSF\RestDocBundle\Generator\ModelBuilder\Decorator;
 
-use GollumSF\RestDocBundle\Generator\ModelBuilder\Model;
-use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelProperty;
+use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
+use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectProperty;
 use GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
@@ -29,7 +29,7 @@ class PropertyDecorator implements DecoratorInterface
 		$this->typeDiscover = $typeDiscover;
 	}
 	
-	public function decorateModel(Model $model): Model {
+	public function decorateModel(ObjectType $model): ObjectType {
 		$class = $model->getClass();
 		
 		$metadata = $this->classMetadataFactory->getMetadataFor($class);
@@ -43,7 +43,7 @@ class PropertyDecorator implements DecoratorInterface
 			
 			$type = $this->typeDiscover->getType($class, $name);
 			
-			$property = new ModelProperty(
+			$property = new ObjectProperty(
 				$name,
 				$serializeName,
 				$type,

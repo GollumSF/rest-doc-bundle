@@ -5,16 +5,11 @@ namespace GollumSF\RestDocBundle\Generator;
 use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestBundle\Annotation\Unserialize;
-use GollumSF\RestDocBundle\Annotation\ApiDescribe;
 use GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilderInterface;
-use GollumSF\RestDocBundle\Generator\ModelBuilder\Model;
 use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\Generator\TagBuilder\Tag;
 use GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilderInterface;
-use GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
-use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
+use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 
 class OpenApiGenerator implements OpenApiGeneratorInterface {
 
@@ -158,14 +153,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 						'tags' => [ $tag->getClass() ],
 						'parameters' => $parameters,
 						'responses' => $responses,
-//							'responses' => [
-//							200 => [
-//								'description' => 'successful operation',
-//								'schema' => [
-//									'ref' => '#/definitions/User'
-//								]
-//							]
-//						]
 				];
 			}
 			
@@ -183,36 +170,16 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				'url' => 'https://teambudd.io'
 			],
 			
-			'host' => "dev.teambudd.io",
+			'host' => "app-chizelle.com",
 			'basePath' => "/api",
-			'schemes' => [ 'https' ],
+			'schemes' => [ 'http' ],
 
 			'tags' => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
 			'paths' => $paths,
-//			'paths' => [
-//				'/users/me' => [
-//					'get' => [
-//						'tags' => [ 'User' ],
-////						'summary' => 'Find or create current user',
-////						'description' => 'Find or create current user',
-////						'produces' => [ 'application/json' ],
-//						'parameters' => [],
-//						'responses' => [
-//							200 => [
-//								'description' => 'successful operation',
-//								'schema' => [
-//									'ref' => '#/definitions/User'
-//								]
-//							]
-//						],
-////						'security' => []
-//					]
-//				],
-//			],
 			'securityDefinitions' => [
 
 			],
-			'definitions' => array_map(function (Model $model) { return $model->toJson(); }, $this->modelbuilder->getAllModels()),
+			'definitions' => array_map(function (ObjectType $model) { return $model->toJson(); }, $this->modelbuilder->getAllModels()),
 		];
 	}
 }

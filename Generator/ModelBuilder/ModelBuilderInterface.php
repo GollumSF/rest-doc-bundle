@@ -3,6 +3,7 @@
 namespace GollumSF\RestDocBundle\Generator\ModelBuilder;
 
 use GollumSF\RestDocBundle\Generator\ModelBuilder\Decorator\DecoratorInterface;
+use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 
 interface ModelBuilderInterface {
 
@@ -10,10 +11,10 @@ interface ModelBuilderInterface {
 
 	public function addDecorator(DecoratorInterface $decorator): void;
 
-	public function getModel(string $lass): Model;
+	public function getModel(string $lass): ObjectType;
 
 	/**
-	 * @return Model[]
+	 * @return ObjectType[]
 	 */
 	public function getAllModels(): array;
 }

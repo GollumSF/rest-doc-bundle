@@ -18,7 +18,7 @@ class ApiDescribe {
 	 * @param string $class
 	 */
 	public function __construct ($param) {
-		$this->entity     = isset ($param["entity"]) ? $param["entity"] : null;
-		$this->collection = isset ($param["collection"]) ? $param["collection"] : null;
+		$this->entity     = isset ($param['entity']) ? $param['entity'] : null;
+		$this->collection = isset ($param['collection']) ? $param['collection'] : null;
 	}
 }

@@ -3,6 +3,8 @@
 namespace GollumSF\RestDocBundle\TypeDiscover;
 
 use GollumSF\RestDocBundle\TypeDiscover\Handler\HandlerInterface;
+use GollumSF\RestDocBundle\TypeDiscover\Models\NativeType;
+use GollumSF\RestDocBundle\TypeDiscover\Models\TypeInterface;
 
 class TypeDiscover implements TypeDiscoverInterface {
 	
@@ -13,7 +15,7 @@ class TypeDiscover implements TypeDiscoverInterface {
 		$this->handlers[] = $handler;
 	}
 	
-	public function getType(string $class, string $targetName): string
+	public function getType(string $class, string $targetName): TypeInterface
 	{
 		foreach ($this->handlers as $handler) {
 			$type = $handler->getType($class, $targetName);
@@ -21,6 +23,6 @@ class TypeDiscover implements TypeDiscoverInterface {
 				return $type;
 			}
 		}
-		return 'mixed';
+		return new NativeType('mixed');
 	}
 }

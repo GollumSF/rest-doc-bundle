@@ -2,9 +2,9 @@
 
 namespace GollumSF\RestDocBundle\Generator\ModelBuilder\Decorator;
 
-use GollumSF\RestDocBundle\Generator\ModelBuilder\Model;
+use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 
 interface DecoratorInterface
 {
-	public function decorateModel(Model $model): Model;
+	public function decorateModel(ObjectType $model): ObjectType;
 }

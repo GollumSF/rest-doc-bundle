@@ -1,22 +1,22 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\ModelBuilder;
+namespace GollumSF\RestDocBundle\TypeDiscover\Models;
 
-class ModelProperty
-{
+class ObjectProperty {
+	
 	/** @var string */
 	private $name;
 	
 	/** @var string */
 	private $serializeName;
 
-	/** @var string */
+	/** @var TypeInterface */
 	private $type;
 	
 	/** @var string[] */
 	private $groups;
 
-	public function __construct(string $name, string $serializeName, string $type, array $groups)
+	public function __construct(string $name, string $serializeName, TypeInterface $type, array $groups)
 	{
 		$this->name = $name;
 		$this->serializeName = $serializeName;
@@ -32,7 +32,7 @@ class ModelProperty
 		return $this->serializeName;
 	}
 
-	public function getType(): string {
+	public function getType(): TypeInterface {
 		return $this->type;
 	}
 
@@ -41,8 +41,6 @@ class ModelProperty
 	}
 	
 	public function toJson(): array {
-		return [
-			'type' => $this->getType()
-		];
+		return $this->getType()->toJson();
 	}
 }

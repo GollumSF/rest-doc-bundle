@@ -3,6 +3,7 @@
 namespace GollumSF\RestDocBundle\TypeDiscover;
 
 use GollumSF\RestDocBundle\TypeDiscover\Handler\HandlerInterface;
+use GollumSF\RestDocBundle\TypeDiscover\Models\TypeInterface;
 
 interface TypeDiscoverInterface {
 
@@ -10,6 +11,6 @@ interface TypeDiscoverInterface {
 
 	public function addHandler(HandlerInterface $handler): void;
 	
-	public function getType(string $class, string $targetName): string;
+	public function getType(string $class, string $targetName): TypeInterface;
 	
 }

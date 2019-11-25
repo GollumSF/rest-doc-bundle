@@ -24,14 +24,6 @@ services:
         tags:
             - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 20 }
 
-    GollumSF\RestDocBundle\TypeDiscover\Handler\PhpDocHandler:
-        tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 30 }
-
-    GollumSF\RestDocBundle\TypeDiscover\Handler\PhpTypeHandler:
-        tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 30 }
-
     GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface:
         class: GollumSF\RestDocBundle\Reflection\ControllerActionExtractor
 
