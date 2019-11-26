@@ -171,7 +171,11 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			'tags' => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
 			'paths' => $paths,
 			'securityDefinitions' => [
-
+				'cookieAuth' => [        # arbitrary name for the security scheme; will be used in the "security" key later
+				  'type' => 'apiKey',
+				  'in' => 'cookie',
+				  'name' => 'PHPSESSID'  # cookie name
+				]
 			],
 			'definitions' => array_map(function (ObjectType $model) { return $model->toJson(); }, $this->modelbuilder->getAllModels()),
 		];

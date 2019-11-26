@@ -29,12 +29,12 @@ class DoctrineHandler implements HandlerInterface {
 						'float',
 						'double',
 						'string',
-						'boolean'
+						'boolean',
 					])) {
 						return new NativeType($type);
 					}
 					if ($type === 'datetime') {
-						return new NativeType('interger');
+						return new NativeType('string');
 					}
 				}
 				
