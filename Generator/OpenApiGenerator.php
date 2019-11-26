@@ -10,6 +10,7 @@ use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\Generator\TagBuilder\Tag;
 use GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilderInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class OpenApiGenerator implements OpenApiGeneratorInterface {
 
@@ -22,14 +23,19 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 	/** @var TagbuilderInterface */
 	private $tagbuilder;
 	
+	/** @var RequestStack */
+	private $requestStack;
+	
 	public function __construct(
 		MetadataBuilderInterface      $metadataBuilderInterface,
 		ModelBuilderInterface         $modelbuilder,
-		TagBuilderInterface           $tagbuilder
+		TagBuilderInterface           $tagbuilder,
+		RequestStack                  $requestStack
 	) {
 		$this->metadataBuilder = $metadataBuilderInterface;
 		$this->modelbuilder    = $modelbuilder;
 		$this->tagbuilder      = $tagbuilder;
+		$this->requestStack    = $requestStack;
 	}
 
 	
@@ -144,6 +150,8 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			
 		}
 		
+		$request = $this->requestStack->getMasterRequest();
+		
 		return [
 			'swagger' => "2.0",
 			'info' => [
@@ -153,12 +161,12 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			],
 			'externalDocs' => [
 				'description' => 'Descript doc externe',
-				'url' => 'https://teambudd.io'
+				'url' => 'https://google.fr'
 			],
 			
-			'host' => "api.chizelle.com",
+			'host' => $request->getHost(),
 			'basePath' => "/api",
-			'schemes' => [ 'http' ],
+			'schemes' => [ $request->getScheme() ],
 
 			'tags' => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
 			'paths' => $paths,
