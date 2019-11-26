@@ -156,7 +156,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				'url' => 'https://teambudd.io'
 			],
 			
-			'host' => "app-chizelle.com",
+			'host' => "api.chizelle.com",
 			'basePath' => "/api",
 			'schemes' => [ 'http' ],
 
