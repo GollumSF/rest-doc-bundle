@@ -3,7 +3,10 @@
 namespace GollumSF\RestDocBundle\TypeDiscover\Handler;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
+use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface;
+use GollumSF\RestDocBundle\TypeDiscover\Models\DateTimeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\NativeType;
+use GollumSF\RestDocBundle\TypeDiscover\Models\RefType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\TypeInterface;
 
 class DoctrineHandler implements HandlerInterface {
@@ -11,8 +14,15 @@ class DoctrineHandler implements HandlerInterface {
 	/** @var ManagerRegistry */
 	private $doctrine;
 	
-	public function __construct(ManagerRegistry $doctrine) {
+	/** @var ModelBuilderInterface */
+	private $modelBuilder;
+	
+	public function __construct(
+		ManagerRegistry $doctrine,
+		ModelBuilderInterface $modelBuilder
+	) {
 		$this->doctrine = $doctrine;
+		$this->modelBuilder = $modelBuilder;
 	}
 
 	public function getType(string $class, string $targetName): ?TypeInterface {
@@ -34,10 +44,12 @@ class DoctrineHandler implements HandlerInterface {
 						return new NativeType($type);
 					}
 					if ($type === 'datetime') {
-						return new NativeType('string');
+						return new DateTimeType();
 					}
 				}
-				
+				if ($metadata->hasAssociation($targetName)) {
+					return $this->modelBuilder->getModel($metadata->getAssociationTargetClass($targetName));
+				}
 			}
 		} catch (\Throwable $e) {
 		}

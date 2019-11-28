@@ -21,10 +21,10 @@ class ModelBuilder implements ModelBuilderInterface {
 	{
 		if (!isset($this->models[$class])) {
 			$model = new ObjectType($class);
+			$this->models[$class] = $model;
 			foreach ($this->decorators as $decorator) {
 				$model = $decorator->decorateModel($model);
 			}
-			$this->models[$class] = $model;
 		}
 		return $this->models[$class];
 	}

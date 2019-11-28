@@ -40,7 +40,7 @@ file that was distributed with this source code. #}
 			
 			// Begin Swagger UI call region
 			window.ui = SwaggerUIBundle({
-				spec: data,
+				spec: data.spec,
 				dom_id: '#swagger-ui',
 				validatorUrl: null,
 				presets: [
@@ -51,6 +51,24 @@ file that was distributed with this source code. #}
 					SwaggerUIBundle.plugins.DownloadUrl
 				],
 				layout: "StandaloneLayout"
+			});
+
+			document.querySelector('.auth-wrapper .btn.authorize').addEventListener('click', function() {
+				setTimeout(function() {
+					for (var i = 0; i < data.security.length; i++) {
+						var security = data.security[i];
+						if (security.defaultValue) {
+							var input = document.querySelector('.auth-wrapper .auth-container:nth-child('+(i+1)+') input');
+							if(input && !input.value) {
+								input.value = security.defaultValue;
+								
+								var event = new Event('change', {bubbles: true});
+								event.simulated = true;
+								input.dispatchEvent(event);
+							}
+						}
+					}
+				}, 100);
 			});
 		}
 	</script>

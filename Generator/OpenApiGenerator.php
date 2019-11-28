@@ -59,23 +59,14 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			$methods = $route->getMethods();
 			$url = substr($url, strlen('/api'));
 
+			$requestBody = [];
 			$parameters = [];
-			$responses = [];
 			
 			if (!isset($paths[$url])) {
 				$paths[$url] = [];
 			}
 
-			
-			if ($annoSerialize) {
-				$responses[$annoSerialize->code] = [
-//						'description' => 'successful operation',
-					'schema' => [
-						'ref' => '#/definitions/'.$model->getClass()
-					]
-				];
-			}
-			
+
 			preg_match_all('/\{([a-zA-Z-9_]+)\}/', $url, $match);
 			foreach ($match[1] as $key) {
 				$parameters[] = [
@@ -119,33 +110,81 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			}
 			
 			foreach ($methods as $method) {
-				
+
+				$hasRquestBody = false;
+				$requestProperties = [];
 				if ($metadata->getUnserializeGroups()) {
-					$groups = array_merge([ strtolower($method) ], $metadata->getUnserializeGroups());
+					$hasRquestBody = true;
+					$groups = array_merge([strtolower($method)], $metadata->getUnserializeGroups());
 					$groups = array_unique($groups);
-					
-					$properties = [];
+
 					foreach ($model->getProperties() as $property) {
 						if (count(array_intersect($property->getGroups(), $groups))) {
-							$properties[$property->getSerializeName()] = $property->getType()->toJson();
+							$requestProperties[$property->getSerializeName()] = $property->getType()->toJson();
 						}
 					}
-					$parameters[] = [
-						'name' => 'body',
-						'in' => 'body',
-						'required' => true,
-						'schema' => [
-							'type' => 'object',
-							'properties' => $properties
+				}
+				if ($metadata->getRequestBodyProperties()) {
+					$hasRquestBody = true;
+					$requestProperties = array_merge($requestProperties, $metadata->getRequestBodyProperties());
+				}
+				
+				if ($hasRquestBody) {
+
+					$requestBody['content'] = [
+						'application/json' => [
+							'schema' => [
+								'type' => 'object',
+								'properties' => $requestProperties
+							]
+						]
+					];
+					
+				}
+
+				$responses = [];
+				if ($annoSerialize) {
+
+					$responseProperties = [];
+					if ($metadata->getSerializeGroups()) {
+						$groups = array_merge([strtolower($method)], $metadata->getSerializeGroups());
+						$groups = array_unique($groups);
+
+						foreach ($model->getProperties() as $property) {
+							if (count(array_intersect($property->getGroups(), $groups))) {
+								$responseProperties[$property->getSerializeName()] = $property->getType()->toJson();
+							}
+						}
+					}
+					if ($metadata->getResponseBodyProperties()) {
+						$responseProperties = array_merge($requestProperties, $metadata->getResponseBodyProperties());
+					}
+					
+					$responses[$annoSerialize->code] = [
+//						'description' => 'successful operation',
+						'content' => [
+							'application/json' => [
+								'schema' => [
+									'type' => 'object',
+									'properties' => $responseProperties
+								]
+							]
 						]
 					];
 				}
 				
-				$paths[$url][strtolower($method)] = [
-						'tags' => [ $tag->getClass() ],
-						'parameters' => $parameters,
-						'responses' => $responses,
+				$path = [
+
+					'tags' => [ $tag->getClass() ],
+//						'summary'=> 'Creates a Book resource.',
+					'parameters' => $parameters,
+					'responses' => $responses,
 				];
+				if ($requestBody) {
+					$path['requestBody'] = $requestBody;
+				}
+				
+				$paths[$url][strtolower($method)] = $path;
 			}
 			
 		}
@@ -153,31 +192,56 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		$request = $this->requestStack->getMasterRequest();
 		
 		return [
-			'swagger' => "2.0",
-			'info' => [
-				'description' => 'description API',
-				'version' => '1.0.0',
-				'title' => 'Swagger Title'
+			'spec' => [
+				'openapi' => '3.0.2',
+				'info' => [
+					'description' => 'description API',
+					'version' => '1.0.0',
+					'title' => 'Swagger Title'
+				],
+				'externalDocs' => [
+					'description' => 'Descript doc externe',
+					'url' => 'https://google.fr'
+				],
+	
+				'servers' => [
+					[ 
+						'url' => '{protocol}://'.$request->getHost().'/api',
+						'variables' => [
+							'protocol' => [ 'enum' => [ $request->getScheme() ], 'default' => $request->getScheme() ]	
+						]
+					],
+				],
+	
+				'tags' => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
+				'paths' => $paths,
+				'components' => [
+					'securitySchemes' => [
+						'ApiKeyHeader' => [
+							'type' => 'apiKey',
+							'in' => 'header',
+							'description' => 'Value for the Authorization header',
+							'name' => 'Authorization',
+							"authenticationScheme" => "Bearer"
+						],
+						'ApiKeyQuery' => [
+							'type' => 'apiKey',
+							'in' => 'query',
+							'description' => 'Value for the token query',
+							'name' => 'token',
+						]
+					],
+					'schemas' => array_map(function (ObjectType $model) { return $model->toJson(); }, $this->modelbuilder->getAllModels())
+				],
+				'security' => [
+					[ 'ApiKeyHeader' => [] ],
+					[ 'ApiKeyQuery' => [] ],
+				],
 			],
-			'externalDocs' => [
-				'description' => 'Descript doc externe',
-				'url' => 'https://google.fr'
-			],
-			
-			'host' => $request->getHost(),
-			'basePath' => "/api",
-			'schemes' => [ $request->getScheme() ],
-
-			'tags' => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
-			'paths' => $paths,
-			'securityDefinitions' => [
-				'cookieAuth' => [        # arbitrary name for the security scheme; will be used in the "security" key later
-				  'type' => 'apiKey',
-				  'in' => 'cookie',
-				  'name' => 'PHPSESSID'  # cookie name
-				]
-			],
-			'definitions' => array_map(function (ObjectType $model) { return $model->toJson(); }, $this->modelbuilder->getAllModels()),
+			'security' => [
+				[ 'defaultValue' => 'BEARER TOKEN_DEV' ],
+				[ 'defaultValue' => 'TOKEN_DEV' ],
+			]
 		];
 	}
 }

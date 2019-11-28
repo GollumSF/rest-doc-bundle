@@ -5,6 +5,7 @@ namespace GollumSF\RestDocBundle\TypeDiscover\Handler;
 use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestDocBundle\Annotation\ApiProperty;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ArrayType;
+use GollumSF\RestDocBundle\TypeDiscover\Models\DateTimeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\NativeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\TypeInterface;
 
@@ -27,7 +28,11 @@ class AnnotationHandler implements HandlerInterface
 			/** @var ApiProperty $annotation */
 			$annotation = $this->reader->getPropertyAnnotation($rProperty, ApiProperty::class);
 			if ($annotation && $annotation->type) {
-				$type =  new NativeType($annotation->type);
+				if ($annotation->type === 'datetime') {
+					$type = new DateTimeType();
+				} else {
+					$type = new NativeType($annotation->type);
+				}
 			}
 
 			if ($type && $annotation->collection) {
@@ -40,7 +45,11 @@ class AnnotationHandler implements HandlerInterface
 			/** @var ApiProperty $annotation */
 			$annotation = $this->reader->getMethodAnnotation($rProperty, ApiProperty::class);
 			if ($annotation && $annotation->type) {
-				$type = new NativeType($annotation->type);
+				if ($annotation->type === 'datetime') {
+					$type = new DateTimeType();
+				} else {
+					$type = new NativeType($annotation->type);
+				}
 			}
 
 			if ($type && $annotation->collection) {

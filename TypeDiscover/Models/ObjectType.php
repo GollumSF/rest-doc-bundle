@@ -45,7 +45,13 @@ class ObjectType implements TypeInterface {
 	public function toJson(): array {
 		$json = [
 			'type' => $this->getType(),
-			'properties' => array_map(function (ObjectProperty $property){ return $property->toJson(); }, $this->getProperties()),
+			'properties' => array_map(
+				function (ObjectProperty $property){
+					return $property->toJson();
+				}, array_filter($this->getProperties(), function (ObjectProperty $property) {
+					return !!count($property->getGroups());
+				})
+			),
 			'xml' => [
 				'name' => $this->getXMLName()
 			]

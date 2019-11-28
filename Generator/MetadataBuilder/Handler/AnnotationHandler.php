@@ -110,6 +110,15 @@ class AnnotationHandler implements HandlerInterface
 
 			$serializeGroups   = array_unique($serializeGroups);
 			$unserializeGroups = array_unique($unserializeGroups);
+
+			$requestBodyProperties = [];
+			if ($describeClass  && $describeClass->requestBodyProperties)  $requestBodyProperties = array_merge($requestBodyProperties, $describeClass->requestBodyProperties);
+			if ($describeMethod && $describeMethod->requestBodyProperties) $requestBodyProperties = array_merge($requestBodyProperties, $describeMethod->requestBodyProperties);
+
+			$responseBodyProperties = [];
+			if ($describeClass  && $describeClass->responseBodyProperties)  $responseBodyProperties = array_merge($responseBodyProperties, $describeClass->responseBodyProperties);
+			if ($describeMethod && $describeMethod->responseBodyProperties) $responseBodyProperties = array_merge($responseBodyProperties, $describeMethod->responseBodyProperties);
+				
 			
 			return new Metadata(
 				$route,
@@ -119,6 +128,8 @@ class AnnotationHandler implements HandlerInterface
 				!!$isCollection,
 				$serializeGroups,
 				$unserializeGroups,
+				$requestBodyProperties,
+				$responseBodyProperties,
 				$annoSerialize,
 				$annoUnserialize
 			);

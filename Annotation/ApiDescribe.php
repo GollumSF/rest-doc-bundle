@@ -20,6 +20,12 @@ class ApiDescribe {
 	/** @var string[] */
 	public $unserializeGroups;
 
+	/** @var string[] */
+	public $requestBodyProperties;
+
+	/** @var string[] */
+	public $responseBodyProperties;
+
 	/**
 	 * @param string $class
 	 */
@@ -28,6 +34,8 @@ class ApiDescribe {
 		$this->collection        = isset ($param['collection'])        ? $param['collection']        : null;
 		$this->serializeGroups   = isset ($param['serializeGroups'])   ? $param['serializeGroups']   : [];
 		$this->unserializeGroups = isset ($param['unserializeGroups']) ? $param['unserializeGroups'] : [];
+		$this->requestBodyProperties  = isset ($param['requestBodyProperties'])  ? $param['requestBodyProperties']  : [];
+		$this->responseBodyProperties = isset ($param['responseBodyProperties']) ? $param['responseBodyProperties'] : [];
 		if (!$this->serializeGroups) {
 			$this->serializeGroups = [];
 		}
