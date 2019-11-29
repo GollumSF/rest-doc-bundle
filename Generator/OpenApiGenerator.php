@@ -120,7 +120,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 					foreach ($model->getProperties() as $property) {
 						if (count(array_intersect($property->getGroups(), $groups))) {
-							$requestProperties[$property->getSerializeName()] = $property->getType()->toJson();
+							$requestProperties[$property->getSerializeName()] = $property->getType()->toJson($groups);
 						}
 					}
 				}
@@ -152,7 +152,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 						foreach ($model->getProperties() as $property) {
 							if (count(array_intersect($property->getGroups(), $groups))) {
-								$responseProperties[$property->getSerializeName()] = $property->getType()->toJson();
+								$responseProperties[$property->getSerializeName()] = $property->getType()->toJson($groups);
 							}
 						}
 					}
@@ -231,7 +231,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 							'name' => 'token',
 						]
 					],
-					'schemas' => array_map(function (ObjectType $model) { return $model->toJson(); }, $this->modelbuilder->getAllModels())
+					'schemas' => array_map(function (ObjectType $model) { return $model->toJsonRef(); }, $this->modelbuilder->getAllModels())
 				],
 				'security' => [
 					[ 'ApiKeyHeader' => [] ],

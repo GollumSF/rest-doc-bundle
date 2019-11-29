@@ -40,7 +40,7 @@ class ObjectProperty {
 		return $this->groups;
 	}
 	
-	public function toJson(): array {
-		return $this->getType()->toJson();
+	public function toJson(array $groups = null): array {
+		return $this->getType()->toJson($groups);
 	}
 }

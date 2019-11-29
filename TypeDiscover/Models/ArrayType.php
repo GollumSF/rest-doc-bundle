@@ -7,7 +7,7 @@ class ArrayType implements TypeInterface {
 	/** @var TypeInterface */
 	private $subType;
 	
-	public function __construct(TypeInterface $subType) {
+	public function __construct(?TypeInterface $subType) {
 		$this->subType = $subType;
 	}
 
@@ -19,10 +19,13 @@ class ArrayType implements TypeInterface {
 		return $this->subType;
 	}
 
-	public function toJson(): array {
-		return [
+	public function toJson(array $groups = null): array {
+		$json = [
 			'type' => $this->getType(),
-			'items' => $this->getSubType()->toJson()
 		];
+		if ($this->getSubType()) {
+			$json['items'] = $this->getSubType()->toJson($groups);
+		}
+		return $json;
 	}
 }

@@ -4,6 +4,7 @@ namespace GollumSF\RestDocBundle\TypeDiscover\Handler;
 
 use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestDocBundle\Annotation\ApiProperty;
+use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ArrayType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\DateTimeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\NativeType;
@@ -13,9 +14,16 @@ class AnnotationHandler implements HandlerInterface
 {
 	/** @var Reader */
 	private $reader;
+
+	/** @var ModelBuilderInterface */
+	private $modelBuilder;
 	
-	public function __construct(Reader $reader) {
+	public function __construct(
+		Reader $reader,
+		ModelBuilderInterface $modelBuilder
+	) {
 		$this->reader = $reader;
+		$this->modelBuilder = $modelBuilder;
 	}
 
 	public function getType(string $class, string $targetName): ?TypeInterface {
@@ -28,13 +36,8 @@ class AnnotationHandler implements HandlerInterface
 			/** @var ApiProperty $annotation */
 			$annotation = $this->reader->getPropertyAnnotation($rProperty, ApiProperty::class);
 			if ($annotation && $annotation->type) {
-				if ($annotation->type === 'datetime') {
-					$type = new DateTimeType();
-				} else {
-					$type = new NativeType($annotation->type);
-				}
+				$type = $this->createType($annotation->type);
 			}
-
 			if ($type && $annotation->collection) {
 				$type = new ArrayType($type);
 			}
@@ -45,11 +48,7 @@ class AnnotationHandler implements HandlerInterface
 			/** @var ApiProperty $annotation */
 			$annotation = $this->reader->getMethodAnnotation($rProperty, ApiProperty::class);
 			if ($annotation && $annotation->type) {
-				if ($annotation->type === 'datetime') {
-					$type = new DateTimeType();
-				} else {
-					$type = new NativeType($annotation->type);
-				}
+				$type = $this->createType($annotation->type);
 			}
 
 			if ($type && $annotation->collection) {
@@ -58,5 +57,17 @@ class AnnotationHandler implements HandlerInterface
 		}
 		
 		return $type;
+	}
+	
+	private function createType(string $type): ?TypeInterface {
+		if (class_exists($type)) {
+			return $this->modelBuilder->getModel($type);
+		} else
+		if ($type === 'datetime') {
+			return new DateTimeType();
+		} else {
+			return new NativeType($type);
+		}
+		return null;
 	}
 }
