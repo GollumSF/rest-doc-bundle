@@ -109,6 +109,10 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				];
 			}
 			
+			foreach ($metadata->getRequestProperties() as $name => $parameter) {
+				$parameters[] = array_merge([ 'name' => $name ], $parameter);
+			}
+			
 			foreach ($methods as $method) {
 
 				$hasRquestBody = false;

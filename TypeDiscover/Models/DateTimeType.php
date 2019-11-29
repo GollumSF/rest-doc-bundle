@@ -13,7 +13,7 @@ class DateTimeType implements TypeInterface {
 	public function toJson(array $groups = null): array {
 		return [
 			'type' => $this->getType(),
-			'defaultValue' => (new \DateTime())->format(\DateTime::RFC3339)
+			'example' => (new \DateTime())->format(\DateTime::RFC3339)
 		];
 	}
 }

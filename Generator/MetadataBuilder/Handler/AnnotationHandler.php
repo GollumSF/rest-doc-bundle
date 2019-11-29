@@ -111,6 +111,10 @@ class AnnotationHandler implements HandlerInterface
 			$serializeGroups   = array_unique($serializeGroups);
 			$unserializeGroups = array_unique($unserializeGroups);
 
+			$requestProperties = [];
+			if ($describeClass  && $describeClass->requestProperties)  $requestProperties = array_merge($requestProperties, $describeClass->requestProperties);
+			if ($describeMethod && $describeMethod->requestProperties) $requestProperties = array_merge($requestProperties, $describeMethod->requestProperties);
+			
 			$requestBodyProperties = [];
 			if ($describeClass  && $describeClass->requestBodyProperties)  $requestBodyProperties = array_merge($requestBodyProperties, $describeClass->requestBodyProperties);
 			if ($describeMethod && $describeMethod->requestBodyProperties) $requestBodyProperties = array_merge($requestBodyProperties, $describeMethod->requestBodyProperties);
@@ -128,6 +132,7 @@ class AnnotationHandler implements HandlerInterface
 				!!$isCollection,
 				$serializeGroups,
 				$unserializeGroups,
+				$requestProperties,
 				$requestBodyProperties,
 				$responseBodyProperties,
 				$annoSerialize,

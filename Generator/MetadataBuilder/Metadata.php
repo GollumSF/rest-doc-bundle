@@ -31,6 +31,9 @@ class Metadata
 	private $unserializeGroups;
 
 	/** @var string[] */
+	private $requestProperties;
+
+	/** @var string[] */
 	private $requestBodyProperties;
 
 	/** @var string[] */
@@ -50,6 +53,7 @@ class Metadata
 		bool $collection,
 		array $serializeGroups,
 		array $unserializeGroups,
+		array $requestProperties,
 		array $requestBodyProperties,
 		array $responseBodyProperties,
 		?Serialize $serialize,
@@ -62,6 +66,7 @@ class Metadata
 		$this->collection = $collection;
 		$this->serializeGroups = $serializeGroups;
 		$this->unserializeGroups = $unserializeGroups;
+		$this->requestProperties = $requestProperties;
 		$this->requestBodyProperties = $requestBodyProperties;
 		$this->responseBodyProperties = $responseBodyProperties;
 		$this->serialize = $serialize;
@@ -96,6 +101,11 @@ class Metadata
 	public function getUnserializeGroups(): array
 	{
 		return $this->unserializeGroups;
+	}
+
+	public function getRequestProperties(): array
+	{
+		return $this->requestProperties;
 	}
 
 	public function getRequestBodyProperties(): array

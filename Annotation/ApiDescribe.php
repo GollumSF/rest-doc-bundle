@@ -21,6 +21,9 @@ class ApiDescribe {
 	public $unserializeGroups;
 
 	/** @var string[] */
+	public $requestProperties;
+
+	/** @var string[] */
 	public $requestBodyProperties;
 
 	/** @var string[] */
@@ -30,10 +33,11 @@ class ApiDescribe {
 	 * @param string $class
 	 */
 	public function __construct ($param) {
-		$this->entity            = isset ($param['entity'])            ? $param['entity']            : null;
-		$this->collection        = isset ($param['collection'])        ? $param['collection']        : null;
-		$this->serializeGroups   = isset ($param['serializeGroups'])   ? $param['serializeGroups']   : [];
-		$this->unserializeGroups = isset ($param['unserializeGroups']) ? $param['unserializeGroups'] : [];
+		$this->entity                 = isset ($param['entity'])                 ? $param['entity']                 : null;
+		$this->collection             = isset ($param['collection'])             ? $param['collection']             : null;
+		$this->serializeGroups        = isset ($param['serializeGroups'])        ? $param['serializeGroups']        : [];
+		$this->unserializeGroups      = isset ($param['unserializeGroups'])      ? $param['unserializeGroups']      : [];
+		$this->requestProperties      = isset ($param['requestProperties'])      ? $param['requestProperties']      : [];
 		$this->requestBodyProperties  = isset ($param['requestBodyProperties'])  ? $param['requestBodyProperties']  : [];
 		$this->responseBodyProperties = isset ($param['responseBodyProperties']) ? $param['responseBodyProperties'] : [];
 		if (!$this->serializeGroups) {
