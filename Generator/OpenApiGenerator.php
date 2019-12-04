@@ -72,8 +72,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				$parameters[] = [
 					'name' => $key,
 					'in' => 'path',
-//						'required' => false,
-//						'type' => "string"
 				];
 			}
 			
