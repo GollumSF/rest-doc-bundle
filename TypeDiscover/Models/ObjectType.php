@@ -43,21 +43,27 @@ class ObjectType implements TypeInterface {
 	}
 
 	public function toJson(array $groups = null): array {
+		
+		$properties = array_filter($this->getProperties(), function (ObjectProperty $property) use ($groups) {
+			return
+				!!count($property->getGroups()) &&
+				(
+					$groups === null ||
+					count(array_intersect($groups, $property->getGroups()))
+				)
+				;
+		});
+		if (count($properties) === 0) {
+			return [
+				'type' => 'integer',
+			];
+		}
+		
 		$json = [
 			'type' => $this->getType(),
-			'properties' => array_map(
-				function (ObjectProperty $property) use ($groups) {
+			'properties' => array_map(function (ObjectProperty $property) use ($groups) {
 					return $property->toJson($groups);
-				}, array_filter($this->getProperties(), function (ObjectProperty $property) use ($groups) {
-					return 
-						!!count($property->getGroups()) &&
-						(
-							$groups === null ||
-							count(array_intersect($groups, $property->getGroups()))
-						)
-					;
-				})
-			),
+			}, $properties),
 			'xml' => [
 				'name' => $this->getXMLName()
 			]
