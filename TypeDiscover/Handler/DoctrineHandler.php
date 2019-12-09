@@ -4,6 +4,7 @@ namespace GollumSF\RestDocBundle\TypeDiscover\Handler;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface;
+use GollumSF\RestDocBundle\TypeDiscover\Models\ArrayType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\DateTimeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\NativeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\RefType;
@@ -48,7 +49,11 @@ class DoctrineHandler implements HandlerInterface {
 					}
 				}
 				if ($metadata->hasAssociation($targetName)) {
-					return $this->modelBuilder->getModel($metadata->getAssociationTargetClass($targetName));
+					$type = $this->modelBuilder->getModel($metadata->getAssociationTargetClass($targetName)); 
+					if ($metadata->isCollectionValuedAssociation($targetName)) {
+						return new ArrayType($type);
+					}
+					return $type;
 				}
 			}
 		} catch (\Throwable $e) {

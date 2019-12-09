@@ -75,14 +75,7 @@ class ObjectType implements TypeInterface {
 			'type' => $this->getType(),
 			'properties' => array_map(
 				function (ObjectProperty $property) {
-					if ($property->getType() instanceof ObjectType) {
-						/** @var ObjectType $type */
-						$type = $property->getType();
-						return [
-							'$ref'=> '#/components/schemas/'.$type->getClass(),
-						];
-					}
-					return $property->toJson();
+					return $property->toJsonRef();
 				}, array_filter($this->getProperties(), function (ObjectProperty $property) {
 					return !!count($property->getGroups());
 				})

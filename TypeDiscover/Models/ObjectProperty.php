@@ -43,4 +43,17 @@ class ObjectProperty {
 	public function toJson(array $groups = null): array {
 		return $this->getType()->toJson($groups);
 	}
+	public function toJsonRef(array $groups = null): array {
+
+		$type = $this->getType();
+		if ($type instanceof ObjectType) {
+			return [
+				'$ref'=> '#/components/schemas/'.$type->getClass(),
+			];
+		}
+		if ($type instanceof ArrayType) {
+			return $type->toJsonRef($groups);
+		}
+		return $type->toJson($groups);
+	}
 }
