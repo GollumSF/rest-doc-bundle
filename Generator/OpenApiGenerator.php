@@ -161,6 +161,21 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 					if ($metadata->getResponseBodyProperties()) {
 						$responseProperties = array_merge($requestProperties, $metadata->getResponseBodyProperties());
 					}
+
+					if ($isCollection) {
+						$responseProperties = [
+							'total' => [
+								'type' => 'integer'
+							],
+							'data' => [
+								'type' => 'array',
+								'items' => [
+									'type' => 'object',
+									'properties' => $responseProperties
+								],
+							],
+						];
+					}
 					
 					$responses[$annoSerialize->code] = [
 //						'description' => 'successful operation',
