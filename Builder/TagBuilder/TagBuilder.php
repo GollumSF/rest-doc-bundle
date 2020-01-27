@@ -1,8 +1,8 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\TagBuilder;
+namespace GollumSF\RestDocBundle\Builder\TagBuilder;
 
-use GollumSF\RestDocBundle\Generator\TagBuilder\Decorator\DecoratorInterface;
+use GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\DecoratorInterface;
 
 class TagBuilder implements TagBuilderInterface {
 	

@@ -1,6 +1,6 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\TagBuilder;
+namespace GollumSF\RestDocBundle\Builder\TagBuilder;
 
 class Tag
 {

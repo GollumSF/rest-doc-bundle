@@ -1,6 +1,6 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\ModelBuilder\Decorator;
+namespace GollumSF\RestDocBundle\Builder\ModelBuilder\Decorator;
 
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectProperty;

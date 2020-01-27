@@ -1,8 +1,8 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\ModelBuilder;
+namespace GollumSF\RestDocBundle\Builder\ModelBuilder;
 
-use GollumSF\RestDocBundle\Generator\ModelBuilder\Decorator\DecoratorInterface;
+use GollumSF\RestDocBundle\Builder\ModelBuilder\Decorator\DecoratorInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 
 interface ModelBuilderInterface {

@@ -3,7 +3,7 @@
 namespace GollumSF\RestDocBundle\TypeDiscover\Handler;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
-use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface;
+use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ArrayType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\DateTimeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\NativeType;

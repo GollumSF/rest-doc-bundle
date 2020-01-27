@@ -2,24 +2,23 @@
 
 namespace GollumSF\RestDocBundle\DependencyInjection\Compiler;
 
-use GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface;
-use GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface;
+use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-class TypeDiscoverPass implements CompilerPassInterface
+class ResponsePropertiesGeneratorPass implements CompilerPassInterface
 {
 	public function process(ContainerBuilder $container)
 	{
 		// always first check if the primary service is defined
-		if (!$container->has(MetadataBuilderInterface::class)) {
+		if (!$container->has(ResponsePropertiesGeneratorInterface::class)) {
 			return;
 		}
 
-		$definition = $container->findDefinition(TypeDiscoverInterface::class);
+		$definition = $container->findDefinition(ResponsePropertiesGeneratorInterface::class);
 
-		$taggedServices = $container->findTaggedServiceIds(TypeDiscoverInterface::HANDLER_TAG);
+		$taggedServices = $container->findTaggedServiceIds(ResponsePropertiesGeneratorInterface::HANDLER_TAG);
 		uasort($taggedServices, function ($a, $b) {
 			$aVal = isset($a[0]) && isset($a[0]['priority']) ? $a[0]['priority'] : 0;
 			$bVal = isset($b[0]) && isset($b[0]['priority']) ? $b[0]['priority'] : 0;

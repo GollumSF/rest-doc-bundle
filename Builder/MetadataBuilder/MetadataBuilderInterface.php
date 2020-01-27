@@ -1,8 +1,8 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\MetadataBuilder;
+namespace GollumSF\RestDocBundle\Builder\MetadataBuilder;
 
-use GollumSF\RestDocBundle\Generator\MetadataBuilder\Handler\HandlerInterface;
+use GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\HandlerInterface;
 
 interface MetadataBuilderInterface
 {

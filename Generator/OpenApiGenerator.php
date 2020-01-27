@@ -2,18 +2,22 @@
 
 namespace GollumSF\RestDocBundle\Generator;
 
-use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestBundle\Annotation\Serialize;
-use GollumSF\RestBundle\Annotation\Unserialize;
-use GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilderInterface;
-use GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface;
-use GollumSF\RestDocBundle\Generator\TagBuilder\Tag;
-use GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilderInterface;
+use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
+use GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface;
+use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
+use GollumSF\RestDocBundle\Builder\TagBuilder\Tag;
+use GollumSF\RestDocBundle\Builder\TagBuilder\TagBuilderInterface;
+use GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface;
+use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface;
+use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class OpenApiGenerator implements OpenApiGeneratorInterface {
 
+	const OPEN_API_VERSION = '3.0.2';
+	
 	/** @var MetadataBuilderInterface */
 	private $metadataBuilder;
 
@@ -26,191 +30,43 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 	/** @var RequestStack */
 	private $requestStack;
 	
+	/** @var ParametersGeneratorInterface */
+	private $parametersGenerator;
+	
+	/** @var ResponsePropertiesGeneratorInterface */
+	private $responsePropertiesGenerator;
+	
+	/** @var RequestBodyGeneratorInterface */
+	private $requestBodyGenerator;
+	
 	public function __construct(
-		MetadataBuilderInterface      $metadataBuilderInterface,
-		ModelBuilderInterface         $modelbuilder,
-		TagBuilderInterface           $tagbuilder,
-		RequestStack                  $requestStack
+		MetadataBuilderInterface             $metadataBuilderInterface,
+		ModelBuilderInterface                $modelbuilder,
+		TagBuilderInterface                  $tagbuilder,
+		RequestStack                         $requestStack,
+		ParametersGeneratorInterface         $parametersGenerator,
+		ResponsePropertiesGeneratorInterface $responsePropertiesGenerator,
+		RequestBodyGeneratorInterface       $requestBodyGenerator
 	) {
-		$this->metadataBuilder = $metadataBuilderInterface;
-		$this->modelbuilder    = $modelbuilder;
-		$this->tagbuilder      = $tagbuilder;
-		$this->requestStack    = $requestStack;
+		$this->metadataBuilder             = $metadataBuilderInterface;
+		$this->modelbuilder                = $modelbuilder;
+		$this->tagbuilder                  = $tagbuilder;
+		$this->requestStack                = $requestStack;
+		$this->parametersGenerator         = $parametersGenerator;
+		$this->responsePropertiesGenerator = $responsePropertiesGenerator;
+		$this->requestBodyGenerator        = $requestBodyGenerator;
 	}
 
 	
-	public function generate(): array
-	{
+	public function generate(): array {
 
-		$paths = [];
-		
-		foreach ($this->metadataBuilder->getMetadataCollection() as $metadata) {
-
-			/** @var Serialize $annoSerialize */
-			$route           = $metadata->getRoute();
-			$entity          = $metadata->getEntity();
-			$isCollection    = $metadata->isCollection();
-			$annoSerialize   = $metadata->getSerialize();
-			
-			$tag = $this->tagbuilder->gettag($entity);
-			$model = $this->modelbuilder->getModel($entity);
-			
-			$url = $route->getPath();
-			$methods = $route->getMethods();
-			$url = substr($url, strlen('/api'));
-
-			$requestBody = [];
-			$parameters = [];
-			
-			if (!isset($paths[$url])) {
-				$paths[$url] = [];
-			}
-
-
-			preg_match_all('/\{([a-zA-Z-9_]+)\}/', $url, $match);
-			foreach ($match[1] as $key) {
-				$parameters[] = [
-					'name' => $key,
-					'in' => 'path',
-				];
-			}
-			
-			if ($isCollection) {
-				$parameters[] = [
-					'name' => 'limit',
-					'in' => 'query',
-					'required' => false,
-					'type' => 'integer',
-					'minimum' => 1,
-				];
-				$parameters[] = [
-					'name' => 'page',
-					'in' => 'query',
-					'required' => false,
-					'type' => 'integer',
-				];
-				$parameters[] = [
-					'name' => 'order',
-					'in' => 'query',
-					'required' => false,
-					'type' => 'string',
-				];
-				$parameters[] = [
-					'name' => 'direction',
-					'in' => 'query',
-					'required' => false,
-					'type' => 'string',
-					'enum' => [
-						"asc",
-						"desc",
-					]
-				];
-			}
-			
-			foreach ($metadata->getRequestProperties() as $name => $parameter) {
-				$parameters[] = array_merge([ 'name' => $name ], $parameter);
-			}
-			
-			foreach ($methods as $method) {
-
-				$hasRquestBody = false;
-				$requestProperties = [];
-				if ($metadata->getUnserializeGroups()) {
-					$hasRquestBody = true;
-					$groups = array_merge([strtolower($method)], $metadata->getUnserializeGroups());
-					$groups = array_unique($groups);
-
-					foreach ($model->getProperties() as $property) {
-						if (count(array_intersect($property->getGroups(), $groups))) {
-							$requestProperties[$property->getSerializeName()] = $property->getType()->toJson($groups);
-						}
-					}
-				}
-				if ($metadata->getRequestBodyProperties()) {
-					$hasRquestBody = true;
-					$requestProperties = array_merge($requestProperties, $metadata->getRequestBodyProperties());
-				}
-				
-				if ($hasRquestBody) {
-
-					$requestBody['content'] = [
-						'application/json' => [
-							'schema' => [
-								'type' => 'object',
-								'properties' => $requestProperties
-							]
-						]
-					];
-					
-				}
-
-				$responses = [];
-				if ($annoSerialize) {
-
-					$responseProperties = [];
-					if ($metadata->getSerializeGroups()) {
-						$groups = array_merge([strtolower($method)], $metadata->getSerializeGroups());
-						$groups = array_unique($groups);
-
-						foreach ($model->getProperties() as $property) {
-							if (count(array_intersect($property->getGroups(), $groups))) {
-								$responseProperties[$property->getSerializeName()] = $property->getType()->toJson($groups);
-							}
-						}
-					}
-					if ($metadata->getResponseBodyProperties()) {
-						$responseProperties = array_merge($requestProperties, $metadata->getResponseBodyProperties());
-					}
-
-					if ($isCollection) {
-						$responseProperties = [
-							'total' => [
-								'type' => 'integer'
-							],
-							'data' => [
-								'type' => 'array',
-								'items' => [
-									'type' => 'object',
-									'properties' => $responseProperties
-								],
-							],
-						];
-					}
-					
-					$responses[$annoSerialize->code] = [
-//						'description' => 'successful operation',
-						'content' => [
-							'application/json' => [
-								'schema' => [
-									'type' => 'object',
-									'properties' => $responseProperties
-								]
-							]
-						]
-					];
-				}
-				
-				$path = [
-
-					'tags' => [ $tag->getClass() ],
-//						'summary'=> 'Creates a Book resource.',
-					'parameters' => $parameters,
-					'responses' => $responses,
-				];
-				if ($requestBody) {
-					$path['requestBody'] = $requestBody;
-				}
-				
-				$paths[$url][strtolower($method)] = $path;
-			}
-			
-		}
+		$paths = $this->generatePaths();
 		
 		$request = $this->requestStack->getMasterRequest();
 		
 		return [
 			'spec' => [
-				'openapi' => '3.0.2',
+				'openapi' => self::OPEN_API_VERSION,
 				'info' => [
 					'description' => 'description API',
 					'version' => '1.0.0',
@@ -258,6 +114,95 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			'security' => [
 				[ 'defaultValue' => 'BEARER TOKEN_DEV' ],
 				[ 'defaultValue' => 'TOKEN_DEV' ],
+			]
+		];
+	}
+
+	protected function generatePaths(): array {
+		
+		$paths = [];
+
+		foreach ($this->metadataBuilder->getMetadataCollection() as $metadata) {
+
+			/** @var Serialize $annoSerialize */
+			$route = $metadata->getRoute();
+			$entity = $metadata->getEntity();
+
+			$tag = $this->tagbuilder->gettag($entity);
+
+			$url = $route->getPath();
+			$methods = $route->getMethods();
+			$url = substr($url, strlen('/api'));
+
+
+			if (!isset($paths[$url])) {
+				$paths[$url] = [];
+			}
+
+			foreach ($methods as $method) {
+
+				$parameters = $this->generateParameters($url, $metadata, $method);
+				$responses = $this->generateResponse($metadata, $method);
+
+				$path = [
+					'tags' => [$tag->getClass()],
+//					'summary'=> 'Creates a Book resource.',
+					'parameters' => $parameters,
+					'responses' => $responses,
+				];
+				if ($this->hasRequestBody($metadata, $method)) {
+					$path['requestBody'] = $this->generateRequestBody($metadata, $method);
+				}
+
+				$paths[$url][strtolower($method)] = $path;
+			}
+
+		}
+		return $paths;
+	}
+	
+	protected function generateParameters($url, Metadata $metadata, string $method): array {
+		return $this->parametersGenerator->generate($url, $metadata, $method)->toArray();
+	}
+
+	protected function generateResponse(Metadata $metadata, string $method): array
+	{
+		$annoSerialize = $metadata->getSerialize();
+		
+		$responses = [];
+		if ($annoSerialize) {
+
+			$responseProperties = $this->responsePropertiesGenerator->generate($metadata, $method)->toArray();
+
+			$responses[$annoSerialize->code] = [
+//				'description' => 'successful operation',
+				'content' => [
+					'application/json' => [
+						'schema' => [
+							'type' => 'object',
+							'properties' => $responseProperties
+						]
+					]
+				]
+			];
+		}
+		return $responses;
+	}
+
+
+	protected function hasRequestBody(Metadata $metadata, string $method): bool {
+		return $this->requestBodyGenerator->hasRequestBody($metadata, $method);
+	}
+	
+	protected function generateRequestBody(Metadata $metadata, string $method): array {
+		return [
+			'content' => [
+				'application/json' => [
+					'schema' => [
+						'type' => 'object',
+						'properties' => $this->requestBodyGenerator->generateProperties($metadata, $method)->toArray()
+					]
+				]
 			]
 		];
 	}

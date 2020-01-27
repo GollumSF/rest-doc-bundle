@@ -9,11 +9,10 @@ file that was distributed with this source code. #}
 	{% block meta %}
 		<meta charset="UTF-8">
 	{% endblock meta %}
-{#	<title>{% block title %}{{ swagger_data.spec.info.title }}{% endblock title %}</title>#}
+	<title>{% block title %}{{ swaggerData.spec.info.title }}{% endblock title %}</title>
 
 	{% block stylesheets %}
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.23.11/swagger-ui.css">
-{#		<link rel="stylesheet" href="{{ asset('bundles/nelmioapidoc/style.css') }}">#}
 	{% endblock stylesheets %}
 
 	{% block swagger_data %}
@@ -72,7 +71,6 @@ file that was distributed with this source code. #}
 			});
 		}
 	</script>
-{#	<script src="{{ asset('bundles/nelmioapidoc/init-swagger-ui.js') }}"></script>#}
 {% endblock swagger_initialization %}
 </body>
 </html>

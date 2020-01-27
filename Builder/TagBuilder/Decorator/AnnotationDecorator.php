@@ -1,10 +1,10 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\TagBuilder\Decorator;
+namespace GollumSF\RestDocBundle\Builder\TagBuilder\Decorator;
 
 use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestDocBundle\Annotation\ApiEntity;
-use GollumSF\RestDocBundle\Generator\TagBuilder\Tag;
+use GollumSF\RestDocBundle\Builder\TagBuilder\Tag;
 
 class AnnotationDecorator implements DecoratorInterface
 {

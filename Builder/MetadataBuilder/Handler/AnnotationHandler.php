@@ -1,12 +1,12 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\MetadataBuilder\Handler;
+namespace GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler;
 
 use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestBundle\Annotation\Unserialize;
 use GollumSF\RestDocBundle\Annotation\ApiDescribe;
-use GollumSF\RestDocBundle\Generator\MetadataBuilder\Metadata;
+use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
 use GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;

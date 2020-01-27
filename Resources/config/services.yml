@@ -34,25 +34,66 @@ services:
     GollumSF\RestDocBundle\Generator\OpenApiGeneratorInterface:
         class: GollumSF\RestDocBundle\Generator\OpenApiGenerator
 
-    GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilderInterface:
-        class: GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilder
+    GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface:
+        class: GollumSF\RestDocBundle\Generator\Parameters\ParametersGenerator
 
-    GollumSF\RestDocBundle\Generator\MetadataBuilder\Handler\AnnotationHandler:
+    GollumSF\RestDocBundle\Generator\Parameters\Handler\UrlHandler:
         tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\Generator\MetadataBuilder\MetadataBuilderInterface::HANDLER_TAG' }
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface::HANDLER_TAG', priority: 10 }
 
-    GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface:
-        class: GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilder
+    GollumSF\RestDocBundle\Generator\Parameters\Handler\CollectionHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface::HANDLER_TAG', priority: 20 }
 
-    GollumSF\RestDocBundle\Generator\ModelBuilder\Decorator\PropertyDecorator:
+    GollumSF\RestDocBundle\Generator\Parameters\Handler\RequestPropertiesHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface::HANDLER_TAG', priority: 30 }
+
+    GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface:
+        class: GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGenerator
+
+    GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\GroupHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface::HANDLER_TAG', priority: 10 }
+
+    GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\ResponsePropertiesHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface::HANDLER_TAG', priority: 20 }
+
+    GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\CollectionHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface::HANDLER_TAG', priority: 255 }
+
+    GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface:
+        class: GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGenerator
+
+    GollumSF\RestDocBundle\Generator\RequestBody\Handler\GroupHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface::HANDLER_TAG', priority: 10 }
+
+    GollumSF\RestDocBundle\Generator\RequestBody\Handler\RequestBodyPropertiesHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface::HANDLER_TAG', priority: 20 }
+
+    GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface:
+        class: GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilder
+
+    GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\AnnotationHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface::HANDLER_TAG' }
+
+    GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface:
+        class: GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilder
+
+    GollumSF\RestDocBundle\Builder\ModelBuilder\Decorator\PropertyDecorator:
         arguments:
             $nameConverter: '@serializer.name_converter.metadata_aware'
         tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ModelBuilder\ModelBuilderInterface::DECORATOR_TAG' }
+            - { name: !php/const 'GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface::DECORATOR_TAG' }
         
-    GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilderInterface:
-        class: GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilder
+    GollumSF\RestDocBundle\Builder\TagBuilder\TagBuilderInterface:
+        class: GollumSF\RestDocBundle\Builder\TagBuilder\TagBuilder
         
-    GollumSF\RestDocBundle\Generator\TagBuilder\Decorator\AnnotationDecorator:
+    GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\AnnotationDecorator:
         tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\Generator\TagBuilder\TagBuilderInterface::DECORATOR_TAG' }
+            - { name: !php/const 'GollumSF\RestDocBundle\Builder\TagBuilder\TagBuilderInterface::DECORATOR_TAG' }
