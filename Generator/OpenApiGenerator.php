@@ -56,7 +56,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		$this->responsePropertiesGenerator = $responsePropertiesGenerator;
 		$this->requestBodyGenerator        = $requestBodyGenerator;
 	}
-
 	
 	public function generate(): array {
 
@@ -70,7 +69,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				'info' => [
 					'description' => 'description API',
 					'version' => '1.0.0',
-					'title' => 'Swagger Title'
+					'title' => 'REST API'
 				],
 				'externalDocs' => [
 					'description' => 'Descript doc externe',
@@ -79,7 +78,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 	
 				'servers' => [
 					[ 
-						'url' => '{protocol}://'.$request->getHost().'/api',
+						'url' => '{protocol}://'.$request->getHost().$this->getBasePath(),
 						'variables' => [
 							'protocol' => [ 'enum' => [ $request->getScheme() ], 'default' => $request->getScheme() ]	
 						]
@@ -118,13 +117,39 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		];
 	}
 
+	protected function getBasePath(): string {
+		$path = null;
+		foreach ($this->metadataBuilder->getMetadataCollection() as $metadata) {
+			$route = $metadata->getRoute();
+			$url = $route->getPath();
+			if ($path === null) {
+				$path = $url;
+				continue;
+			}
+			$newPath = '';
+			for ($i = 0; $i < strlen($url); $i++) {
+				if ($i >= strlen($path) || $url[$i] !== $path[$i]) {
+					break;
+				}
+				$newPath .= $path[$i];
+			}
+			$path = $newPath;
+		}
+		if ($path[strlen($path) - 1] === '/') {
+			$path = substr($path, 0, -1);
+		}
+		
+		return $path;
+	}
+	
 	protected function generatePaths(): array {
 		
 		$paths = [];
 
+		$basePath = $this->getBasePath();
+		
 		foreach ($this->metadataBuilder->getMetadataCollection() as $metadata) {
 
-			/** @var Serialize $annoSerialize */
 			$route = $metadata->getRoute();
 			$entity = $metadata->getEntity();
 
@@ -132,7 +157,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 			$url = $route->getPath();
 			$methods = $route->getMethods();
-			$url = substr($url, strlen('/api'));
+			$url = substr($url, strlen($basePath));
 
 
 			if (!isset($paths[$url])) {
@@ -165,8 +190,8 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		return $this->parametersGenerator->generate($url, $metadata, $method)->toArray();
 	}
 
-	protected function generateResponse(Metadata $metadata, string $method): array
-	{
+	protected function generateResponse(Metadata $metadata, string $method): array {
+		
 		$annoSerialize = $metadata->getSerialize();
 		
 		$responses = [];
@@ -188,7 +213,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		}
 		return $responses;
 	}
-
 
 	protected function hasRequestBody(Metadata $metadata, string $method): bool {
 		return $this->requestBodyGenerator->hasRequestBody($metadata, $method);
