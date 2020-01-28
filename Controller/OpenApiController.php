@@ -15,7 +15,7 @@ class OpenApiController {
 	}
 
 	public function __invoke() {
-		$json = \json_encode($this->openApiGenerator->generate()['spec']);
+		$json = \json_encode($this->openApiGenerator->generate());
 		return new Response($json, Response::HTTP_OK, [ 'Content-Type' => 'application/json', 'Content-Length' => strlen($json) ]);
 	}
 }

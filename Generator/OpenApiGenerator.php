@@ -66,55 +66,40 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 		$paths = $this->generatePaths();
 		
-		$request = $this->requestStack->getMasterRequest();
-		
 		$json = [
-			'spec' => [
-				'openapi' => self::OPEN_API_VERSION,
-				'info' => $this->generateInfo(),
-	
-				'servers' => [
-					[ 
-						'url' => '{protocol}://'.$request->getHost().$this->getBasePath(),
-						'variables' => [
-							'protocol' => [ 'enum' => [ $request->getScheme() ], 'default' => $request->getScheme() ]	
-						]
+			'openapi' => self::OPEN_API_VERSION,
+			'info'    => $this->generateInfo(),
+			'servers' => $this->generateServers(),
+			'paths'   => $paths,
+			'tags'    => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
+			'schemas' => array_map(function (ObjectType $model) { return $model->toJsonRef(); }, $this->modelbuilder->getAllModels()),
+			'components' => [
+				'securitySchemes' => [
+					'ApiKeyHeader' => [
+						'type' => 'apiKey',
+						'in' => 'header',
+						'description' => 'Value for the Authorization header',
+						'name' => 'Authorization',
+						"authenticationScheme" => "Bearer",
+						'defaultValue' => 'BEARER TOKEN_DEV',
 					],
-				],
-	
-				'tags' => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
-				'paths' => $paths,
-				'components' => [
-					'securitySchemes' => [
-						'ApiKeyHeader' => [
-							'type' => 'apiKey',
-							'in' => 'header',
-							'description' => 'Value for the Authorization header',
-							'name' => 'Authorization',
-							"authenticationScheme" => "Bearer"
-						],
-						'ApiKeyQuery' => [
-							'type' => 'apiKey',
-							'in' => 'query',
-							'description' => 'Value for the token query',
-							'name' => 'token',
-						]
-					],
-					'schemas' => array_map(function (ObjectType $model) { return $model->toJsonRef(); }, $this->modelbuilder->getAllModels())
-				],
-				'security' => [
-					[ 'ApiKeyHeader' => [] ],
-					[ 'ApiKeyQuery' => [] ],
-				],
+					'ApiKeyQuery' => [
+						'type' => 'apiKey',
+						'in' => 'query',
+						'description' => 'Value for the token query',
+						'name' => 'token',
+						'defaultValue' => 'TOKEN_DEV',
+					]
+				]
 			],
 			'security' => [
-				[ 'defaultValue' => 'BEARER TOKEN_DEV' ],
-				[ 'defaultValue' => 'TOKEN_DEV' ],
-			]
+				[ 'ApiKeyHeader' => [] ],
+				[ 'ApiKeyQuery' => [] ],
+			],
 		];
 
 		if ($this->generateExternalDocs()) {
-			$json['spec']['externalDocs'] = $this->generateExternalDocs();
+			$json['externalDocs'] = $this->generateExternalDocs();
 		}
 		
 		return $json;
@@ -256,5 +241,32 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			}
 		}
 		return $externalDocs;
+	}
+
+	/**
+	 * @param \Symfony\Component\HttpFoundation\Request|null $request
+	 * @return array
+	 */
+	protected function generateServers(): array
+	{
+		$request = $this->requestStack->getMasterRequest();
+
+		$host = $this->apiDocConfiguration->getHost() ? $this->apiDocConfiguration->getHost() : [ $request->getHost() ];
+		$defaultEnv = $this->apiDocConfiguration->getDefaultHost() ? $this->apiDocConfiguration->getDefaultHost() : $host[0];
+
+		$protocols = $this->apiDocConfiguration->getProtocol() ? $this->apiDocConfiguration->getProtocol() : [ $request->getScheme() ];
+		$defaultProtocol = $this->apiDocConfiguration->getDefaultProtocol() ? $this->apiDocConfiguration->getDefaultProtocol() : $protocols[0];
+
+		return [
+			[
+				'url' => '{protocol}://{base_uri}',
+				'variables' => [
+					'base_uri' => ['enum' => array_map(function ($h) {
+						return $h. $this->getBasePath();
+					}, $host), 'default' => $defaultEnv ],
+					'protocol' => ['enum' => $protocols, 'default' => $defaultProtocol ]
+				]
+			]
+		];
 	}
 }

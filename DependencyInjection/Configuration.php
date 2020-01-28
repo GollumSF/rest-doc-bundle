@@ -15,6 +15,17 @@ class Configuration implements ConfigurationInterface {
 			->scalarNode('title')->defaultValue('REST Api')->end()
 			->scalarNode('version')->defaultValue('1.0.0')->end()
 			->scalarNode('description')->defaultValue(null)->end()
+
+			->arrayNode('host')
+				->defaultValue([])
+				->prototype('scalar')->end()
+			->end()
+			->scalarNode('default_host')->defaultValue(null)->end()
+			->arrayNode('protocol')
+				->defaultValue([])
+				->prototype('scalar')->end()
+			->end()
+			->scalarNode('default_protocol')->defaultValue(null)->end()
 			
 			->arrayNode('external_docs')->children()
 				->scalarNode('url')->isRequired()->end()

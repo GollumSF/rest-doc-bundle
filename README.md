@@ -4,13 +4,22 @@ Auto generate documentation for GollumSF/RestBundle
 
 ## Configuration: 
 
-File `config/packages/gollum_sf_rest_doc.yaml` :
+All configurations is optionals. Edit file `config/packages/gollum_sf_rest_doc.yaml` :
 ```yaml
 gollum_sf_rest_doc:
     title: 'REST Api'                      # optional, default : REST Api
     version: '1.0.0'                       # optional, default : 1.0.0
     description: 'Api general description' # optional, default : null
     
+    host:                                  # optional, default : null (return current host url)
+        - 'dev.api.com'
+        - 'preprod.api.com'
+        - 'prod.api.com'
+    default_host: 'dev.api.com'            # optional, default : null (return first item to host list)
+    protocol:                              # optional, default : null (return current sheme url)
+        - 'http'                           
+        - 'https'
+    default_protocol: 'http'               # optional, default : null (return first item to protocol list)
 
     external_docs:                                          # optional
         url: 'https://github.com/GollumSF/rest-doc-bundle'  # required

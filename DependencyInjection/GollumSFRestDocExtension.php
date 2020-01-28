@@ -22,6 +22,10 @@ class GollumSFRestDocExtension extends Extension
 		$definition->addArgument($config['title']);
 		$definition->addArgument($config['version']);
 		$definition->addArgument($config['description']);
+		$definition->addArgument($config['host']);
+		$definition->addArgument($config['default_host']);
+		$definition->addArgument($config['protocol']);
+		$definition->addArgument($config['default_protocol']);
 		$definition->addArgument(isset($config['external_docs']) ? $config['external_docs'] : null);
 	}
 }
