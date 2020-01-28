@@ -1,0 +1,38 @@
+language: php
+
+php:
+    - 7.2
+
+env:
+    - SYMFONY_VERSION=4.4.*
+    - SYMFONY_VERSION=5.0.*
+    - SYMFONY_VERSION=
+    
+matrix:
+  fast_finish: true
+
+install:
+    - composer self-update
+    - if [ "$SYMFONY_VERSION" != "" ]; then composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update; fi;
+    - composer update --prefer-dist --dev --no-interaction $COMPOSER_FLAGS
+
+before_script:
+    - mkdir -p build/logs
+
+script: vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml --whitelist src tests/
+
+after_success:
+    - composer global require satooshi/php-coveralls
+    - travis_retry php $HOME/.composer/vendor/bin/coveralls -v
+
+notifications:
+    discord:
+        channels:
+          - 312160566291971:V7pRJV-3rzpjDuYxKIlbQ7Eihfg4PlIUShhesTdyg4IlRK0G7Akr_jm7SjzK-oqgFc6N
+        pull_request_template:
+          - 'Build [#%{build_number}](%{build_url}) ([%{commit}](%{compare_url})) of %{repository}@%{branch} in PR [#%{pull_request_number}](%{pull_request_url}) by %{author} %{result} in %{duration}'
+        branch_template:
+          - 'Build [#%{build_number}](%{build_url}) ([%{commit}](%{compare_url})) of %{repository}@%{branch} by %{author} %{result} in %{duration}'
+    slack: redori:zPaW8aAbTCF9NJh13BtWq9UV
+    email:
+        - smeagolworms4@gmail.com

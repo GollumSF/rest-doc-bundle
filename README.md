@@ -1,6 +1,26 @@
 # GollumSF/RestDocBundle
 
-Auto generate documentation for GollumSF/RestBundle
+[![Build Status](https://travis-ci.org/GollumSF/rest-doc-bundle.svg?branch=master)](https://travis-ci.org/GollumSF/rest-doc-bundle)
+[![Coverage](https://coveralls.io/repos/github/GollumSF/rest-doc-bundle/badge.svg?branch=master)](https://coveralls.io/github/GollumSF/rest-bundle)
+[![License](https://poser.pugx.org/gollumsf/rest-doc-bundle/license)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
+[![Latest Stable Version](https://poser.pugx.org/gollumsf/rest-doc-bundle/v/stable)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
+[![Latest Unstable Version](https://poser.pugx.org/gollumsf/rest-doc-bundle/v/unstable)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
+
+Auto-Generate documentation API for GollumSF\RestBundle : https://github.com/GollumSF/rest-bundle
+
+## Installation:
+
+```shell
+composer require gollumsf/rest-doc-bundle
+```
+
+### config/bundles.php
+```php
+return [
+    // [ ... ]
+    GollumSF\RestBundle\GollumSFRestDocBundle::class => ['all' => true],
+];
+```
 
 ## Configuration: 
 

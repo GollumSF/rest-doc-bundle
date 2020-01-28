@@ -1,0 +1,44 @@
+{
+    "name": "gollumsf/rest-doc-bundle",
+    "type": "symfony-bundle",
+    "description": "Auto-Generate documentation API for GollumSF\\RestBundle",
+    "keywords" : [
+        "api",
+        "documentation",
+        "swagger",
+        "openapi",
+        "rest",
+        "gollumsf"
+    ],
+    "homepage": "https://github.com/GollumSF/rest-doc-bundle",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Damien Duboeuf",
+            "email": "smeagolworms4@gmail.com"
+        }
+    ],
+    "support" : {
+        "email": "smeagolworms4@gmail.com",
+        "wiki": "https://github.com/GollumSF/rest-doc-bundle/blob/master/README.md"
+    },
+    "require" : {
+        "php": "^7.2"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^5.0",
+        "phpunit/phpunit": "^8.5",
+        "gollumsf/reflection-property-test": "^1.0",
+        "matthiasnoback/symfony-dependency-injection-test": "^4.1"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "GollumSF\\RestDocBundle\\" : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\GollumSF\\RestDocBundle\\" : "tests/"
+        }
+    }
+}
