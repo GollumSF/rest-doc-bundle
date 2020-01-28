@@ -83,14 +83,11 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				'securitySchemes' => $security
 			],
 			'security' => array_map(function () { return []; }, $security)
-//			[
-//				[ 'ApiKeyHeader' => [] ],
-//				[ 'ApiKeyQuery' => [] ],
-//			],
 		];
 
-		if ($this->generateExternalDocs()) {
-			$json['externalDocs'] = $this->generateExternalDocs();
+		$externalDocs = $this->generateExternalDocs();
+		if ($externalDocs) {
+			$json['externalDocs'] = $externalDocs;
 		}
 		
 		return $json;
@@ -234,10 +231,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		return $externalDocs;
 	}
 
-	/**
-	 * @param \Symfony\Component\HttpFoundation\Request|null $request
-	 * @return array
-	 */
 	protected function generateServers(): array
 	{
 		$request = $this->requestStack->getMasterRequest();
@@ -261,9 +254,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		];
 	}
 
-	/**
-	 * @return array
-	 */
 	protected function generateSecurity(): array {
 		return $this->securityGenerator->generate()->toArray();
 	}
