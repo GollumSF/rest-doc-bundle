@@ -28,6 +28,9 @@ class ApiDocConfiguration implements ApiDocConfigurationInterface {
 	/** @var string */
 	private $defaultProtocol;
 	
+	/** @var string */
+	private $securities;
+	
 	public function __construct(
 		string $title,
 		string $version,
@@ -36,7 +39,8 @@ class ApiDocConfiguration implements ApiDocConfigurationInterface {
 		?string $defaultHost,
 		array $protocol,
 		?string $defaultProtocol,
-		?array $externalDocs
+		?array $externalDocs,
+		array $securities
 	) {
 		$this->title = $title;
 		$this->version = $version;
@@ -46,6 +50,7 @@ class ApiDocConfiguration implements ApiDocConfigurationInterface {
 		$this->defaultHost = $defaultHost;
 		$this->defaultProtocol = $defaultProtocol;
 		$this->externalDocs = $externalDocs;
+		$this->securities = $securities;
 	}
 
 	public function getTitle(): string {
@@ -75,8 +80,12 @@ class ApiDocConfiguration implements ApiDocConfigurationInterface {
 	public function getDefaultProtocol(): ?string {
 		return $this->defaultProtocol;
 	}
-	
+
 	public function getExternalDocs(): ?array {
 		return $this->externalDocs;
+	}
+	
+	public function getSecurities(): array {
+		return $this->securities;
 	}
 }

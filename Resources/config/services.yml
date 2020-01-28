@@ -75,6 +75,21 @@ services:
         tags:
             - { name: !php/const 'GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface::HANDLER_TAG', priority: 20 }
 
+    GollumSF\RestDocBundle\Generator\Security\SecurityGeneratorInterface:
+        class: GollumSF\RestDocBundle\Generator\Security\SecurityGenerator
+
+    GollumSF\RestDocBundle\Generator\Security\Handler\QueryParamHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\Security\SecurityGeneratorInterface::HANDLER_TAG', priority: 10 }
+
+    GollumSF\RestDocBundle\Generator\Security\Handler\AuthorizationBearerHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\Security\SecurityGeneratorInterface::HANDLER_TAG', priority: 20 }
+    
+    GollumSF\RestDocBundle\Generator\Security\Handler\CustomHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\Security\SecurityGeneratorInterface::HANDLER_TAG', priority: 30 }
+            
     GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface:
         class: GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilder
 

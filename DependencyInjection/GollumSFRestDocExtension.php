@@ -15,17 +15,19 @@ class GollumSFRestDocExtension extends Extension
 		$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 		$loader->load('services.yml');
 
-		$configuration = new Configuration();
-		$config = $this->processConfiguration($configuration, $configs);
-
-		$definition = $container->register(ApiDocConfigurationInterface::class, ApiDocConfiguration::class);
-		$definition->addArgument($config['title']);
-		$definition->addArgument($config['version']);
-		$definition->addArgument($config['description']);
-		$definition->addArgument($config['host']);
-		$definition->addArgument($config['default_host']);
-		$definition->addArgument($config['protocol']);
-		$definition->addArgument($config['default_protocol']);
-		$definition->addArgument(isset($config['external_docs']) ? $config['external_docs'] : null);
+		$config = $this->processConfiguration(new Configuration(), $configs);
+		
+		$container
+			->register(ApiDocConfigurationInterface::class, ApiDocConfiguration::class)
+			->addArgument($config['title'])
+			->addArgument($config['version'])
+			->addArgument($config['description'])
+			->addArgument($config['host'])
+			->addArgument($config['default_host'])
+			->addArgument($config['protocol'])
+			->addArgument($config['default_protocol'])
+			->addArgument(isset($config['external_docs']) ? $config['external_docs'] : null)
+			->addArgument($config['security'])
+		;
 	}
 }

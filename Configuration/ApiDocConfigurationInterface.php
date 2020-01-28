@@ -20,4 +20,6 @@ interface ApiDocConfigurationInterface {
 	
 	public function getExternalDocs(): ?array;
 
+	public function getSecurities(): array;
+
 }

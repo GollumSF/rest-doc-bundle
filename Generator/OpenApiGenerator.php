@@ -11,6 +11,7 @@ use GollumSF\RestDocBundle\Configuration\ApiDocConfigurationInterface;
 use GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface;
 use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface;
 use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface;
+use GollumSF\RestDocBundle\Generator\Security\SecurityGeneratorInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -39,6 +40,9 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 	/** @var RequestBodyGeneratorInterface */
 	private $requestBodyGenerator;
 	
+	/** @var SecurityGeneratorInterface */
+	private $securityGenerator;
+	
 	/** @var ApiDocConfigurationInterface */
 	private $apiDocConfiguration;
 	
@@ -50,6 +54,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		ParametersGeneratorInterface         $parametersGenerator,
 		ResponsePropertiesGeneratorInterface $responsePropertiesGenerator,
 		RequestBodyGeneratorInterface        $requestBodyGenerator,
+		SecurityGeneratorInterface           $securityGenerator,
 		ApiDocConfigurationInterface         $apiDocConfiguration
 	) {
 		$this->metadataBuilder             = $metadataBuilderInterface;
@@ -59,43 +64,29 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		$this->parametersGenerator         = $parametersGenerator;
 		$this->responsePropertiesGenerator = $responsePropertiesGenerator;
 		$this->requestBodyGenerator        = $requestBodyGenerator;
+		$this->securityGenerator           = $securityGenerator;
 		$this->apiDocConfiguration         = $apiDocConfiguration;
 	}
 	
 	public function generate(): array {
 
-		$paths = $this->generatePaths();
+		$security = $this->generateSecurity();
 		
 		$json = [
 			'openapi' => self::OPEN_API_VERSION,
 			'info'    => $this->generateInfo(),
 			'servers' => $this->generateServers(),
-			'paths'   => $paths,
+			'paths'   => $this->generatePaths(),
 			'tags'    => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
 			'schemas' => array_map(function (ObjectType $model) { return $model->toJsonRef(); }, $this->modelbuilder->getAllModels()),
 			'components' => [
-				'securitySchemes' => [
-					'ApiKeyHeader' => [
-						'type' => 'apiKey',
-						'in' => 'header',
-						'description' => 'Value for the Authorization header',
-						'name' => 'Authorization',
-						"authenticationScheme" => "Bearer",
-						'defaultValue' => 'BEARER TOKEN_DEV',
-					],
-					'ApiKeyQuery' => [
-						'type' => 'apiKey',
-						'in' => 'query',
-						'description' => 'Value for the token query',
-						'name' => 'token',
-						'defaultValue' => 'TOKEN_DEV',
-					]
-				]
+				'securitySchemes' => $security
 			],
-			'security' => [
-				[ 'ApiKeyHeader' => [] ],
-				[ 'ApiKeyQuery' => [] ],
-			],
+			'security' => array_map(function () { return []; }, $security)
+//			[
+//				[ 'ApiKeyHeader' => [] ],
+//				[ 'ApiKeyQuery' => [] ],
+//			],
 		];
 
 		if ($this->generateExternalDocs()) {
@@ -268,5 +259,12 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				]
 			]
 		];
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function generateSecurity(): array {
+		return $this->securityGenerator->generate()->toArray();
 	}
 }
