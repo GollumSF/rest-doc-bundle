@@ -10,7 +10,8 @@ class ApiDescribeTest extends TestCase {
 	public function provideConstruct() {
 		return [
 			[ [], null, null, [], [], [], [], [], [] ],
-			
+
+			[ [ 'value' => \stdClass::class ], \stdClass::class, null, [], [], [], [], [], [] ],
 			[ [ 'entity' => \stdClass::class ], \stdClass::class, null, [], [], [], [], [], [] ],
 			
 			[ [ 'collection' => true ] , null, true, [], [], [], [], [], [] ],

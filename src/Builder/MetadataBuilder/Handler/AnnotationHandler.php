@@ -5,9 +5,9 @@ namespace GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler;
 use Doctrine\Common\Annotations\Reader;
 use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestBundle\Annotation\Unserialize;
+use GollumSF\RestBundle\Reflection\ControllerActionExtractorInterface;
 use GollumSF\RestDocBundle\Annotation\ApiDescribe;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
-use GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -38,29 +38,19 @@ class AnnotationHandler implements HandlerInterface
 	 */
 	public function getMetadataCollection(): array {
 
-		$etadataCollection = [];
-
-		$controllerActions = [];
+		$metadataCollection = [];
+		
 		foreach ($this->router->getRouteCollection() as $routeName => $route) {
-			$controllerAction = $this->controllerActionExtractor->extractFromRoute($route);
+			$controllerAction = $this->controllerActionExtractor->extractFromString($route->getDefault('_controller'));
 			if ($controllerAction) {
-				$controllerActions[] = $controllerAction;
-			}
-		}
-
-		foreach ($controllerActions as $controllerAction) {
-
-			$route = $controllerAction->getRoute();
-			$controller = $controllerAction->getControllerClass();
-			$action = $controllerAction->getAction();
-
-			$metadata = $this->createMatadata($route, $controller, $action);
-			if ($metadata) {
-				$etadataCollection[] = $metadata;
+				$metadata = $this->createMatadata($route, $controllerAction->getControllerClass(), $controllerAction->getAction());
+				if ($metadata) {
+					$metadataCollection[] = $metadata;
+				}
 			}
 		}
 		
-		return $etadataCollection;
+		return $metadataCollection;
 	}
 
 	protected function createMatadata(Route $route, string $controller, $action): ?Metadata {
@@ -88,7 +78,7 @@ class AnnotationHandler implements HandlerInterface
 				$isCollection = $describeClass->collection;
 			}
 		}
-
+		
 		if ($entity) {
 
 			/** @var Serialize $annoSerialize */
