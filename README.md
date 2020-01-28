@@ -2,6 +2,20 @@
 
 Auto generate documentation for GollumSF/RestBundle
 
+## Configuration: 
+
+File `config/packages/gollum_sf_rest_doc.yaml` :
+```yaml
+gollum_sf_rest_doc:
+    title: 'REST Api'                      # optional, default : REST Api
+    version: '1.0.0'                       # optional, default : 1.0.0
+    description: 'Api general description' # optional, default : null
+    
+
+    external_docs:                                          # optional
+        url: 'https://github.com/GollumSF/rest-doc-bundle'  # required
+        description: 'External documentation description'   # optional, default : null
+```
 
 ## Integration with [Swagger](https://github.com/swagger-api/swagger-ui): 
 

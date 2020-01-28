@@ -2,12 +2,12 @@
 
 namespace GollumSF\RestDocBundle\Generator;
 
-use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface;
 use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\Builder\TagBuilder\Tag;
 use GollumSF\RestDocBundle\Builder\TagBuilder\TagBuilderInterface;
+use GollumSF\RestDocBundle\Configuration\ApiDocConfigurationInterface;
 use GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface;
 use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface;
 use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface;
@@ -39,6 +39,9 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 	/** @var RequestBodyGeneratorInterface */
 	private $requestBodyGenerator;
 	
+	/** @var ApiDocConfigurationInterface */
+	private $apiDocConfiguration;
+	
 	public function __construct(
 		MetadataBuilderInterface             $metadataBuilderInterface,
 		ModelBuilderInterface                $modelbuilder,
@@ -46,7 +49,8 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		RequestStack                         $requestStack,
 		ParametersGeneratorInterface         $parametersGenerator,
 		ResponsePropertiesGeneratorInterface $responsePropertiesGenerator,
-		RequestBodyGeneratorInterface       $requestBodyGenerator
+		RequestBodyGeneratorInterface        $requestBodyGenerator,
+		ApiDocConfigurationInterface         $apiDocConfiguration
 	) {
 		$this->metadataBuilder             = $metadataBuilderInterface;
 		$this->modelbuilder                = $modelbuilder;
@@ -55,6 +59,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		$this->parametersGenerator         = $parametersGenerator;
 		$this->responsePropertiesGenerator = $responsePropertiesGenerator;
 		$this->requestBodyGenerator        = $requestBodyGenerator;
+		$this->apiDocConfiguration         = $apiDocConfiguration;
 	}
 	
 	public function generate(): array {
@@ -63,18 +68,10 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		
 		$request = $this->requestStack->getMasterRequest();
 		
-		return [
+		$json = [
 			'spec' => [
 				'openapi' => self::OPEN_API_VERSION,
-				'info' => [
-					'description' => 'description API',
-					'version' => '1.0.0',
-					'title' => 'REST API'
-				],
-				'externalDocs' => [
-					'description' => 'Descript doc externe',
-					'url' => 'https://google.fr'
-				],
+				'info' => $this->generateInfo(),
 	
 				'servers' => [
 					[ 
@@ -115,6 +112,12 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				[ 'defaultValue' => 'TOKEN_DEV' ],
 			]
 		];
+
+		if ($this->generateExternalDocs()) {
+			$json['spec']['externalDocs'] = $this->generateExternalDocs();
+		}
+		
+		return $json;
 	}
 
 	protected function getBasePath(): string {
@@ -229,5 +232,29 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				]
 			]
 		];
+	}
+
+	protected function generateInfo(): array {
+		$infos = [
+			'title' => $this->apiDocConfiguration->getTitle(),
+			'version' => $this->apiDocConfiguration->getVersion(),
+		];
+		if ($this->apiDocConfiguration->getDescription()) {
+			$infos['description'] = $this->apiDocConfiguration->getDescription();
+		}
+		return $infos;
+	}
+
+	protected function generateExternalDocs(): ?array {
+		$externalDocs = null;
+		if ($this->apiDocConfiguration->getExternalDocs()) {
+			$externalDocs = [
+				'url' => $this->apiDocConfiguration->getExternalDocs()['url'],
+			];
+			if ($this->apiDocConfiguration->getExternalDocs()['description']) {
+				$externalDocs['description'] = $this->apiDocConfiguration->getExternalDocs()['description'];
+			}
+		}
+		return $externalDocs;
 	}
 }

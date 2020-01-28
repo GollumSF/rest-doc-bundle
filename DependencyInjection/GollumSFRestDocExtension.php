@@ -1,6 +1,8 @@
 <?php
 namespace GollumSF\RestDocBundle\DependencyInjection;
 
+use GollumSF\RestDocBundle\Configuration\ApiDocConfiguration;
+use GollumSF\RestDocBundle\Configuration\ApiDocConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -12,5 +14,14 @@ class GollumSFRestDocExtension extends Extension
 	{
 		$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 		$loader->load('services.yml');
+
+		$configuration = new Configuration();
+		$config = $this->processConfiguration($configuration, $configs);
+
+		$definition = $container->register(ApiDocConfigurationInterface::class, ApiDocConfiguration::class);
+		$definition->addArgument($config['title']);
+		$definition->addArgument($config['version']);
+		$definition->addArgument($config['description']);
+		$definition->addArgument(isset($config['external_docs']) ? $config['external_docs'] : null);
 	}
 }
