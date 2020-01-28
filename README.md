@@ -4,6 +4,7 @@
 [![License](https://poser.pugx.org/gollumsf/rest-doc-bundle/license)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
 [![Latest Stable Version](https://poser.pugx.org/gollumsf/rest-doc-bundle/v/stable)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
 [![Latest Unstable Version](https://poser.pugx.org/gollumsf/rest-doc-bundle/v/unstable)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
+[![Discord](https://img.shields.io/discord/671741944149573687?color=purple&label=discord)](https://discord.gg/xMBc5SQ)
 
 Auto-Generate documentation API for GollumSF\RestBundle : https://github.com/GollumSF/rest-bundle
 
