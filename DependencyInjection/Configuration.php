@@ -41,11 +41,7 @@ class Configuration implements ConfigurationInterface {
 				->defaultValue([])
 				->arrayPrototype()
 					->children()
-						->enumNode('type')->values([
-							AuthorizationBearerHandler::SECURITY_TAG,
-							QueryParamHandler::SECURITY_TAG,
-							CustomHandler::SECURITY_TAG,
-						])->isRequired()->end()
+						->scalarNode('type')->isRequired()->end()
 						->scalarNode('defaultValue')->defaultValue('')->end()
 						->scalarNode('name')->defaultValue(null)->end()
 						->scalarNode('scheme')->defaultValue(null)->end()
