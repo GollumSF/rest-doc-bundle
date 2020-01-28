@@ -23,7 +23,8 @@
         "wiki": "https://github.com/GollumSF/rest-doc-bundle/blob/master/README.md"
     },
     "require" : {
-        "php": "^7.2"
+        "php": "^7.2",
+        "gollumsf/rest-bundle": "^2.3"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^5.0",

@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\GollumSF\RestDocBundle\Builder;
+namespace Test\GollumSF\RestDocBundle\Builder\MetadataBuilder;
 
 use GollumSF\ReflectionPropertyTest\ReflectionPropertyTrait;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\HandlerInterface;
