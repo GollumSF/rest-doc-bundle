@@ -93,3 +93,5 @@ gsf_restbundle_openapi:
     resource: "@GollumSFRestDocBundle/Resources/config/openapi_routing.yml"
     prefix: /api-docs.json
 ```
+
+## Annotations: 
