@@ -40,12 +40,6 @@ class ApiDescribe {
 		$this->requestProperties      = isset ($param['requestProperties'])      ? $param['requestProperties']      : [];
 		$this->requestBodyProperties  = isset ($param['requestBodyProperties'])  ? $param['requestBodyProperties']  : [];
 		$this->responseBodyProperties = isset ($param['responseBodyProperties']) ? $param['responseBodyProperties'] : [];
-		if (!$this->serializeGroups) {
-			$this->serializeGroups = [];
-		}
-		if (!$this->unserializeGroups) {
-			$this->unserializeGroups = [];
-		}
 		if (!is_array($this->serializeGroups)) {
 			$this->serializeGroups = [ $this->serializeGroups ];
 		}
