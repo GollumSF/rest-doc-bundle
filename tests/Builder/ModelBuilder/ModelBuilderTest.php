@@ -1,13 +1,14 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Builder\ModelBuilder;
+namespace Test\GollumSF\RestDocBundle\Builder\ModelBuilder;
 
 use GollumSF\ReflectionPropertyTest\ReflectionPropertyTrait;
 use GollumSF\RestDocBundle\Builder\ModelBuilder\Decorator\DecoratorInterface;
+use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilder;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use PHPUnit\Framework\TestCase;
 
-class ModelBuildeTest extends TestCase {
+class ModelBuilderTest extends TestCase {
 	
 	use ReflectionPropertyTrait;
 	
@@ -60,7 +61,6 @@ class ModelBuildeTest extends TestCase {
 		$this->assertEquals($this->reflectionGetValue($modelBuilder, 'models'), [ \stdClass::class => $model3 ]);
 		
 		$this->assertEquals($modelBuilder->getModel(\stdClass::class), $model3);
-
 
 		$this->assertEquals($modelBuilder->getAllModels(), [ \stdClass::class => $model3 ]);
 	}
