@@ -13,7 +13,7 @@ class TypeDiscoverPass implements CompilerPassInterface
 	public function process(ContainerBuilder $container)
 	{
 		// always first check if the primary service is defined
-		if (!$container->has(MetadataBuilderInterface::class)) {
+		if (!$container->has(TypeDiscoverInterface::class)) {
 			return;
 		}
 
