@@ -9,13 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OpenApiControllerTest extends TestCase {
 	
-//	/** @var OpenApiGeneratorInterface */
-//	private $openApiGenerator;
-//	
-//	public function __construct(OpenApiGeneratorInterface $openApiGenerator) {
-//		$this->openApiGenerator = $openApiGenerator;
-//	}
-
 	public function testInvoke() {
 
 		$openApiGenerator = $this->getMockBuilder(OpenApiGeneratorInterface::class)->getMockForAbstractClass();

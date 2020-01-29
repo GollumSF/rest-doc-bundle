@@ -24,7 +24,8 @@
     },
     "require" : {
         "php": "^7.2",
-        "gollumsf/rest-bundle": "^2.3"
+        "gollumsf/rest-bundle": "^2.3",
+        "twig/twig": "^2.0|^3.0"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^5.0",
