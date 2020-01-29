@@ -11,7 +11,6 @@ use GollumSF\RestDocBundle\DependencyInjection\Compiler\TagBuilderPass;
 use GollumSF\RestDocBundle\DependencyInjection\Compiler\TypeDiscoverPass;
 use GollumSF\RestDocBundle\GollumSFRestDocBundle;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class GollumSFRestDocBundletTest extends TestCase {
