@@ -28,9 +28,6 @@ services:
         tags:
             - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 30 }
     
-    GollumSF\RestDocBundle\Reflection\ControllerActionExtractorInterface:
-        class: GollumSF\RestDocBundle\Reflection\ControllerActionExtractor
-
     GollumSF\RestDocBundle\Generator\OpenApiGeneratorInterface:
         class: GollumSF\RestDocBundle\Generator\OpenApiGenerator
 
