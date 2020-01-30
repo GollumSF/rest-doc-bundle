@@ -1,5 +1,5 @@
 # GollumSF/RestDocBundle
-[![Build Status](https://travis-ci.org/GollumSF/rest-doc-bundle.svg?branch=master)](https://travis-ci.org/GollumSF/rest-doc-bundle)
+[![Build Status](https://travis-ci.com/GollumSF/rest-doc-bundle.svg?branch=master)](https://travis-ci.com/GollumSF/rest-doc-bundle)
 [![Coverage](https://coveralls.io/repos/github/GollumSF/rest-doc-bundle/badge.svg?branch=master)](https://coveralls.io/github/GollumSF/rest-doc-bundle)
 [![License](https://poser.pugx.org/gollumsf/rest-doc-bundle/license)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
 [![Latest Stable Version](https://poser.pugx.org/gollumsf/rest-doc-bundle/v/stable)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
