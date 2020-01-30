@@ -15,12 +15,12 @@ class GroupHandler implements HandlerInterface {
 	}
 
 	public function generateResponseProperties(ResponsePropertyCollection $responsePropertyCollection, Metadata $metadata, string $method): void {
-		if ($metadata->getSerializeGroups()) {
+		if ($groups = $metadata->getSerializeGroups()) {
 
 			$entity = $metadata->getEntity();
 			$model  = $this->modelbuilder->getModel($entity);
 			
-			$groups = array_merge([strtolower($method)], $metadata->getSerializeGroups());
+			$groups = array_merge([strtolower($method)], $groups);
 			$groups = array_unique($groups);
 
 			foreach ($model->getProperties() as $property) {

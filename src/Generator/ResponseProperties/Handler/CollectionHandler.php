@@ -11,7 +11,7 @@ class CollectionHandler implements HandlerInterface {
 
 			$subProperties = $responsePropertyCollection->toArray();
 			$responsePropertyCollection->clear();
-			
+
 			$responsePropertyCollection
 				->add('total', [
 					'type' => 'integer'
