@@ -24,7 +24,7 @@ class ObjectType implements TypeInterface {
 
 	public function getXMLName(): string {
 		$xmlName = $this->getClass();
-		if (($index = strrpos('\\', $xmlName)) === false) {
+		if (($index = strrpos($xmlName, '\\')) !== false) {
 			$xmlName = substr($xmlName, $index + 1);
 		}
 		return $xmlName;
@@ -51,8 +51,9 @@ class ObjectType implements TypeInterface {
 					$groups === null ||
 					count(array_intersect($groups, $property->getGroups()))
 				)
-				;
+			;
 		});
+		
 		if (count($properties) === 0) {
 			return [
 				'type' => 'integer',

@@ -95,34 +95,4 @@ class ArrayTypeTest extends TestCase {
 			]
 		]);
 	}
-//
-//	public function toJson(array $groups = null): array {
-//		$json = [
-//			'type' => $this->getType(),
-//		];
-//		if ($this->getSubType()) {
-//			$json['items'] = $this->getSubType()->toJson($groups);
-//		}
-//		return $json;
-//	}
-//	public function toJsonRef(array $groups = null): array {
-//		$json = [
-//			'type' => $this->getType(),
-//		];
-//		$subType = $this->getSubType();
-//		if ($subType) {
-//			$type = $this->getSubType();
-//			if ($type instanceof ObjectType) {
-//				$json['items'] =  [
-//					'$ref'=> '#/components/schemas/'.$type->getClass(),
-//				];
-//			} else
-//			if ($type instanceof ArrayType) {
-//				$json['items'] =   $type->toJsonRef($groups);
-//			} else {
-//				$json['items'] =  $type->toJson($groups);
-//			}
-//		}
-//		return $json;
-//	}
 }
