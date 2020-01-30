@@ -95,7 +95,9 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 	protected function getBasePath(): string {
 		$path = null;
+		
 		foreach ($this->metadataBuilder->getMetadataCollection() as $metadata) {
+			
 			$route = $metadata->getRoute();
 			$url = $route->getPath();
 			if ($path === null) {
@@ -111,7 +113,10 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			}
 			$path = $newPath;
 		}
-		if ($path[strlen($path) - 1] === '/') {
+		if (null == $path) {
+			$path = '';
+		}
+		if ($path && $path[strlen($path) - 1] === '/') {
 			$path = substr($path, 0, -1);
 		}
 		
@@ -129,7 +134,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			$route = $metadata->getRoute();
 			$entity = $metadata->getEntity();
 
-			$tag = $this->tagbuilder->gettag($entity);
+			$tag = $this->tagbuilder->getTag($entity);
 
 			$url = $route->getPath();
 			$methods = $route->getMethods();
@@ -212,20 +217,20 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			'title' => $this->apiDocConfiguration->getTitle(),
 			'version' => $this->apiDocConfiguration->getVersion(),
 		];
-		if ($this->apiDocConfiguration->getDescription()) {
-			$infos['description'] = $this->apiDocConfiguration->getDescription();
+		if ($description = $this->apiDocConfiguration->getDescription()) {
+			$infos['description'] = $description;
 		}
 		return $infos;
 	}
 
 	protected function generateExternalDocs(): ?array {
 		$externalDocs = null;
-		if ($this->apiDocConfiguration->getExternalDocs()) {
+		if ($docs = $this->apiDocConfiguration->getExternalDocs()) {
 			$externalDocs = [
-				'url' => $this->apiDocConfiguration->getExternalDocs()['url'],
+				'url' => $docs['url'],
 			];
-			if ($this->apiDocConfiguration->getExternalDocs()['description']) {
-				$externalDocs['description'] = $this->apiDocConfiguration->getExternalDocs()['description'];
+			if (isset($docs['description']) && $docs['description']) {
+				$externalDocs['description'] = $docs['description'];
 			}
 		}
 		return $externalDocs;
@@ -236,7 +241,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		$request = $this->requestStack->getMasterRequest();
 
 		$host = $this->apiDocConfiguration->getHost() ? $this->apiDocConfiguration->getHost() : [ $request->getHost() ];
-		$defaultEnv = $this->apiDocConfiguration->getDefaultHost() ? $this->apiDocConfiguration->getDefaultHost() : $host[0];
+		$defaultHost = $this->apiDocConfiguration->getDefaultHost() ? $this->apiDocConfiguration->getDefaultHost() : $host[0];
 
 		$protocols = $this->apiDocConfiguration->getProtocol() ? $this->apiDocConfiguration->getProtocol() : [ $request->getScheme() ];
 		$defaultProtocol = $this->apiDocConfiguration->getDefaultProtocol() ? $this->apiDocConfiguration->getDefaultProtocol() : $protocols[0];
@@ -247,7 +252,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				'variables' => [
 					'base_uri' => ['enum' => array_map(function ($h) {
 						return $h. $this->getBasePath();
-					}, $host), 'default' => $defaultEnv ],
+					}, $host), 'default' => $defaultHost ],
 					'protocol' => ['enum' => $protocols, 'default' => $defaultProtocol ]
 				]
 			]

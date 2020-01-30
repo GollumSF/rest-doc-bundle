@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3561fbd2386bd98432e2310628a531f1",
+    "content-hash": "24dd0f15bd62265abb6f08713fd4ddec",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -4025,17 +4025,21 @@
     "packages-dev": [
         {
             "name": "gollumsf/reflection-property-test",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GollumSF/reflection-property-test.git",
-                "reference": "1f17d98d6609015f9bdd019e3015c51e61604edb"
+                "reference": "b8e49b3146b4f1f57445cdb8ec76c803f9dd51b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GollumSF/reflection-property-test/zipball/1f17d98d6609015f9bdd019e3015c51e61604edb",
-                "reference": "1f17d98d6609015f9bdd019e3015c51e61604edb",
+                "url": "https://api.github.com/repos/GollumSF/reflection-property-test/zipball/b8e49b3146b4f1f57445cdb8ec76c803f9dd51b1",
+                "reference": "b8e49b3146b4f1f57445cdb8ec76c803f9dd51b1",
                 "shasum": ""
+            },
+            "require-dev": {
+                "doctrine/orm": "*",
+                "phpunit/phpunit": "^8.5"
             },
             "type": "library",
             "autoload": {
@@ -4053,14 +4057,14 @@
                     "email": "smeagolworms4@gmail.com"
                 }
             ],
-            "description": "Add trait for reflection data",
+            "description": "Add trait for reflection data and call",
             "homepage": "https://github.com/GollumSF/reflection-property-test",
             "keywords": [
                 "gollumsf",
                 "reflection",
                 "test"
             ],
-            "time": "2020-01-21T13:33:31+00:00"
+            "time": "2020-01-29T22:46:45+00:00"
         },
         {
             "name": "matthiasnoback/symfony-config-test",
