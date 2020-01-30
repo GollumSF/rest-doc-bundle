@@ -7,7 +7,7 @@ class ArrayType implements TypeInterface {
 	/** @var TypeInterface */
 	private $subType;
 	
-	public function __construct(?TypeInterface $subType) {
+	public function __construct(?TypeInterface $subType = null) {
 		$this->subType = $subType;
 	}
 
@@ -15,7 +15,7 @@ class ArrayType implements TypeInterface {
 		return 'array';
 	}
 
-	public function getSubType(): TypeInterface {
+	public function getSubType(): ?TypeInterface {
 		return $this->subType;
 	}
 
@@ -34,16 +34,15 @@ class ArrayType implements TypeInterface {
 		];
 		$subType = $this->getSubType();
 		if ($subType) {
-			$type = $this->getSubType();
-			if ($type instanceof ObjectType) {
+			if ($subType instanceof ObjectType) {
 				$json['items'] =  [
-					'$ref'=> '#/components/schemas/'.$type->getClass(),
+					'$ref'=> '#/components/schemas/'.$subType->getClass(),
 				];
 			} else
-			if ($type instanceof ArrayType) {
-				$json['items'] =   $type->toJsonRef($groups);
+			if ($subType instanceof ArrayType) {
+				$json['items'] =   $subType->toJsonRef($groups);
 			} else {
-				$json['items'] =  $type->toJson($groups);
+				$json['items'] =  $subType->toJson($groups);
 			}
 		}
 		return $json;

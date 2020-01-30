@@ -2,7 +2,6 @@
 
 namespace GollumSF\RestDocBundle\TypeDiscover\Handler;
 
-use Doctrine\Common\Collections\Collection;
 use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ArrayType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\DateTimeType;
@@ -66,12 +65,9 @@ class PropertyInfosHandler implements HandlerInterface {
 				if ($class === \DateTime::class || is_subclass_of($class, \DateTime::class)) {
 					return new DateTimeType();
 				}
-				if ($class === Collection::class || is_subclass_of($class, Collection::class)) {
-					return new DateTimeType();
-				}
 				return $this->modelBuilder->getModel($class);
 			}
-			if ($builtin === 'array') {
+			if ($type->isCollection()) {
 				$valueType = $type->getCollectionValueType();
 				return new ArrayType(
 					$valueType ? $this->createType([ $valueType ]) : null
