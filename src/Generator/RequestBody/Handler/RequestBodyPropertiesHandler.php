@@ -2,7 +2,6 @@
 namespace GollumSF\RestDocBundle\Generator\RequestBody\Handler;
 
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
-use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyPropertyCollection;
 
 class RequestBodyPropertiesHandler implements HandlerInterface {
