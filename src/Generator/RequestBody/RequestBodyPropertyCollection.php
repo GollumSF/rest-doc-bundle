@@ -21,7 +21,7 @@ class RequestBodyPropertyCollection implements \Iterator {
 		return $this->valid();
 	}
 
-	public function key(): int {
+	public function key(): string {
 		return $this->keys[$this->position];
 	}
 
