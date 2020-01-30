@@ -30,7 +30,7 @@ class DoctrineHandler implements HandlerInterface {
 
 		try {
 			$manager = $this->doctrine->getManagerForClass($class);
-			if ($manager) {
+			if ($manager && !$manager->getMetadataFactory()->isTransient($class)) {
 				$metadata = $manager->getClassMetadata($class);
 				
 				if ($metadata->hasField($targetName)) {
