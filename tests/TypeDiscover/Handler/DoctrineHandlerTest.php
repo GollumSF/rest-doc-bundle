@@ -309,7 +309,28 @@ class DoctrineHandlerTest extends TestCase {
 			->with(\stdClass::class)
 			->willReturn(null)
 		;
-		
+
+		$handler = new DoctrineHandler(
+			$doctrine,
+			$modelBuilder
+		);
+
+		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
+		$this->assertNull($result);
+	}
+
+	public function testGetTypeException() {
+
+		$doctrine        = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
+		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+
+		$doctrine
+			->expects($this->once())
+			->method('getManagerForClass')
+			->with(\stdClass::class)
+			->willThrowException(new \Exception())
+		;
+
 		$handler = new DoctrineHandler(
 			$doctrine,
 			$modelBuilder
