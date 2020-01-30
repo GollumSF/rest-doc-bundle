@@ -12,7 +12,7 @@ class ResponsePropertiesGeneratorTest extends TestCase {
 
 	use ReflectionPropertyTrait;
 
-	public function testAddDecorator() {
+	public function testAddHandler() {
 		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
 		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
 		$handler3 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();

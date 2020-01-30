@@ -28,20 +28,20 @@ class PropertyInfosHandler implements HandlerInterface {
 	}
 
 	public function getType(string $class, string $targetName): ?TypeInterface {
-//		try {
+		try {
 			$types = $this->propertyInfoExtractor->getTypes($class, $targetName);
 			if ($types) {
 				return $this->createType($types);
 			}
-//		} catch (\Throwable $e) {
-//		}
+		} catch (\Throwable $e) {
+		}
 		return null;
 	}
 
 	/**
 	 * @param Type[] $types
 	 */
-	private function createType(array $types): ?TypeInterface {
+	protected function createType(array $types): ?TypeInterface {
 		
 		foreach ($types as $type) {
 			$builtin = $type->getBuiltinType();

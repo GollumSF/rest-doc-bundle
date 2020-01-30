@@ -44,9 +44,9 @@ class AnnotationHandler implements HandlerInterface
 		}
 
 		if ($rClass->hasMethod($targetName)) {
-			$rProperty = $rClass->getMethod($targetName);
+			$rMethod = $rClass->getMethod($targetName);
 			/** @var ApiProperty $annotation */
-			$annotation = $this->reader->getMethodAnnotation($rProperty, ApiProperty::class);
+			$annotation = $this->reader->getMethodAnnotation($rMethod, ApiProperty::class);
 			if ($annotation && $annotation->type) {
 				$type = $this->createType($annotation->type);
 			}
@@ -59,15 +59,13 @@ class AnnotationHandler implements HandlerInterface
 		return $type;
 	}
 	
-	private function createType(string $type): ?TypeInterface {
-		if (class_exists($type)) {
-			return $this->modelBuilder->getModel($type);
-		} else
+	protected function createType(string $type): ?TypeInterface {
 		if ($type === 'datetime') {
 			return new DateTimeType();
-		} else {
-			return new NativeType($type);
+		} else
+		if (class_exists($type)) {
+			return $this->modelBuilder->getModel($type);
 		}
-		return null;
+		return new NativeType($type);
 	}
 }

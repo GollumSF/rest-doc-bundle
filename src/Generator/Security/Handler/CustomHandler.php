@@ -20,7 +20,9 @@ class CustomHandler implements HandlerInterface {
 	public function generateSecurities(SecurityCollection $securityCollection): void {
 		foreach ($this->apiDocConfiguration->getSecurities() as $name => $security) {
 			if ($security['type'] == self::SECURITY_TAG) {
-				$securityCollection->add($name, $security['data']);
+				$securityCollection->add($name, array_merge([
+					'defaultValue' => $security['defaultValue'] ? $security['defaultValue'] : ''
+				], $security['data']));
 			}
 		}
 	}
