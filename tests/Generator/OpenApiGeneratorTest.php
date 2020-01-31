@@ -718,7 +718,7 @@ class OpenApiGeneratorTest extends TestCase {
 						'base_uri' => [ 
 							'enum' => [
 								'REQUEST_HOST/base/path'
-							], 'default' => 'REQUEST_HOST'
+							], 'default' => 'REQUEST_HOST/base/path'
 						],
 						'protocol' => [ 
 							'enum' => [ 
@@ -737,7 +737,7 @@ class OpenApiGeneratorTest extends TestCase {
 							'enum' => [
 								'HOST1/base/path',
 								'HOST2/base/path',
-							], 'default' => 'HOST1'
+							], 'default' => 'HOST1/base/path'
 						],
 						'protocol' => [
 							'enum' => [
@@ -757,7 +757,7 @@ class OpenApiGeneratorTest extends TestCase {
 							'enum' => [
 								'HOST1/base/path',
 								'HOST2/base/path',
-							], 'default' => 'HOST2'
+							], 'default' => 'HOST2/base/path'
 						],
 						'protocol' => [
 							'enum' => [
