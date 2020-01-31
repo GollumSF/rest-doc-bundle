@@ -125,7 +125,7 @@ class OpenApiGeneratorTest extends TestCase {
 					'components' => [
 						'securitySchemes' => [ 'SECURITY' => [ 'SECURITY_DATA' ] ]
 					],
-					'security' => [ 'SECURITY' => [] ],
+					'security' => [ [ 'SECURITY' => [] ] ],
 					'externalDocs' => [ 'EXTERNAL_DOCS' ],
 				] 
 			],
@@ -148,7 +148,7 @@ class OpenApiGeneratorTest extends TestCase {
 				'components' => [
 					'securitySchemes' => [ 'SECURITY' => [ 'SECURITY_DATA' ] ]
 				],
-				'security' => [ 'SECURITY' => [] ],
+				'security' => [ [ 'SECURITY' => [] ] ],
 			]
 			]
 		];

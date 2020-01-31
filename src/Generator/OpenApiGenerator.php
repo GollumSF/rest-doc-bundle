@@ -82,7 +82,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			'components' => [
 				'securitySchemes' => $security
 			],
-			'security' => array_map(function () { return []; }, $security)
+			'security' => array_map(function ($value) { return [ $value => [] ]; }, array_keys($security))
 		];
 
 		$externalDocs = $this->generateExternalDocs();
@@ -251,8 +251,8 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				'url' => '{protocol}://{base_uri}',
 				'variables' => [
 					'base_uri' => ['enum' => array_map(function ($h) {
-						return $h. $this->getBasePath();
-					}, $host), 'default' => $defaultHost ],
+						return $h.$this->getBasePath();
+					}, $host), 'default' => $defaultHost.$this->getBasePath() ],
 					'protocol' => ['enum' => $protocols, 'default' => $defaultProtocol ]
 				]
 			]
