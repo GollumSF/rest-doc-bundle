@@ -39,6 +39,12 @@ class GollumSFRestDocBundletTest extends BaseBundleTestCase {
 
 	public function testInitBundle() {
 
+		// Create a new Kernel
+		$kernel = $this->createKernel();
+
+		// Add some configuration
+		$kernel->addConfigFile(__DIR__.'/Resources/config.yaml');
+		
 		// Boot the kernel.
 		$this->bootKernel();
 
@@ -56,6 +62,9 @@ class GollumSFRestDocBundletTest extends BaseBundleTestCase {
 
 		// Add some other bundles we depend on
 		$kernel->addBundle(\GollumSF\ControllerActionExtractorBundle\GollumSFControllerActionExtractorBundle::class);
+
+		// Add some configuration
+		$kernel->addConfigFile(__DIR__.'/Resources/config.yaml');
 
 		// Boot the kernel.
 		$this->bootKernel();
