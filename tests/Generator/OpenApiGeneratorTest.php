@@ -117,12 +117,12 @@ class OpenApiGeneratorTest extends TestCase {
 						[ 'name' => 'ClassEntity2' ],
 						[ 'name' => 'ClassEntity3' ],
 					],
-					'schemas' => [
-						'ClassEntity1' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity1' ] ],
-						'ClassEntity2' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity2' ] ],
-						'ClassEntity3' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity3' ] ],
-					],
 					'components' => [
+						'schemas' => [
+							'ClassEntity1' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity1' ] ],
+							'ClassEntity2' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity2' ] ],
+							'ClassEntity3' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity3' ] ],
+						],
 						'securitySchemes' => [ 'SECURITY' => [ 'SECURITY_DATA' ] ]
 					],
 					'security' => [ [ 'SECURITY' => [] ] ],
@@ -140,12 +140,12 @@ class OpenApiGeneratorTest extends TestCase {
 					[ 'name' => 'ClassEntity2' ],
 					[ 'name' => 'ClassEntity3' ],
 				],
-				'schemas' => [
-					'ClassEntity1' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity1' ] ],
-					'ClassEntity2' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity2' ] ],
-					'ClassEntity3' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity3' ] ],
-				],
 				'components' => [
+					'schemas' => [
+						'ClassEntity1' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity1' ] ],
+						'ClassEntity2' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity2' ] ],
+						'ClassEntity3' => [ 'type' => 'object', 'properties' => [], 'xml' => [ 'name' => 'ClassEntity3' ] ],
+					],
 					'securitySchemes' => [ 'SECURITY' => [ 'SECURITY_DATA' ] ]
 				],
 				'security' => [ [ 'SECURITY' => [] ] ],

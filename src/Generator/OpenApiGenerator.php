@@ -78,8 +78,8 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			'servers' => $this->generateServers(),
 			'paths'   => $this->generatePaths(),
 			'tags'    => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
-			'schemas' => array_map(function (ObjectType $model) { return $model->toJsonRef(); }, $this->modelbuilder->getAllModels()),
 			'components' => [
+				'schemas' => array_map(function (ObjectType $model) { return $model->toJsonRef(); }, $this->modelbuilder->getAllModels()),
 				'securitySchemes' => $security
 			],
 			'security' => array_map(function ($value) { return [ $value => [] ]; }, array_keys($security))
