@@ -22,8 +22,7 @@ class MetadataTest extends TestCase {
 				true,
 				[ 's_group1' ],
 				[ 'us_group1' ],
-				[ 'r_prop1' ],
-				[ 'rb_prop1' ],
+				[ 'req_prop1' ],
 				[ 'resp_prop1' ],
 				new Serialize([]),
 				new Unserialize([]),
@@ -36,8 +35,7 @@ class MetadataTest extends TestCase {
 				false,
 				[ 's_group1' ],
 				[ 'us_group1' ],
-				[ 'r_prop1' ],
-				[ 'rb_prop1' ],
+				[ 'req_prop1' ],
 				[ 'resp_prop1' ],
 				null,
 				null,
@@ -56,9 +54,8 @@ class MetadataTest extends TestCase {
 		bool $collection,
 		array $serializeGroups,
 		array $unserializeGroups,
-		array $requestProperties,
-		array $requestBodyProperties,
-		array $responseBodyProperties,
+		array $request,
+		array $response,
 		?Serialize $serialize,
 		?Unserialize $unserialize
 	) {
@@ -71,9 +68,8 @@ class MetadataTest extends TestCase {
 			$collection,
 			$serializeGroups,
 			$unserializeGroups,
-			$requestProperties,
-			$requestBodyProperties,
-			$responseBodyProperties,
+			$request,
+			$response,
 			$serialize,
 			$unserialize
 		);
@@ -84,9 +80,8 @@ class MetadataTest extends TestCase {
 		$this->assertEquals($annotation->isCollection(), $collection);
 		$this->assertEquals($annotation->getSerializeGroups(), $serializeGroups);
 		$this->assertEquals($annotation->getUnserializeGroups(), $unserializeGroups);
-		$this->assertEquals($annotation->getRequestProperties(), $requestProperties);
-		$this->assertEquals($annotation->getRequestBodyProperties(), $requestBodyProperties);
-		$this->assertEquals($annotation->getResponseBodyProperties(), $responseBodyProperties);
+		$this->assertEquals($annotation->getRequest(), $request);
+		$this->assertEquals($annotation->getResponse(), $response);
 		$this->assertEquals($annotation->getSerialize(), $serialize);
 		$this->assertEquals($annotation->getUnserialize(), $unserialize);
 	}

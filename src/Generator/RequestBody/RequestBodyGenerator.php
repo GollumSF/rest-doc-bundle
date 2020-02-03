@@ -25,7 +25,7 @@ class RequestBodyGenerator implements RequestBodyGeneratorInterface {
 	public function generateProperties(Metadata $metadata, string $method): RequestBodyPropertyCollection {
 		$requestBodyPropertyCollection = new RequestBodyPropertyCollection();
 		foreach ($this->handlers as $handler) {
-			if ($this->hasRequestBody($metadata, $method)) {
+			if ($handler->hasRequestBody($metadata, $method)) {
 				$handler->generateProperties($requestBodyPropertyCollection, $metadata, $method);
 			}
 		}

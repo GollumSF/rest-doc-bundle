@@ -1,15 +1,14 @@
 <?php
-namespace Test\GollumSF\RestDocBundle\Generator\RequestBody;
+namespace Test\GollumSF\RestDocBundle\Generator\ResponseBody;
 
 use GollumSF\ReflectionPropertyTest\ReflectionPropertyTrait;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
-use GollumSF\RestDocBundle\Generator\RequestBody\Handler\HandlerInterface;
-use GollumSF\RestDocBundle\Generator\RequestBody\ParameterCollection;
-use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGenerator;
-use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyPropertyCollection;
+use GollumSF\RestDocBundle\Generator\ResponseBody\Handler\HandlerInterface;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGenerator;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyPropertyCollection;
 use PHPUnit\Framework\TestCase;
 
-class RequestBodyGeneratorTest extends TestCase {
+class ResponseBodyGeneratorTest extends TestCase {
 
 	use ReflectionPropertyTrait;
 
@@ -18,16 +17,16 @@ class RequestBodyGeneratorTest extends TestCase {
 		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
 		$handler3 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
 
-		$requestBodyGenerator = new RequestBodyGenerator();
+		$parametersGenerator = new ResponseBodyGenerator();
 
-		$requestBodyGenerator->addHandler($handler1);
-		$this->assertEquals($this->reflectionGetValue($requestBodyGenerator, 'handlers'), [ $handler1 ]);
-		$requestBodyGenerator->addHandler($handler2);
-		$this->assertEquals($this->reflectionGetValue($requestBodyGenerator, 'handlers'), [ $handler1, $handler2 ]);
-		$requestBodyGenerator->addHandler($handler3);
-		$this->assertEquals($this->reflectionGetValue($requestBodyGenerator, 'handlers'), [ $handler1, $handler2, $handler3 ]);
+		$parametersGenerator->addHandler($handler1);
+		$this->assertEquals($this->reflectionGetValue($parametersGenerator, 'handlers'), [ $handler1 ]);
+		$parametersGenerator->addHandler($handler2);
+		$this->assertEquals($this->reflectionGetValue($parametersGenerator, 'handlers'), [ $handler1, $handler2 ]);
+		$parametersGenerator->addHandler($handler3);
+		$this->assertEquals($this->reflectionGetValue($parametersGenerator, 'handlers'), [ $handler1, $handler2, $handler3 ]);
 	}
-	
+
 	public function providerHasRequestBody() {
 		return [
 			[ false, false, false ],
@@ -40,7 +39,7 @@ class RequestBodyGeneratorTest extends TestCase {
 	/**
 	 * @dataProvider providerHasRequestBody
 	 */
-	public function testHasRequestBody($first, $second, $result) {
+	public function testHasResponseBody($first, $second, $result) {
 
 		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
 		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
@@ -48,24 +47,24 @@ class RequestBodyGeneratorTest extends TestCase {
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 
 		$handler1
-			->method('hasRequestBody')
+			->method('hasResponseBody')
 			->with($metadata, 'GET')
 			->willReturn($first)
 		;
 		$handler2
-			->method('hasRequestBody')
+			->method('hasResponseBody')
 			->with($metadata, 'GET')
 			->willReturn($second)
 		;
 
-		$requestBodyGenerator = new RequestBodyGenerator();
+		$requestBodyGenerator = new ResponseBodyGenerator();
 		$requestBodyGenerator->addHandler($handler1);
 		$requestBodyGenerator->addHandler($handler2);
 
 		$this->assertEquals(
-			$this->reflectionCallMethod($requestBodyGenerator, 'hasRequestBody', [ $metadata, 'GET' ]), $result
+			$this->reflectionCallMethod($requestBodyGenerator, 'hasResponseBody', [ $metadata, 'GET' ]), $result
 		);
-			
+
 	}
 
 	public function testGenerateProperties() {
@@ -73,20 +72,12 @@ class RequestBodyGeneratorTest extends TestCase {
 		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
-		$collection = new RequestBodyPropertyCollection();
+		$collection = new ResponseBodyPropertyCollection();
+
 
 		$handler1
-			->expects($this->once())
-			->method('generateProperties')
-			->willReturnCallback(function ($collectionParam, $metadataParam, string $method) use ($collection, $metadata) {
-				$this->assertEquals($collectionParam, $collection);
-				$this->assertEquals($metadataParam, $metadata);
-				$this->assertEquals($method, 'GET');
-			})
-		;
-		$handler1
 			->expects($this->at(0))
-			->method('hasRequestBody')
+			->method('hasResponseBody')
 			->with($metadata, 'GET')
 			->willReturn(true)
 		;
@@ -101,7 +92,7 @@ class RequestBodyGeneratorTest extends TestCase {
 		;
 		$handler2
 			->expects($this->once())
-			->method('hasRequestBody')
+			->method('hasResponseBody')
 			->with($metadata, 'GET')
 			->willReturn(false)
 		;
@@ -109,11 +100,11 @@ class RequestBodyGeneratorTest extends TestCase {
 			->expects($this->never())
 			->method('generateProperties')
 		;
+		
+		$responsePropertiesGenerator = new ResponseBodyGenerator();
+		$responsePropertiesGenerator->addHandler($handler1);
+		$responsePropertiesGenerator->addHandler($handler2);
 
-		$requestBodyGenerator = new RequestBodyGenerator();
-		$requestBodyGenerator->addHandler($handler1);
-		$requestBodyGenerator->addHandler($handler2);
-
-		$this->assertEquals($requestBodyGenerator->generateProperties($metadata, 'GET'), $collection);
+		$this->assertEquals($responsePropertiesGenerator->generateProperties($metadata, 'GET'), $collection);
 	}
 }

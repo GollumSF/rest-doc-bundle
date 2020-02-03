@@ -1,13 +1,14 @@
 <?php
-namespace Test\GollumSF\RestDocBundle\Generator\RequestBody\Handler;
+namespace Test\GollumSF\RestDocBundle\Generator\ResponseBody\Handler;
 
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
-use GollumSF\RestDocBundle\Generator\RequestBody\Handler\RequestBodyPropertiesHandler;
-use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyPropertyCollection;
+use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
+use GollumSF\RestDocBundle\Generator\ResponseBody\Handler\ResponseBodyPropertiesHandler;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyPropertyCollection;
 use PHPUnit\Framework\TestCase;
 
-class RequestBodyPropertiesHandlerTest extends TestCase {
-	
+class ResponseBodyPropertiesHandlerTest extends TestCase {
+
 	public function providerHasRequestBody() {
 		return [
 			[ [ 'body' => [ 'properties' => [ 'NAME' => [ 'key' =>'VALUE' ] ] ] ], true ],
@@ -27,25 +28,25 @@ class RequestBodyPropertiesHandlerTest extends TestCase {
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$metadata
 			->expects($this->once())
-			->method('getRequest')
+			->method('getResponse')
 			->willReturn($requestProp)
 		;
 
-		$handler = new RequestBodyPropertiesHandler();
+		$handler = new ResponseBodyPropertiesHandler();
 		$this->assertEquals(
-			$handler->hasRequestBody($metadata, 'GET'), $result
+			$handler->hasResponseBody($metadata, 'GET'), $result
 		);
 	}
 
 	public function testGenerateProperties() {
 
-		$collection = new RequestBodyPropertyCollection();
+		$collection = new ResponseBodyPropertyCollection();
 		$collection->add('NAME_ORI', [ 'key' =>'VALUE_ORI' ]);
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$metadata
 			->expects($this->once())
-			->method('getRequest')
+			->method('getResponse')
 			->willReturn([
 				'body' => [ 
 					'properties' => [
@@ -56,9 +57,11 @@ class RequestBodyPropertiesHandlerTest extends TestCase {
 			])
 		;
 
-		$handler = new RequestBodyPropertiesHandler();
+		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+
+		$handler = new ResponseBodyPropertiesHandler($modelBuilder);
 		$handler->generateProperties($collection, $metadata, 'GET');
-		
+
 		$this->assertEquals($collection->toArray(), [
 			'NAME_ORI' => [ 'key' =>'VALUE_ORI' ],
 			'NAME1' => [ 'key' =>'VALUE1' ],

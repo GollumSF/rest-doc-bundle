@@ -15,8 +15,8 @@ use GollumSF\RestDocBundle\Generator\Parameters\ParameterCollection;
 use GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface;
 use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface;
 use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyPropertyCollection;
-use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface;
-use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertyCollection;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyPropertyCollection;
 use GollumSF\RestDocBundle\Generator\Security\SecurityCollection;
 use GollumSF\RestDocBundle\Generator\Security\SecurityGeneratorInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
@@ -87,7 +87,7 @@ class OpenApiGeneratorTest extends TestCase {
 	private $tagbuilder;
 	private $requestStack;
 	private $parametersGenerator;
-	private $responsePropertiesGenerator;
+	private $responseBodyPropertiesGenerator;
 	private $requestBodyGenerator;
 	private $securityGenerator;
 	private $apiDocConfiguration;
@@ -98,7 +98,7 @@ class OpenApiGeneratorTest extends TestCase {
 		$this->tagbuilder                  = $this->getMockForAbstractClass(TagBuilderInterface::class);
 		$this->requestStack                = $this->getMockBuilder(RequestStack::class)->disableOriginalConstructor()->getMock();
 		$this->parametersGenerator         = $this->getMockForAbstractClass(ParametersGeneratorInterface::class);
-		$this->responsePropertiesGenerator = $this->getMockForAbstractClass(ResponsePropertiesGeneratorInterface::class);
+		$this->responseBodyPropertiesGenerator = $this->getMockForAbstractClass(ResponseBodyGeneratorInterface::class);
 		$this->requestBodyGenerator        = $this->getMockForAbstractClass(RequestBodyGeneratorInterface::class);
 		$this->securityGenerator           = $this->getMockForAbstractClass(SecurityGeneratorInterface::class);
 		$this->apiDocConfiguration         = $this->getMockForAbstractClass(ApiDocConfigurationInterface::class);
@@ -165,7 +165,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -239,7 +239,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -360,7 +360,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -427,7 +427,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -500,7 +500,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -513,12 +513,17 @@ class OpenApiGeneratorTest extends TestCase {
 			->willReturn($anno)
 		;
 		
-		$collection = new ResponsePropertyCollection();
+		$collection = new ResponseBodyPropertyCollection();
 		$collection->add('PROP1', [ 'name' => 'PARAM1' ]);
 		$collection->add('PROP2', [ 'name' => 'PARAM2' ]);
 
-		$this->responsePropertiesGenerator
-			->method('generate')
+		$this->responseBodyPropertiesGenerator
+			->method('hasResponseBody')
+			->with($metadata, 'GET')
+			->willReturn(true)
+		;
+		$this->responseBodyPropertiesGenerator
+			->method('generateProperties')
 			->with($metadata, 'GET')
 			->willReturn($collection)
 		;
@@ -535,7 +540,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -571,7 +576,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -614,7 +619,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -640,7 +645,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -677,7 +682,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -697,7 +702,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -782,7 +787,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration
@@ -839,7 +844,7 @@ class OpenApiGeneratorTest extends TestCase {
 			$this->tagbuilder,
 			$this->requestStack,
 			$this->parametersGenerator,
-			$this->responsePropertiesGenerator,
+			$this->responseBodyPropertiesGenerator,
 			$this->requestBodyGenerator,
 			$this->securityGenerator,
 			$this->apiDocConfiguration

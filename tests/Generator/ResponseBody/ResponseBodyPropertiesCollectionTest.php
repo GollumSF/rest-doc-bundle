@@ -1,19 +1,19 @@
 <?php
 
-namespace Test\GollumSF\RestDocBundle\Generator\ResponseProperties;
+namespace Test\GollumSF\RestDocBundle\Generator\ResponseBody;
 
 use GollumSF\ReflectionPropertyTest\ReflectionPropertyTrait;
-use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertyCollection;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyPropertyCollection;
 use PHPUnit\Framework\TestCase;
 
-class ResponsePropertiesCollectionTest extends TestCase {
+class ResponseBodyPropertiesCollectionTest extends TestCase {
 	
 	use ReflectionPropertyTrait;
 	
 	private $collection;
 	
 	public function setUp(): void {
-		$this->collection = new ResponsePropertyCollection();
+		$this->collection = new ResponseBodyPropertyCollection();
 		$this->assertEquals($this->collection->add('a', ['1']), $this->collection);
 		$this->assertEquals($this->collection->add('b', ['2']), $this->collection);
 		$this->assertEquals($this->collection->add('c', ['3']), $this->collection);

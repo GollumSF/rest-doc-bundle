@@ -24,14 +24,15 @@
     },
     "require" : {
         "php": "^7.2",
-        "gollumsf/rest-bundle": "^2.3",
-        "twig/twig": "^2.0|^3.0"
+        "gollumsf/rest-bundle": "^2.6",
+        "gollumsf/controller-action-extractor-bundle": "^1.0",
+        "symfony/twig-bundle": "^4.4|^5.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^5.0",
         "phpunit/phpunit": "^8.5",
         "gollumsf/reflection-property-test": "^1.0",
-        "matthiasnoback/symfony-dependency-injection-test": "^4.1"
+        "matthiasnoback/symfony-dependency-injection-test": "^4.1",
+        "nyholm/symfony-bundle-test": "^1.6"
     },
     "autoload" : {
         "psr-4" : {

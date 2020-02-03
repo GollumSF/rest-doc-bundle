@@ -1,8 +1,8 @@
 <?php
 
-namespace GollumSF\RestDocBundle\Generator\ResponseProperties;
+namespace GollumSF\RestDocBundle\Generator\ResponseBody;
 
-class ResponsePropertyCollection implements \Iterator {
+class ResponseBodyPropertyCollection implements \Iterator {
 
 	private $position = 0;
 

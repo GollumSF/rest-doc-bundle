@@ -46,20 +46,20 @@ services:
         tags:
             - { name: !php/const 'GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface::HANDLER_TAG', priority: 30 }
 
-    GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface:
-        class: GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGenerator
+    GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface:
+        class: GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGenerator
 
-    GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\GroupHandler:
+    GollumSF\RestDocBundle\Generator\ResponseBody\Handler\GroupHandler:
         tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface::HANDLER_TAG', priority: 10 }
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface::HANDLER_TAG', priority: 10 }
 
-    GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\ResponsePropertiesHandler:
+    GollumSF\RestDocBundle\Generator\ResponseBody\Handler\ResponseBodyPropertiesHandler:
         tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface::HANDLER_TAG', priority: 20 }
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface::HANDLER_TAG', priority: 20 }
 
-    GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\CollectionHandler:
+    GollumSF\RestDocBundle\Generator\ResponseBody\Handler\CollectionHandler:
         tags:
-            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface::HANDLER_TAG', priority: 255 }
+            - { name: !php/const 'GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface::HANDLER_TAG', priority: 255 }
 
     GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface:
         class: GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGenerator

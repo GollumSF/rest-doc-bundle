@@ -31,13 +31,10 @@ class Metadata
 	private $unserializeGroups;
 
 	/** @var string[] */
-	private $requestProperties;
+	private $request;
 
 	/** @var string[] */
-	private $requestBodyProperties;
-
-	/** @var string[] */
-	private $responseBodyProperties;
+	private $response;
 
 	/** @var Serialize */
 	private $serialize;
@@ -53,9 +50,8 @@ class Metadata
 		bool $collection,
 		array $serializeGroups,
 		array $unserializeGroups,
-		array $requestProperties,
-		array $requestBodyProperties,
-		array $responseBodyProperties,
+		array $request,
+		array $response,
 		?Serialize $serialize,
 		?Unserialize $unserialize
 	) {
@@ -66,9 +62,8 @@ class Metadata
 		$this->collection = $collection;
 		$this->serializeGroups = $serializeGroups;
 		$this->unserializeGroups = $unserializeGroups;
-		$this->requestProperties = $requestProperties;
-		$this->requestBodyProperties = $requestBodyProperties;
-		$this->responseBodyProperties = $responseBodyProperties;
+		$this->request = $request;
+		$this->response = $response;
 		$this->serialize = $serialize;
 		$this->unserialize = $unserialize;
 	}
@@ -103,19 +98,14 @@ class Metadata
 		return $this->unserializeGroups;
 	}
 
-	public function getRequestProperties(): array
+	public function getRequest(): array
 	{
-		return $this->requestProperties;
+		return $this->request;
 	}
 
-	public function getRequestBodyProperties(): array
+	public function getResponse(): array
 	{
-		return $this->requestBodyProperties;
-	}
-
-	public function getResponseBodyProperties(): array
-	{
-		return $this->responseBodyProperties;
+		return $this->response;
 	}
 
 	public function getSerialize(): ?Serialize {

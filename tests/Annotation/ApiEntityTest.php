@@ -21,8 +21,13 @@ class ApiEntityTest extends TestCase {
 	 */
 	public function testConstruct($param, $description, $url, $docDescription) {
 		$annotation = new ApiEntity($param);
-		$this->assertEquals($annotation->description   , $description);
-		$this->assertEquals($annotation->url           , $url);
-		$this->assertEquals($annotation->docDescription, $docDescription);
+		$this->assertEquals($annotation->getDescription()   , $description);
+		$this->assertEquals($annotation->getUrl()           , $url);
+		$this->assertEquals($annotation->getDocDescription(), $docDescription);
+	}
+	
+	public function testConstructException() {
+		$this->expectException(\RuntimeException::class);
+		$annotation = new ApiEntity(['bad' => 'value']);
 	}
 }

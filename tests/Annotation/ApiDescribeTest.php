@@ -11,24 +11,23 @@ class ApiDescribeTest extends TestCase {
 		return [
 			[ [], null, null, [], [], [], [], [], [] ],
 
-			[ [ 'value' => \stdClass::class ], \stdClass::class, null, [], [], [], [], [], [] ],
-			[ [ 'entity' => \stdClass::class ], \stdClass::class, null, [], [], [], [], [], [] ],
+			[ [ 'value' => \stdClass::class ], \stdClass::class, null, [], [], [], [], [] ],
+			[ [ 'entity' => \stdClass::class ], \stdClass::class, null, [], [], [], [], [] ],
 			
-			[ [ 'collection' => true ] , null, true, [], [], [], [], [], [] ],
-			[ [ 'collection' => false ], null, false, [], [], [], [], [], [] ],
+			[ [ 'collection' => true ] , null, true, [], [], [], [], [] ],
+			[ [ 'collection' => false ], null, false, [], [], [], [], [] ],
 
-			[ [ 'collection' => false ], null, false, [], [], [], [], [], [] ],
-			[ [ 'collection' => false ], null, false, [], [], [], [], [], [] ],
+			[ [ 'collection' => false ], null, false, [], [], [], [], [] ],
+			[ [ 'collection' => false ], null, false, [], [], [], [], [] ],
 
-			[ [ 'serializeGroups' => 'group1' ], null, null, [ 'group1' ], [], [], [], [], [] ],
-			[ [ 'serializeGroups' => [ 'group1', 'group2' ] ], null, null, [ 'group1', 'group2' ], [], [], [], [], [] ],
+			[ [ 'serializeGroups' => 'group1' ], null, null, [ 'group1' ], [], [], [], [] ],
+			[ [ 'serializeGroups' => [ 'group1', 'group2' ] ], null, null, [ 'group1', 'group2' ], [], [], [], [] ],
 
-			[ [ 'unserializeGroups' => 'group1' ], null, null, [], [ 'group1' ], [], [], [], [] ],
-			[ [ 'unserializeGroups' => [ 'group1', 'group2' ] ], null, null, [], [ 'group1', 'group2' ], [], [], [], [] ],
+			[ [ 'unserializeGroups' => 'group1' ], null, null, [], [ 'group1' ], [], [], [] ],
+			[ [ 'unserializeGroups' => [ 'group1', 'group2' ] ], null, null, [], [ 'group1', 'group2' ], [], [], [] ],
 
-			[ [ 'requestProperties'      => [ 'key' => 'value' ] ], null, null, [], [], [ 'key' => 'value' ], [], [] ],
-			[ [ 'requestBodyProperties'  => [ 'key' => 'value' ] ], null, null, [], [], [], [ 'key' => 'value' ], [] ],
-			[ [ 'responseBodyProperties' => [ 'key' => 'value' ] ], null, null, [], [], [], [], [ 'key' => 'value' ] ],
+			[ [ 'request'  => [ 'key' => 'value' ] ], null, null, [], [], [ 'key' => 'value' ], [] ],
+			[ [ 'response' => [ 'key' => 'value' ] ], null, null, [], [], [], [ 'key' => 'value' ] ],
 		];
 	}
 
@@ -41,18 +40,17 @@ class ApiDescribeTest extends TestCase {
 		$collection,
 		$serializeGroups,
 		$unserializeGroups,
-		$requestProperties,
-		$requestBodyProperties,
-		$responseBodyProperties
+		$request,
+		$response
 	) {
-
 		$annotation = new ApiDescribe($param);
-		$this->assertEquals($annotation->entity                , $entity);
-		$this->assertEquals($annotation->collection            , $collection);
-		$this->assertEquals($annotation->serializeGroups       , $serializeGroups);
-		$this->assertEquals($annotation->unserializeGroups     , $unserializeGroups);
-		$this->assertEquals($annotation->requestProperties     , $requestProperties);
-		$this->assertEquals($annotation->requestBodyProperties , $requestBodyProperties);
-		$this->assertEquals($annotation->responseBodyProperties, $responseBodyProperties);
+		$this->assertEquals($annotation->getEntity()           , $entity);
+		$this->assertEquals($annotation->isCollection()        , $collection);
+		$this->assertEquals($annotation->getSerializeGroups()  , $serializeGroups);
+		$this->assertEquals($annotation->getUnserializeGroups(), $unserializeGroups);
+		$this->assertEquals($annotation->getRequest()          , $request);
+		$this->assertEquals($annotation->getResponse()         , $response);
+		$this->assertEquals($annotation->getAliasName()        , ApiDescribe::ALIAS_NAME);
+		$this->assertTrue($annotation->allowArray());
 	}
 }

@@ -3,9 +3,10 @@
 namespace GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler;
 
 use Doctrine\Common\Annotations\Reader;
+use GollumSF\ControllerActionExtractorBundle\Extractor\ControllerAction;
+use GollumSF\ControllerActionExtractorBundle\Extractor\ControllerActionExtractorInterface;
 use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestBundle\Annotation\Unserialize;
-use GollumSF\RestBundle\Reflection\ControllerActionExtractorInterface;
 use GollumSF\RestDocBundle\Annotation\ApiDescribe;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
 use Symfony\Component\Routing\Route;
@@ -41,9 +42,9 @@ class AnnotationHandler implements HandlerInterface
 		$metadataCollection = [];
 		
 		foreach ($this->router->getRouteCollection() as $routeName => $route) {
-			$controllerAction = $this->controllerActionExtractor->extractFromString($route->getDefault('_controller'));
+			$controllerAction = $this->controllerActionExtractor->extractFromRoute($route);
 			if ($controllerAction) {
-				$metadata = $this->createMatadata($route, $controllerAction->getControllerClass(), $controllerAction->getAction());
+				$metadata = $this->createMetadata($route, $controllerAction);
 				if ($metadata) {
 					$metadataCollection[] = $metadata;
 				}
@@ -53,8 +54,11 @@ class AnnotationHandler implements HandlerInterface
 		return $metadataCollection;
 	}
 
-	protected function createMatadata(Route $route, string $controller, $action): ?Metadata {
+	protected function createMetadata(Route $route, ControllerAction $controllerAction): ?Metadata {
 
+		$controller = $controllerAction->getControllerClass();
+		$action = $controllerAction->getActionMethod();
+		
 		$rClass = new \ReflectionClass($controller);
 		$rMethod = $rClass->getMethod($action);
 
@@ -67,15 +71,15 @@ class AnnotationHandler implements HandlerInterface
 		$isCollection = null;
 
 		if ($describeMethod) {
-			$entity = $describeMethod->entity;
-			$isCollection = $describeMethod->collection;
+			$entity = $describeMethod->getEntity();
+			$isCollection = $describeMethod->isCollection();
 		}
 		if ($describeClass) {
 			if ($entity === null) {
-				$entity = $describeClass->entity;
+				$entity = $describeClass->getEntity();
 			}
 			if ($isCollection === null) {
-				$isCollection = $describeClass->collection;
+				$isCollection = $describeClass->isCollection();
 			}
 		}
 		
@@ -86,32 +90,26 @@ class AnnotationHandler implements HandlerInterface
 			$annoSerialize = $this->reader->getMethodAnnotation($rMethod, Serialize::class);
 			$annoUnserialize = $this->reader->getMethodAnnotation($rMethod, Unserialize::class);
 
-			$serializeGroups   = $annoSerialize   && $annoSerialize->groups   ? $annoSerialize->groups   : [];
-			$unserializeGroups = $annoUnserialize && $annoUnserialize->groups ? $annoUnserialize->groups : [];
+			$serializeGroups   = $annoSerialize   ? $annoSerialize->getGroups()   : [];
+			$unserializeGroups = $annoUnserialize ? $annoUnserialize->getGroups() : [];
 			
-			if ($serializeGroups   && !is_array($serializeGroups  )) $serializeGroups   = [$serializeGroups];
-			if ($unserializeGroups && !is_array($unserializeGroups)) $unserializeGroups = [$unserializeGroups];
+			if ($describeClass  && $describeClass ->getSerializeGroups()) $serializeGroups = array_merge($serializeGroups, $describeClass ->getSerializeGroups());
+			if ($describeMethod && $describeMethod->getSerializeGroups()) $serializeGroups = array_merge($serializeGroups, $describeMethod->getSerializeGroups());
 
-			if ($describeClass  && $describeClass ->serializeGroups) $serializeGroups = array_merge($serializeGroups, $describeClass ->serializeGroups);
-			if ($describeMethod && $describeMethod->serializeGroups) $serializeGroups = array_merge($serializeGroups, $describeMethod->serializeGroups);
-
-			if ($describeClass  && $describeClass ->unserializeGroups) $unserializeGroups = array_merge($unserializeGroups, $describeClass ->unserializeGroups);
-			if ($describeMethod && $describeMethod->unserializeGroups) $unserializeGroups = array_merge($unserializeGroups, $describeMethod->unserializeGroups);
+			if ($describeClass  && $describeClass ->getUnserializeGroups()) $unserializeGroups = array_merge($unserializeGroups, $describeClass ->getUnserializeGroups());
+			if ($describeMethod && $describeMethod->getUnserializeGroups()) $unserializeGroups = array_merge($unserializeGroups, $describeMethod->getUnserializeGroups());
 
 			$serializeGroups   = array_unique($serializeGroups);
 			$unserializeGroups = array_unique($unserializeGroups);
 
-			$requestProperties = [];
-			if ($describeClass  && $describeClass->requestProperties)  $requestProperties = array_merge($requestProperties, $describeClass->requestProperties);
-			if ($describeMethod && $describeMethod->requestProperties) $requestProperties = array_merge($requestProperties, $describeMethod->requestProperties);
+			$request = [];
+			if ($describeClass  && $describeClass->getRequest())  $request = array_merge($request, $describeClass->getRequest());
+			if ($describeMethod && $describeMethod->getRequest()) $request = array_merge($request, $describeMethod->getRequest());
 			
-			$requestBodyProperties = [];
-			if ($describeClass  && $describeClass->requestBodyProperties)  $requestBodyProperties = array_merge($requestBodyProperties, $describeClass->requestBodyProperties);
-			if ($describeMethod && $describeMethod->requestBodyProperties) $requestBodyProperties = array_merge($requestBodyProperties, $describeMethod->requestBodyProperties);
 
-			$responseBodyProperties = [];
-			if ($describeClass  && $describeClass->responseBodyProperties)  $responseBodyProperties = array_merge($responseBodyProperties, $describeClass->responseBodyProperties);
-			if ($describeMethod && $describeMethod->responseBodyProperties) $responseBodyProperties = array_merge($responseBodyProperties, $describeMethod->responseBodyProperties);
+			$response = [];
+			if ($describeClass  && $describeClass->getResponse())  $response = array_merge($response, $describeClass->getResponse());
+			if ($describeMethod && $describeMethod->getResponse()) $response = array_merge($response, $describeMethod->getResponse());
 				
 			
 			return new Metadata(
@@ -122,9 +120,8 @@ class AnnotationHandler implements HandlerInterface
 				!!$isCollection,
 				$serializeGroups,
 				$unserializeGroups,
-				$requestProperties,
-				$requestBodyProperties,
-				$responseBodyProperties,
+				$request,
+				$response,
 				$annoSerialize,
 				$annoUnserialize
 			);

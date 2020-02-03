@@ -3,7 +3,7 @@
 namespace Test\GollumSF\RestDocBundle\DependencyInjection\Compiler;
 
 use GollumSF\RestDocBundle\DependencyInjection\Compiler\ResponsePropertiesGeneratorPass;
-use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -17,24 +17,24 @@ class ResponsePropertiesGeneratorPassTest extends AbstractCompilerPassTestCase {
 	public function testProcessNot() {
 
 		$serviceTag1 = new Definition();
-		$serviceTag1->addTag(ResponsePropertiesGeneratorInterface::HANDLER_TAG, [ 'priority' => 20 ]);
+		$serviceTag1->addTag(ResponseBodyGeneratorInterface::HANDLER_TAG, [ 'priority' => 20 ]);
 		$this->setDefinition('serviceTag1', $serviceTag1);
 
 		$serviceTag2 = new Definition();
-		$serviceTag2->addTag(ResponsePropertiesGeneratorInterface::HANDLER_TAG);
+		$serviceTag2->addTag(ResponseBodyGeneratorInterface::HANDLER_TAG);
 		$this->setDefinition('serviceTag2', $serviceTag2);
 
 		$serviceTag3 = new Definition();
-		$serviceTag3->addTag(ResponsePropertiesGeneratorInterface::HANDLER_TAG, [ 'priority' => 10 ]);
+		$serviceTag3->addTag(ResponseBodyGeneratorInterface::HANDLER_TAG, [ 'priority' => 10 ]);
 		$this->setDefinition('serviceTag3', $serviceTag3);
 
 		$serviceTag4 = new Definition();
-		$serviceTag4->addTag(ResponsePropertiesGeneratorInterface::HANDLER_TAG, [ 'priority' => 20 ]);
+		$serviceTag4->addTag(ResponseBodyGeneratorInterface::HANDLER_TAG, [ 'priority' => 20 ]);
 		$this->setDefinition('serviceTag4', $serviceTag4);
 		
 		
 		$service = new Definition();
-		$this->setDefinition(ResponsePropertiesGeneratorInterface::class, $service);
+		$this->setDefinition(ResponseBodyGeneratorInterface::class, $service);
 
 		$this->compile();
 
@@ -61,7 +61,7 @@ class ResponsePropertiesGeneratorPassTest extends AbstractCompilerPassTestCase {
 		$container
 			->expects($this->once())
 			->method('has')
-			->with(ResponsePropertiesGeneratorInterface::class)
+			->with(ResponseBodyGeneratorInterface::class)
 			->willReturn(false);
 		;
 

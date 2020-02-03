@@ -1,6 +1,8 @@
 <?php
 namespace GollumSF\RestDocBundle;
 
+use GollumSF\RestDocBundle\DependencyInjection\Compiler\DoctrineBuilderPass;
+use GollumSF\RestDocBundle\DependencyInjection\Compiler\TwigBuilderPass;
 use GollumSF\RestDocBundle\DependencyInjection\Compiler\MetadataBuilderPass;
 use GollumSF\RestDocBundle\DependencyInjection\Compiler\ModelBuilderPass;
 use GollumSF\RestDocBundle\DependencyInjection\Compiler\ParametersGeneratorPass;
@@ -28,5 +30,7 @@ class GollumSFRestDocBundle extends Bundle {
 		$container->addCompilerPass(new ResponsePropertiesGeneratorPass());
 		$container->addCompilerPass(new SecurityGeneratorPass());
 		$container->addCompilerPass(new RequestBodyGeneratorPass());
+		$container->addCompilerPass(new DoctrineBuilderPass());
+		$container->addCompilerPass(new TwigBuilderPass());
 	}
 }

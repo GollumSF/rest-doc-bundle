@@ -10,7 +10,7 @@ use GollumSF\RestDocBundle\Builder\TagBuilder\TagBuilderInterface;
 use GollumSF\RestDocBundle\Configuration\ApiDocConfigurationInterface;
 use GollumSF\RestDocBundle\Generator\Parameters\ParametersGeneratorInterface;
 use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface;
-use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface;
 use GollumSF\RestDocBundle\Generator\Security\SecurityGeneratorInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -34,8 +34,8 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 	/** @var ParametersGeneratorInterface */
 	private $parametersGenerator;
 	
-	/** @var ResponsePropertiesGeneratorInterface */
-	private $responsePropertiesGenerator;
+	/** @var ResponseBodyGeneratorInterface */
+	private $responseBodyGenerator;
 	
 	/** @var RequestBodyGeneratorInterface */
 	private $requestBodyGenerator;
@@ -47,25 +47,25 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 	private $apiDocConfiguration;
 	
 	public function __construct(
-		MetadataBuilderInterface             $metadataBuilderInterface,
-		ModelBuilderInterface                $modelbuilder,
-		TagBuilderInterface                  $tagbuilder,
-		RequestStack                         $requestStack,
-		ParametersGeneratorInterface         $parametersGenerator,
-		ResponsePropertiesGeneratorInterface $responsePropertiesGenerator,
-		RequestBodyGeneratorInterface        $requestBodyGenerator,
-		SecurityGeneratorInterface           $securityGenerator,
-		ApiDocConfigurationInterface         $apiDocConfiguration
+		MetadataBuilderInterface       $metadataBuilderInterface,
+		ModelBuilderInterface          $modelbuilder,
+		TagBuilderInterface            $tagbuilder,
+		RequestStack                   $requestStack,
+		ParametersGeneratorInterface   $parametersGenerator,
+		ResponseBodyGeneratorInterface $responseBodyGenerator,
+		RequestBodyGeneratorInterface  $requestBodyGenerator,
+		SecurityGeneratorInterface     $securityGenerator,
+		ApiDocConfigurationInterface   $apiDocConfiguration
 	) {
-		$this->metadataBuilder             = $metadataBuilderInterface;
-		$this->modelbuilder                = $modelbuilder;
-		$this->tagbuilder                  = $tagbuilder;
-		$this->requestStack                = $requestStack;
-		$this->parametersGenerator         = $parametersGenerator;
-		$this->responsePropertiesGenerator = $responsePropertiesGenerator;
-		$this->requestBodyGenerator        = $requestBodyGenerator;
-		$this->securityGenerator           = $securityGenerator;
-		$this->apiDocConfiguration         = $apiDocConfiguration;
+		$this->metadataBuilder       = $metadataBuilderInterface;
+		$this->modelbuilder          = $modelbuilder;
+		$this->tagbuilder            = $tagbuilder;
+		$this->requestStack          = $requestStack;
+		$this->parametersGenerator   = $parametersGenerator;
+		$this->responseBodyGenerator = $responseBodyGenerator;
+		$this->requestBodyGenerator  = $requestBodyGenerator;
+		$this->securityGenerator     = $securityGenerator;
+		$this->apiDocConfiguration   = $apiDocConfiguration;
 	}
 	
 	public function generate(): array {
@@ -178,19 +178,21 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 		$responses = [];
 		if ($annoSerialize) {
 
-			$responseProperties = $this->responsePropertiesGenerator->generate($metadata, $method)->toArray();
-
-			$responses[$annoSerialize->code] = [
+			$resposneJson = [
 //				'description' => 'successful operation',
-				'content' => [
+			];
+			if ($this->responseBodyGenerator->hasResponseBody($metadata, $method)) {
+				$responseProperties = $this->responseBodyGenerator->generateProperties($metadata, $method)->toArray();
+				$resposneJson['content'] = [
 					'application/json' => [
 						'schema' => [
 							'type' => 'object',
 							'properties' => $responseProperties
 						]
 					]
-				]
-			];
+				];
+			}
+			$responses[$annoSerialize->getCode()] = $resposneJson;
 		}
 		return $responses;
 	}

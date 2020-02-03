@@ -2,8 +2,7 @@
 
 namespace Test\GollumSF\RestDocBundle\TypeDiscover\Handler;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\DBAL\Types\DateType;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Persistence\ObjectManager;
@@ -79,9 +78,9 @@ class DoctrineHandlerTest extends TestCase {
 		;
 		
 		$handler = new DoctrineHandler(
-			$doctrine,
 			$modelBuilder
 		);
+		$handler->setManagerRegistry($doctrine);
 		
 		/** @var NativeType $result */
 		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
@@ -138,9 +137,9 @@ class DoctrineHandlerTest extends TestCase {
 		;
 
 		$handler = new DoctrineHandler(
-			$doctrine,
 			$modelBuilder
 		);
+		$handler->setManagerRegistry($doctrine);
 
 		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
 		$this->assertInstanceOf(DateTimeType::class, $result);
@@ -213,9 +212,9 @@ class DoctrineHandlerTest extends TestCase {
 			->willReturn($type)
 		;
 		$handler = new DoctrineHandler(
-			$doctrine,
 			$modelBuilder
 		);
+		$handler->setManagerRegistry($doctrine);
 
 		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
 		$this->assertEquals($result, $type);
@@ -288,9 +287,9 @@ class DoctrineHandlerTest extends TestCase {
 			->willReturn($type)
 		;
 		$handler = new DoctrineHandler(
-			$doctrine,
 			$modelBuilder
 		);
+		$handler->setManagerRegistry($doctrine);
 
 		/** @var ArrayType $result */
 		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
@@ -311,9 +310,9 @@ class DoctrineHandlerTest extends TestCase {
 		;
 
 		$handler = new DoctrineHandler(
-			$doctrine,
 			$modelBuilder
 		);
+		$handler->setManagerRegistry($doctrine);
 
 		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
 		$this->assertNull($result);
@@ -332,7 +331,18 @@ class DoctrineHandlerTest extends TestCase {
 		;
 
 		$handler = new DoctrineHandler(
-			$doctrine,
+			$modelBuilder
+		);
+		$handler->setManagerRegistry($doctrine);
+
+		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
+		$this->assertNull($result);
+	}
+
+	public function testGetTypeNoDoctrine() {
+
+		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$handler = new DoctrineHandler(
 			$modelBuilder
 		);
 

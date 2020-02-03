@@ -16,10 +16,12 @@ class RequestPropertiesHandlerTest extends TestCase {
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$metadata
 			->expects($this->once())
-			->method('getRequestProperties')
+			->method('getRequest')
 			->willReturn([
-				'NAME1' => [ 'key' =>'VALUE1' ],
-				'NAME2' => [ 'key' =>'VALUE2' ],
+				'parameters' => [
+					'NAME1' => [ 'key' =>'VALUE1' ],
+					'NAME2' => [ 'key' =>'VALUE2' ],
+				]
 			])
 		;
 
@@ -30,6 +32,50 @@ class RequestPropertiesHandlerTest extends TestCase {
 			[ 'name'=> 'NAME_ORI', 'key' =>'VALUE_ORI' ],
 			[ 'name'=> 'NAME1', 'key' =>'VALUE1' ],
 			[ 'name'=> 'NAME2', 'key' =>'VALUE2' ],
+		]);
+	}
+
+	public function testGenerateParameterEmpty() {
+
+
+		$collection = new ParameterCollection();
+		$collection->add([ 'name'=> 'NAME_ORI', 'key' =>'VALUE_ORI' ]);
+
+		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
+		$metadata
+			->expects($this->once())
+			->method('getRequest')
+			->willReturn([])
+		;
+
+		$handler = new RequestPropertiesHandler();
+		$handler->generateParameter($collection, 'URL', $metadata, 'GET');
+
+		$this->assertEquals($collection->toArray(), [
+			[ 'name'=> 'NAME_ORI', 'key' =>'VALUE_ORI' ],
+		]);
+	}
+
+	public function testGenerateParameterNorArray() {
+
+
+		$collection = new ParameterCollection();
+		$collection->add([ 'name'=> 'NAME_ORI', 'key' =>'VALUE_ORI' ]);
+
+		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
+		$metadata
+			->expects($this->once())
+			->method('getRequest')
+			->willReturn([
+				'parameters' => 'NOR_ARRAY'
+			])
+		;
+
+		$handler = new RequestPropertiesHandler();
+		$handler->generateParameter($collection, 'URL', $metadata, 'GET');
+
+		$this->assertEquals($collection->toArray(), [
+			[ 'name'=> 'NAME_ORI', 'key' =>'VALUE_ORI' ],
 		]);
 	}
 }

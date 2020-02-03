@@ -15,14 +15,20 @@ class SwaggerUIController {
 	private $openApiGenerator;
 	
 	public function __construct(
-		Environment $twig,
 		OpenApiGeneratorInterface $openApiGenerator
 	) {
-		$this->twig = $twig;
 		$this->openApiGenerator = $openApiGenerator;
 	}
 
+	public function setTwig(Environment $twig): self {
+		$this->twig = $twig;
+		return $this;
+	}
+
 	public function __invoke() {
+		if (!$this->twig) {
+			throw new \LogicException(sprintf('%s service not declared. install Symfony Twig', Environment::class));
+		}
 		return new Response(
 			$this->twig->render('@GollumSFRestDoc/SwaggerUI/index.html.twig', [
 				'swaggerData' => $this->openApiGenerator->generate()

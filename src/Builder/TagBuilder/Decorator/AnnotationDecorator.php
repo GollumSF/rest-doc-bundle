@@ -25,14 +25,14 @@ class AnnotationDecorator implements DecoratorInterface
 		$apiEntityAnnotation = $this->reader->getClassAnnotation($rClass, ApiEntity::class);
 		
 		if ($apiEntityAnnotation) {
-			if ($apiEntityAnnotation->description) {
-				$tag->setDescription($apiEntityAnnotation->description);
+			if ($apiEntityAnnotation->getDescription()) {
+				$tag->setDescription($apiEntityAnnotation->getDescription());
 			}
-			if ($apiEntityAnnotation->url) {
-				$tag->setUrl($apiEntityAnnotation->url);
+			if ($apiEntityAnnotation->getUrl()) {
+				$tag->setUrl($apiEntityAnnotation->getUrl());
 			}
-			if ($apiEntityAnnotation->docDescription) {
-				$tag->setDocDescription($apiEntityAnnotation->docDescription);
+			if ($apiEntityAnnotation->getDocDescription()) {
+				$tag->setDocDescription($apiEntityAnnotation->getDocDescription());
 			}
 		}
 		

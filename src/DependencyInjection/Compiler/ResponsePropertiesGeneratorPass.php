@@ -2,7 +2,7 @@
 
 namespace GollumSF\RestDocBundle\DependencyInjection\Compiler;
 
-use GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface;
+use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -12,13 +12,13 @@ class ResponsePropertiesGeneratorPass implements CompilerPassInterface
 	public function process(ContainerBuilder $container)
 	{
 		// always first check if the primary service is defined
-		if (!$container->has(ResponsePropertiesGeneratorInterface::class)) {
+		if (!$container->has(ResponseBodyGeneratorInterface::class)) {
 			return;
 		}
 
-		$definition = $container->findDefinition(ResponsePropertiesGeneratorInterface::class);
+		$definition = $container->findDefinition(ResponseBodyGeneratorInterface::class);
 
-		$taggedServices = $container->findTaggedServiceIds(ResponsePropertiesGeneratorInterface::HANDLER_TAG);
+		$taggedServices = $container->findTaggedServiceIds(ResponseBodyGeneratorInterface::HANDLER_TAG);
 		uasort($taggedServices, function ($a, $b) {
 			$aVal = isset($a[0]) && isset($a[0]['priority']) ? $a[0]['priority'] : 0;
 			$bVal = isset($b[0]) && isset($b[0]['priority']) ? $b[0]['priority'] : 0;

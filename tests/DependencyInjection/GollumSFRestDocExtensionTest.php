@@ -1,6 +1,7 @@
 <?php
 namespace Test\GollumSF\RestDocBundle\DependencyInjection;
 
+use GollumSF\ControllerActionExtractorBundle\GollumSFControllerActionExtractorBundle;
 use GollumSF\RestDocBundle\Configuration\ApiDocConfigurationInterface;
 use GollumSF\RestDocBundle\DependencyInjection\GollumSFRestDocExtension;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
@@ -14,8 +15,13 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 	}
 	
 	public function testLoad() {
+
+		$this->setParameter('kernel.bundles', []);
+		
 		$this->load();
 
+		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Controller\OpenApiController::class);
+		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Controller\SwaggerUIController::class);
 		
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::class);
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\TypeDiscover\Handler\AnnotationHandler::class);
@@ -29,10 +35,10 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\Parameters\Handler\CollectionHandler::class);
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\Parameters\Handler\RequestPropertiesHandler::class);
 
-		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\ResponseProperties\ResponsePropertiesGeneratorInterface::class);
-		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\GroupHandler::class);
-		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\ResponsePropertiesHandler::class);
-		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\ResponseProperties\Handler\CollectionHandler::class);
+		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface::class);
+		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\ResponseBody\Handler\GroupHandler::class);
+		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\ResponseBody\Handler\ResponseBodyPropertiesHandler::class);
+		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\ResponseBody\Handler\CollectionHandler::class);
 
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyGeneratorInterface::class);
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\RequestBody\Handler\GroupHandler::class);
@@ -42,8 +48,8 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\Security\Handler\QueryParamHandler::class);
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\Security\Handler\AuthorizationBearerHandler::class);
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Generator\Security\Handler\CustomHandler::class);
+			
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface::class);
-
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\AnnotationHandler::class);
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface::class);
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Builder\ModelBuilder\Decorator\PropertyDecorator::class);
@@ -52,6 +58,20 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\AnnotationDecorator::class);
 		
 		$this->assertContainerBuilderHasService(ApiDocConfigurationInterface::class);
+
+
+		$this->assertContainerBuilderHasService(\GollumSF\ControllerActionExtractorBundle\Extractor\ControllerActionExtractorInterface::class);
+	}
+
+	public function testLoadWith()
+	{
+
+		$this->setParameter('kernel.bundles', [
+			'GollumSFControllerActionExtractorBundle' => GollumSFControllerActionExtractorBundle::class
+		]);
+		$this->load();
+		
+		$this->assertContainerBuilderNotHasService(\GollumSF\ControllerActionExtractorBundle\Extractor\ControllerActionExtractorInterface::class);
 	}
 
 	public function providerLoadConfiguration() {
@@ -92,6 +112,9 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 		$external_docs,
 		$security
 	) {
+
+		$this->setParameter('kernel.bundles', []);
+		
 		$this->load($config);
 
 		$this->assertContainerBuilderHasServiceDefinitionWithArgument(ApiDocConfigurationInterface::class, 0, $title);

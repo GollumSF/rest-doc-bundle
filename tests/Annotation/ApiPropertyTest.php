@@ -21,7 +21,12 @@ class ApiPropertyTest extends TestCase {
 	 */
 	public function testConstruct($param, $type, $collection) {
 		$annotation = new ApiProperty($param);
-		$this->assertEquals($annotation->type      , $type);
-		$this->assertEquals($annotation->collection, $collection);
+		$this->assertEquals($annotation->getType()     , $type);
+		$this->assertEquals($annotation->isCollection(), $collection);
+	}
+
+	public function testConstructException() {
+		$this->expectException(\RuntimeException::class);
+		$annotation = new ApiProperty(['bad' => 'value']);
 	}
 }

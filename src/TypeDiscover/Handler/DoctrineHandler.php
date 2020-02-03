@@ -2,7 +2,7 @@
 
 namespace GollumSF\RestDocBundle\TypeDiscover\Handler;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ArrayType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\DateTimeType;
@@ -13,23 +13,30 @@ use GollumSF\RestDocBundle\TypeDiscover\Models\TypeInterface;
 class DoctrineHandler implements HandlerInterface {
 	
 	/** @var ManagerRegistry */
-	private $doctrine;
+	private $managerRegistry;
 	
 	/** @var ModelBuilderInterface */
 	private $modelBuilder;
 	
 	public function __construct(
-		ManagerRegistry $doctrine,
 		ModelBuilderInterface $modelBuilder
 	) {
-		$this->doctrine = $doctrine;
 		$this->modelBuilder = $modelBuilder;
+	}
+
+	public function setManagerRegistry(ManagerRegistry $managerRegistry): self {
+		$this->managerRegistry = $managerRegistry;
+		return $this;
 	}
 
 	public function getType(string $class, string $targetName): ?TypeInterface {
 
+		if (!$this->managerRegistry) {
+			return null;
+		}
+		
 		try {
-			$manager = $this->doctrine->getManagerForClass($class);
+			$manager = $this->managerRegistry->getManagerForClass($class);
 			if ($manager && !$manager->getMetadataFactory()->isTransient($class)) {
 				$metadata = $manager->getClassMetadata($class);
 				

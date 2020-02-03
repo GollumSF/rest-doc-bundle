@@ -3,11 +3,11 @@
 namespace Test\GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler;
 
 use Doctrine\Common\Annotations\Reader;
+use GollumSF\ControllerActionExtractorBundle\Extractor\ControllerAction;
+use GollumSF\ControllerActionExtractorBundle\Extractor\ControllerActionExtractorInterface;
 use GollumSF\ReflectionPropertyTest\ReflectionPropertyTrait;
 use GollumSF\RestBundle\Annotation\Serialize;
 use GollumSF\RestBundle\Annotation\Unserialize;
-use GollumSF\RestBundle\Reflection\ControllerAction;
-use GollumSF\RestBundle\Reflection\ControllerActionExtractorInterface;
 use GollumSF\RestDocBundle\Annotation\ApiDescribe;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\AnnotationHandler;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
@@ -21,8 +21,7 @@ class AnnotationHandlerGetMetadataCollection extends AnnotationHandler {
 	private $metadatas;
 
 	public $routes = [];
-	public $controllers = [];
-	public $actions = [];
+	public $controllerAction = [];
 	
 	public function __construct(
 		RouterInterface $router,
@@ -34,10 +33,9 @@ class AnnotationHandlerGetMetadataCollection extends AnnotationHandler {
 		$this->metadatas = $metadatas;
 	}
 
-	protected function createMatadata(Route $route, string $controller, $action): ?Metadata {
-		$this->routes     [] = $route;
-		$this->controllers[] = $controller;
-		$this->actions    [] = $action;
+	protected function createMetadata(Route $route, ControllerAction $controllerAction): ?Metadata {
+		$this->routes[] = $route;
+		$this->controllerAction[] = $controllerAction;
 		return array_pop($this->metadatas);
 	}
 	
@@ -66,10 +64,6 @@ class AnnotationHandlerTest extends TestCase {
 		$route2 = $this->getMockBuilder(Route::class)->disableOriginalConstructor()->getMock();
 		$route3 = $this->getMockBuilder(Route::class)->disableOriginalConstructor()->getMock();
 
-		$route1->expects($this->once())->method('getDefault')->with('_controller')->willReturn('controller1::action1');
-		$route2->expects($this->once())->method('getDefault')->with('_controller')->willReturn('controller2::action2');
-		$route3->expects($this->once())->method('getDefault')->with('_controller')->willReturn('controller3::action3');
-		
 		$routeCollection = new RouteCollection();
 		$routeCollection->add('route1', $route1);
 		$routeCollection->add('route2', $route2);
@@ -87,20 +81,20 @@ class AnnotationHandlerTest extends TestCase {
 
 		$controllerActionExtractor
 			->expects($this->at(0))
-			->method('extractFromString')
-			->with('controller1::action1')
+			->method('extractFromRoute')
+			->with($route1)
 			->willReturn($controllerAction1)
 		;
 		$controllerActionExtractor
 			->expects($this->at(1))
-			->method('extractFromString')
-			->with('controller2::action2')
+			->method('extractFromRoute')
+			->with($route2)
 			->willReturn($controllerAction2)
 		;
 		$controllerActionExtractor
 			->expects($this->at(2))
-			->method('extractFromString')
-			->with('controller3::action3')
+			->method('extractFromRoute')
+			->with($route3)
 			->willReturn($controllerAction3)
 		;
 		
@@ -129,16 +123,10 @@ class AnnotationHandlerTest extends TestCase {
 			$route3
 		]);
 
-		$this->assertEquals($annotationHandler->controllers, [
-			'controller1',
-			'controller2',
-			'controller3'
-		]);
-
-		$this->assertEquals($annotationHandler->actions, [
-			'action1',
-			'action2',
-			'action3'
+		$this->assertEquals($annotationHandler->controllerAction, [
+			new ControllerAction('controller1', 'action1'),
+			new ControllerAction('controller2', 'action2'),
+			new ControllerAction('controller3', 'action3'),
 		]);
 	}
 	
@@ -147,74 +135,72 @@ class AnnotationHandlerTest extends TestCase {
 			
 			// Entity Class
 			
-			[ new ApiDescribe([ 'entity' => 'EntityClass1' ]), null, null, null, 'EntityClass1', false, [], [], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1' ]), null, null, 'EntityClass1', false, [], [], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1' ]), new ApiDescribe([ 'entity' => 'EntityClass2' ]), null, null, 'EntityClass2', false, [], [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1' ]), null, null, null, 'EntityClass1', false, [], [], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1' ]), null, null, 'EntityClass1', false, [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1' ]), new ApiDescribe([ 'entity' => 'EntityClass2' ]), null, null, 'EntityClass2', false, [], [], [], [] ],
 
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'collection' => true ]), null, null, null, 'EntityClass1', true, [], [], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'collection' => true ]), null, null, 'EntityClass1', true, [], [], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'collection' => true ]), new ApiDescribe([ 'entity' => 'EntityClass2', 'collection' => false ]), null, null, 'EntityClass2', false, [], [], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'collection' => false ]), new ApiDescribe([ 'entity' => 'EntityClass2', 'collection' => true ]), null, null, 'EntityClass2', true, [], [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'collection' => true ]), null, null, null, 'EntityClass1', true, [], [], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'collection' => true ]), null, null, 'EntityClass1', true, [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'collection' => true ]), new ApiDescribe([ 'entity' => 'EntityClass2', 'collection' => false ]), null, null, 'EntityClass2', false, [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'collection' => false ]), new ApiDescribe([ 'entity' => 'EntityClass2', 'collection' => true ]), null, null, 'EntityClass2', true, [], [], [], [] ],
 			
 			// Describe Serialize group
 
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, null, null, 'EntityClass1', false, [ 'group1' ], [], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, null, 'EntityClass1', false, [ 'group1' ], [], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, null, 'EntityClass1', false, [ 'group1' ], [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, null, null, 'EntityClass1', false, [ 'group1' ], [], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, null, 'EntityClass1', false, [ 'group1' ], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, null, 'EntityClass1', false, [ 'group1' ], [], [], [] ],
 
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => [ 'group1' ] ]), null, null, null, 'EntityClass1', false, [ 'group1' ], [], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => [ 'group1' ] ]), null, null, 'EntityClass1', false, [ 'group1' ], [], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => [ 'group1' ] ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => [ 'group2' ] ]), null, null, 'EntityClass1', false, [ 'group1', 'group2' ], [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => [ 'group1' ] ]), null, null, null, 'EntityClass1', false, [ 'group1' ], [], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => [ 'group1' ] ]), null, null, 'EntityClass1', false, [ 'group1' ], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => [ 'group1' ] ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => [ 'group2' ] ]), null, null, 'EntityClass1', false, [ 'group1', 'group2' ], [], [], [] ],
 
 			// Annotation Serialize group
 
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, new Serialize([ 'groups' => 'group4' ]), null, 'EntityClass1', false, [ 'group4', 'group1' ], [], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new Serialize([ 'groups' => 'group4' ]), null, 'EntityClass1', false, [ 'group4', 'group1' ], [], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new Serialize([ 'groups' => 'group4' ]), null, 'EntityClass1', false, [ 'group4', 'group1' ], [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, new Serialize([ 'groups' => 'group4' ]), null, 'EntityClass1', false, [ 'group4', 'group1' ], [], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new Serialize([ 'groups' => 'group4' ]), null, 'EntityClass1', false, [ 'group4', 'group1' ], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new Serialize([ 'groups' => 'group4' ]), null, 'EntityClass1', false, [ 'group4', 'group1' ], [], [], [] ],
 
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, new Serialize([ 'groups' => [ 'group4', 'group5' ] ]), null, 'EntityClass1', false, [ 'group4', 'group5', 'group1' ], [], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new Serialize([ 'groups' => [ 'group4', 'group5' ] ]), null, 'EntityClass1', false, [ 'group4', 'group5', 'group1' ], [], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new Serialize([ 'groups' => [ 'group1', 'group4', 'group5' ] ]), null, 'EntityClass1', false, [ 'group1', 'group4', 'group5' ], [], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), null, new Serialize([ 'groups' => [ 'group4', 'group5' ] ]), null, 'EntityClass1', false, [ 'group4', 'group5', 'group1' ], [], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new Serialize([ 'groups' => [ 'group4', 'group5' ] ]), null, 'EntityClass1', false, [ 'group4', 'group5', 'group1' ], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'serializeGroups' => 'group1' ]), new Serialize([ 'groups' => [ 'group1', 'group4', 'group5' ] ]), null, 'EntityClass1', false, [ 'group1', 'group4', 'group5' ], [], [], [] ],
 
 			// Describe Unserialize group
 
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, null, 'EntityClass1', false, [], [ 'group1' ], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, 'EntityClass1', false, [], [ 'group1' ], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, 'EntityClass1', false, [], [ 'group1' ], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, null, 'EntityClass1', false, [], [ 'group1' ], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, 'EntityClass1', false, [], [ 'group1' ], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, 'EntityClass1', false, [], [ 'group1' ], [], [] ],
 
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => [ 'group1' ] ]), null, null, null, 'EntityClass1', false, [], [ 'group1' ], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => [ 'group1' ] ]), null, null, 'EntityClass1', false, [], [ 'group1' ], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => [ 'group1' ] ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => [ 'group2' ] ]), null, null, 'EntityClass1', false, [], [ 'group1', 'group2' ], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => [ 'group1' ] ]), null, null, null, 'EntityClass1', false, [], [ 'group1' ], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => [ 'group1' ] ]), null, null, 'EntityClass1', false, [], [ 'group1' ], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => [ 'group1' ] ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => [ 'group2' ] ]), null, null, 'EntityClass1', false, [], [ 'group1', 'group2' ], [], [] ],
 
 			// Annotation Unserialize group
 
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, new Unserialize([ 'groups' => 'group4' ]), 'EntityClass1', false, [], [ 'group4', 'group1' ], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, new Unserialize([ 'groups' => 'group4' ]), 'EntityClass1', false, [], [ 'group4', 'group1' ], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, new Unserialize([ 'groups' => 'group4' ]), 'EntityClass1', false, [], [ 'group4', 'group1' ], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, new Unserialize([ 'groups' => 'group4' ]), 'EntityClass1', false, [], [ 'group4', 'group1' ], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, new Unserialize([ 'groups' => 'group4' ]), 'EntityClass1', false, [], [ 'group4', 'group1' ], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, new Unserialize([ 'groups' => 'group4' ]), 'EntityClass1', false, [], [ 'group4', 'group1' ], [], [] ],
 			
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, new Unserialize([ 'groups' => [ 'group4', 'group5' ] ]), 'EntityClass1', false, [], [ 'group4', 'group5', 'group1' ], [], [], [] ],
-			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, new Unserialize([ 'groups' => [ 'group4', 'group5' ] ]), 'EntityClass1', false, [], [ 'group4', 'group5', 'group1' ], [], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, new Unserialize([ 'groups' => [ 'group1', 'group4', 'group5' ] ]), 'EntityClass1', false, [], [ 'group1', 'group4', 'group5' ], [], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, null, new Unserialize([ 'groups' => [ 'group4', 'group5' ] ]), 'EntityClass1', false, [], [ 'group4', 'group5', 'group1' ], [], [] ],
+			[ null, new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, new Unserialize([ 'groups' => [ 'group4', 'group5' ] ]), 'EntityClass1', false, [], [ 'group4', 'group5', 'group1' ], [], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), new ApiDescribe([ 'entity' => 'EntityClass1', 'unserializeGroups' => 'group1' ]), null, new Unserialize([ 'groups' => [ 'group1', 'group4', 'group5' ] ]), 'EntityClass1', false, [], [ 'group1', 'group4', 'group5' ], [], [] ],
 
 			// Others
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'requestProperties' => [ 'KEY' => 'VALUE' ] ]), null, null, null, 'EntityClass1', false, [], [], [ 'KEY' => 'VALUE' ], [], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'requestBodyProperties' => [ 'KEY' => 'VALUE' ] ]), null, null, null, 'EntityClass1', false, [], [], [], [ 'KEY' => 'VALUE' ], [] ],
-			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'responseBodyProperties' => [ 'KEY' => 'VALUE' ] ]), null, null, null, 'EntityClass1', false, [], [], [], [], [ 'KEY' => 'VALUE' ] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'request' => [ 'KEY' => 'VALUE' ] ]), null, null, null, 'EntityClass1', false, [], [], [ 'KEY' => 'VALUE' ], [] ],
+			[ new ApiDescribe([ 'entity' => 'EntityClass1', 'response' => [ 'KEY' => 'VALUE' ] ]), null, null, null, 'EntityClass1', false, [], [], [], [ 'KEY' => 'VALUE' ] ],
 		];
 	}
 	
 	/**
 	 * @dataProvider  providerCreateMatadata
 	 */
-	public function testCreateMatadata(
+	public function testCreateMetadata(
 		$describeClass, $describeMethod, $annoSerialize, $annoUnserialize,
 		$entity,
 		$isCollection,
 		$serializeGroups,
 		$unserializeGroups,
-		$requestProperties,
-		$requestBodyProperties,
-		$responseBodyProperties
+		$request,
+		$response
 	) {
 
 		$router                    = $this->getMockBuilder(RouterInterface::class                   )->getMockForAbstractClass();
@@ -272,7 +258,7 @@ class AnnotationHandlerTest extends TestCase {
 		;
 
 		/** @var Metadata $metadata */
-		$metadata = $this->reflectionCallMethod($annotationHandler, 'createMatadata', [ $route, DummyController::class, 'dummyAction' ]);
+		$metadata = $this->reflectionCallMethod($annotationHandler, 'createMetadata', [ $route, new ControllerAction(DummyController::class, 'dummyAction') ]);
 
 		$this->assertEquals($metadata->getRoute(), $route);
 		$this->assertEquals($metadata->getController(), DummyController::class);
@@ -281,14 +267,13 @@ class AnnotationHandlerTest extends TestCase {
 		$this->assertEquals($metadata->isCollection(), $isCollection);
 		$this->assertEquals($metadata->getSerializeGroups(), $serializeGroups);
 		$this->assertEquals($metadata->getUnSerializeGroups(), $unserializeGroups);
-		$this->assertEquals($metadata->getRequestProperties(), $requestProperties);
-		$this->assertEquals($metadata->getRequestBodyProperties(), $requestBodyProperties);
-		$this->assertEquals($metadata->getResponseBodyProperties(), $responseBodyProperties);
+		$this->assertEquals($metadata->getRequest(), $request);
+		$this->assertEquals($metadata->getResponse(), $response);
 		$this->assertEquals($metadata->getSerialize(), $annoSerialize);
 		$this->assertEquals($metadata->getUnserialize(), $annoUnserialize);
 	}
 	
-	public function providerCreateMatadataNull() {
+	public function providerCreateMetadataNull() {
 		return [
 			[ null, null ],
 			[ new ApiDescribe([]), null ],
@@ -298,9 +283,9 @@ class AnnotationHandlerTest extends TestCase {
 	}
 	
 	/**
-	 * @dataProvider  providerCreateMatadataNull
+	 * @dataProvider  providerCreateMetadataNull
 	 */
-	public function testCreateMatadataNull($describeClass, $describeMethod) {
+	public function testCreateMetadataNull($describeClass, $describeMethod) {
 
 		$router                    = $this->getMockBuilder(RouterInterface::class                   )->getMockForAbstractClass();
 		$reader                    = $this->getMockBuilder(Reader::class                            )->disableOriginalConstructor()->getMock();
@@ -338,7 +323,7 @@ class AnnotationHandlerTest extends TestCase {
 
 		
 		$this->assertNull(
-			$this->reflectionCallMethod($annotationHandler, 'createMatadata', [ $route, DummyController::class, 'dummyAction' ])
+			$this->reflectionCallMethod($annotationHandler, 'createMetadata', [ $route, new ControllerAction(DummyController::class, 'dummyAction') ])
 		);
 	}
 
