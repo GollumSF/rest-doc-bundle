@@ -2,6 +2,7 @@
 namespace GollumSF\RestDocBundle\DependencyInjection;
 
 use GollumSF\ControllerActionExtractorBundle\DependencyInjection\GollumSFControllerActionExtractorExtension;
+use GollumSF\ControllerActionExtractorBundle\Extractor\ControllerActionExtractorInterface;
 use GollumSF\RestDocBundle\Configuration\ApiDocConfiguration;
 use GollumSF\RestDocBundle\Configuration\ApiDocConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,8 +16,10 @@ class GollumSFRestDocExtension extends Extension {
 
 		$bundles = $container->getParameter('kernel.bundles');
 		if (!isset($bundles['GollumSFControllerActionExtractorBundle'])) {
-			$extension = new GollumSFControllerActionExtractorExtension();
-			$extension->load([], $container);
+			if (!$container->hasDefinition(ControllerActionExtractorInterface::class)) {
+				$extension = new GollumSFControllerActionExtractorExtension();
+				$extension->load([], $container);
+			}
 		}
 		
 		$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
