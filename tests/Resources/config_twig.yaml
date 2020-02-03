@@ -1,3 +1,4 @@
 framework:
     serializer:
+    property_info:
 twig:
