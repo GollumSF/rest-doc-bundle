@@ -152,12 +152,14 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 				$path = [
 					'tags' => [$tag->getClass()],
-//					'summary'=> 'Creates a Book resource.',
 					'parameters' => $parameters,
 					'responses' => $responses,
 				];
 				if ($this->hasRequestBody($metadata, $method)) {
 					$path['requestBody'] = $this->generateRequestBody($metadata, $method);
+				}
+				if ($summary = $metadata->getSummary()) {
+					$path['summary'] = $summary;
 				}
 
 				$paths[$url][strtolower($method)] = $path;

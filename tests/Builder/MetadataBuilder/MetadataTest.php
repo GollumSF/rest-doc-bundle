@@ -24,6 +24,7 @@ class MetadataTest extends TestCase {
 				[ 'us_group1' ],
 				[ 'req_prop1' ],
 				[ 'resp_prop1' ],
+				'SUMMARY',
 				new Serialize([]),
 				new Unserialize([]),
 			],
@@ -37,6 +38,7 @@ class MetadataTest extends TestCase {
 				[ 'us_group1' ],
 				[ 'req_prop1' ],
 				[ 'resp_prop1' ],
+				null,
 				null,
 				null,
 			]
@@ -56,6 +58,7 @@ class MetadataTest extends TestCase {
 		array $unserializeGroups,
 		array $request,
 		array $response,
+		?string $summary,
 		?Serialize $serialize,
 		?Unserialize $unserialize
 	) {
@@ -70,6 +73,7 @@ class MetadataTest extends TestCase {
 			$unserializeGroups,
 			$request,
 			$response,
+			$summary,
 			$serialize,
 			$unserialize
 		);
@@ -82,6 +86,7 @@ class MetadataTest extends TestCase {
 		$this->assertEquals($annotation->getUnserializeGroups(), $unserializeGroups);
 		$this->assertEquals($annotation->getRequest(), $request);
 		$this->assertEquals($annotation->getResponse(), $response);
+		$this->assertEquals($annotation->getSummary(),  $summary);
 		$this->assertEquals($annotation->getSerialize(), $serialize);
 		$this->assertEquals($annotation->getUnserialize(), $unserialize);
 	}

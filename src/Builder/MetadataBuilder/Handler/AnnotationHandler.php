@@ -69,10 +69,12 @@ class AnnotationHandler implements HandlerInterface
 
 		$entity = null;
 		$isCollection = null;
-
+		$summary = null; 
+		
 		if ($describeMethod) {
 			$entity = $describeMethod->getEntity();
 			$isCollection = $describeMethod->isCollection();
+			$summary = $describeMethod->getSummary();
 		}
 		if ($describeClass) {
 			if ($entity === null) {
@@ -80,6 +82,9 @@ class AnnotationHandler implements HandlerInterface
 			}
 			if ($isCollection === null) {
 				$isCollection = $describeClass->isCollection();
+			}
+			if ($summary === null) {
+				$summary = $describeClass->getSummary();
 			}
 		}
 		
@@ -122,6 +127,7 @@ class AnnotationHandler implements HandlerInterface
 				$unserializeGroups,
 				$request,
 				$response,
+				$summary,
 				$annoSerialize,
 				$annoUnserialize
 			);

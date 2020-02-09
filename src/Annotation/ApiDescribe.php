@@ -28,8 +28,10 @@ class ApiDescribe extends ConfigurationAnnotation {
 	private $request = [];
 
 	/** @var array */
-	public $response = [];
+	private $response = [];
 
+	private $summary = null;
+	
 	/////////////
 	// Getters //
 	/////////////
@@ -56,6 +58,10 @@ class ApiDescribe extends ConfigurationAnnotation {
 
 	public function getResponse(): array {
 		return $this->response;
+	}
+
+	public function getSummary(): ?string {
+		return $this->summary;
 	}
 
 	public function getAliasName() {
@@ -103,6 +109,11 @@ class ApiDescribe extends ConfigurationAnnotation {
 
 	public function setResponse(array $response): self {
 		$this->response = $response;
+		return $this;
+	}
+
+	public function setSummary(?string $summary): self {
+		$this->summary = $summary;
 		return $this;
 	}
 

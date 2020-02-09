@@ -278,10 +278,10 @@ class OpenApiGeneratorTest extends TestCase {
 			[ '', [], [] ],
 			
 			[ '', [
-				// class, path, methods, hasResquestBody
-				[ 'Class1', '/api/users', ['GET'], true ],
-				[ 'Class1', '/api/users/list', ['GET', 'POST'], false ],
-				[ 'Class2', '/api/games', ['PATCH'], false ],
+				// class, path, methods, hasResquestBody, summary
+				[ 'Class1', '/api/users', ['GET'], true, 'SUMMARY1' ],
+				[ 'Class1', '/api/users/list', ['GET', 'POST'], false, 'SUMMARY2' ],
+				[ 'Class2', '/api/games', ['PATCH'], false, null ],
 			], [
 				'/api/users' => [
 					'get' => [
@@ -289,6 +289,7 @@ class OpenApiGeneratorTest extends TestCase {
 						'parameters' => [ 'PARAMETER' => '/api/users', 'METHOD' => 'GET' ],
 						'responses' => [ 'RESPONSE' => 'VALUE', 'METHOD' => 'GET' ],
 						'requestBody' => [ 'REQUEST_BODY' => 'VALUE', 'METHOD' => 'GET' ],
+						'summary' => 'SUMMARY1',
 					]
 				],
 				'/api/users/list' => [
@@ -296,11 +297,13 @@ class OpenApiGeneratorTest extends TestCase {
 						'tags' => [ 'Class1' ],
 						'parameters' => [ 'PARAMETER' => '/api/users/list', 'METHOD' => 'GET' ],
 						'responses' => [ 'RESPONSE' => 'VALUE', 'METHOD' => 'GET' ],
+						'summary' => 'SUMMARY2',
 					],
 					'post' => [
 						'tags' => [ 'Class1' ],
 						'parameters' => [ 'PARAMETER' => '/api/users/list', 'METHOD' => 'POST' ],
 						'responses' => [ 'RESPONSE' => 'VALUE', 'METHOD' => 'POST' ],
+						'summary' => 'SUMMARY2',
 					]
 				],
 				'/api/games' => [
@@ -313,10 +316,10 @@ class OpenApiGeneratorTest extends TestCase {
 			] ],
 
 			[ '/api', [
-				// class, path, methods, hasResquestBody
-				[ 'Class1', '/api/users', ['GET'], true ],
-				[ 'Class1', '/api/users/list', ['GET', 'POST'], false ],
-				[ 'Class2', '/api/games', ['PATCH'], false ],
+				// class, path, methods, hasResquestBody, summary
+				[ 'Class1', '/api/users', ['GET'], true, 'SUMMARY1' ],
+				[ 'Class1', '/api/users/list', ['GET', 'POST'], false, 'SUMMARY2' ],
+				[ 'Class2', '/api/games', ['PATCH'], false, null ],
 			], [
 				'/users' => [
 					'get' => [
@@ -324,6 +327,7 @@ class OpenApiGeneratorTest extends TestCase {
 						'parameters' => [ 'PARAMETER' => '/users', 'METHOD' => 'GET' ],
 						'responses' => [ 'RESPONSE' => 'VALUE', 'METHOD' => 'GET' ],
 						'requestBody' => [ 'REQUEST_BODY' => 'VALUE', 'METHOD' => 'GET' ],
+						'summary' => 'SUMMARY1',
 					]
 				],
 				'/users/list' => [
@@ -331,11 +335,13 @@ class OpenApiGeneratorTest extends TestCase {
 						'tags' => [ 'Class1' ],
 						'parameters' => [ 'PARAMETER' => '/users/list', 'METHOD' => 'GET' ],
 						'responses' => [ 'RESPONSE' => 'VALUE', 'METHOD' => 'GET' ],
+						'summary' => 'SUMMARY2',
 					],
 					'post' => [
 						'tags' => [ 'Class1' ],
 						'parameters' => [ 'PARAMETER' => '/users/list', 'METHOD' => 'POST' ],
 						'responses' => [ 'RESPONSE' => 'VALUE', 'METHOD' => 'POST' ],
+						'summary' => 'SUMMARY2',
 					]
 				],
 				'/games' => [
@@ -392,6 +398,10 @@ class OpenApiGeneratorTest extends TestCase {
 				->expects($this->at(1))
 				->method('getEntity')
 				->willReturn($metadataInfo[0])
+			;
+			$metadata
+				->method('getSummary')
+				->willReturn($metadataInfo[4])
 			;
 			$metadata->hasRequestBody = $metadataInfo[3];
 			$metadatas[] = $metadata;

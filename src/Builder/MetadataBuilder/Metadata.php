@@ -42,6 +42,9 @@ class Metadata
 	/** @var Unserialize */
 	private $unserialize;
 
+	/** @var string */
+	private $summary = null;
+
 	public function __construct(
 		Route $route,
 		string $controller,
@@ -52,6 +55,7 @@ class Metadata
 		array $unserializeGroups,
 		array $request,
 		array $response,
+		?string $summary,
 		?Serialize $serialize,
 		?Unserialize $unserialize
 	) {
@@ -64,6 +68,7 @@ class Metadata
 		$this->unserializeGroups = $unserializeGroups;
 		$this->request = $request;
 		$this->response = $response;
+		$this->summary = $summary;
 		$this->serialize = $serialize;
 		$this->unserialize = $unserialize;
 	}
@@ -88,24 +93,24 @@ class Metadata
 		return $this->collection;
 	}
 
-	public function getSerializeGroups(): array
-	{
+	public function getSerializeGroups(): array {
 		return $this->serializeGroups;
 	}
 
-	public function getUnserializeGroups(): array
-	{
+	public function getUnserializeGroups(): array {
 		return $this->unserializeGroups;
 	}
 
-	public function getRequest(): array
-	{
+	public function getRequest(): array {
 		return $this->request;
 	}
 
-	public function getResponse(): array
-	{
+	public function getResponse(): array {
 		return $this->response;
+	}
+
+	public function getSummary(): ?string {
+		return $this->summary;
 	}
 
 	public function getSerialize(): ?Serialize {
