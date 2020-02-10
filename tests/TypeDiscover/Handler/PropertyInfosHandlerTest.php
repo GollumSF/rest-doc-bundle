@@ -99,7 +99,7 @@ class PropertyInfosHandlerTest extends TestCase {
 		return [
 			[ [ new Type('int') ], 'integer' ],
 			[ [ new Type('resource'), new Type('int') ], 'integer' ],
-			[ [ new Type('float') ], 'float' ],
+			[ [ new Type('float') ], 'number' ],
 			[ [ new Type('string') ], 'string' ],
 			[ [ new Type('bool') ], 'boolean' ],
 		];

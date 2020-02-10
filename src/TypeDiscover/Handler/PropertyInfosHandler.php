@@ -49,12 +49,15 @@ class PropertyInfosHandler implements HandlerInterface {
 					$builtin = 'integer'; break;
 				case 'bool':
 					$builtin = 'boolean'; break;
+				case 'float':
+				case 'double':
+					$builtin = 'number'; break;
 				default: break;
 			}
 			if (in_array($builtin, [
 				'integer',
 				'float',
-				'double',
+				'number',
 				'string',
 				'boolean',
 			])) {

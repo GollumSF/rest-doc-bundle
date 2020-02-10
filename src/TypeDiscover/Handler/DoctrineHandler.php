@@ -49,6 +49,9 @@ class DoctrineHandler implements HandlerInterface {
 						'string',
 						'boolean',
 					])) {
+						if ($type === 'float' || $type === 'double') {
+							$type = 'number';
+						}
 						return new NativeType($type);
 					}
 					if ($type === 'datetime') {

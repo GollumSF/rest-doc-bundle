@@ -60,6 +60,9 @@ class AnnotationHandler implements HandlerInterface
 	}
 	
 	protected function createType(string $type): ?TypeInterface {
+		if ($type === 'float' || $type === 'double') {
+			return new NativeType('number');
+		} else
 		if ($type === 'datetime') {
 			return new DateTimeType();
 		} else

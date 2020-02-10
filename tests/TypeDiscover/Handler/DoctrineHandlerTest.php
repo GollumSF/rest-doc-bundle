@@ -18,18 +18,18 @@ class DoctrineHandlerTest extends TestCase {
 
 	public function providerGetTypeNative() {
 		return [
-			[ 'integer' ],
-			[ 'float' ],
-			[ 'double' ],
-			[ 'string' ],
-			[ 'boolean' ],
+			[ 'integer', 'integer' ],
+			[ 'float'  , 'number' ],
+			[ 'double' , 'number' ],
+			[ 'string' , 'string' ],
+			[ 'boolean', 'boolean' ],
 		];
 	}
 	
 	/**
 	 * @dataProvider providerGetTypeNative
 	 */
-	public function testGetTypeNative($type) {
+	public function testGetTypeNative($type, $result) {
 		
 		$doctrine        = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
 		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
@@ -83,9 +83,9 @@ class DoctrineHandlerTest extends TestCase {
 		$handler->setManagerRegistry($doctrine);
 		
 		/** @var NativeType $result */
-		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
-		$this->assertInstanceOf(NativeType::class, $result);
-		$this->assertEquals($result->getType(), $type);
+		$returned = $handler->getType(\stdClass::class, 'TARGET_NAME');
+		$this->assertInstanceOf(NativeType::class, $returned);
+		$this->assertEquals($returned->getType(), $result);
 	}
 
 	public function testGetTypeDateTime() {

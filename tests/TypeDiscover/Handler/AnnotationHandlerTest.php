@@ -237,8 +237,19 @@ class AnnotationHandlerTest extends TestCase {
 			$this->reflectionCallMethod($annotationHandler, 'createType', [ 'datetime' ])
 		);
 	}
+	
+	public function provideCreateTypeNative() {
+		return [
+			[ 'integer', 'integer' ],
+			[ 'float'   ,'number' ],
+			[ 'double' , 'number' ],
+		];
+	}
 
-	public function testCreateTypeNative() {
+	/**
+	 * @dataProvider provideCreateTypeNative
+	 */
+	public function testCreateTypeNative($type, $result) {
 
 		$reader = $this->getMockBuilder(Reader::class)->disableOriginalConstructor()->getMock();
 		$modelBuilder = $this->getMockBuilder(ModelBuilderInterface::class)->getMockForAbstractClass();
@@ -253,10 +264,10 @@ class AnnotationHandlerTest extends TestCase {
 			->method('getModel')
 		;
 		
-		/** @var NativeType $result */
-		$result = $this->reflectionCallMethod($annotationHandler, 'createType', [ 'integer' ]);
+		/** @var NativeType $returned */
+		$returned = $this->reflectionCallMethod($annotationHandler, 'createType', [ $type ]);
 
-		$this->assertInstanceOf(NativeType::class, $result);
-		$this->assertEquals($result->getType(), 'integer');
+		$this->assertInstanceOf(NativeType::class, $returned);
+		$this->assertEquals($returned->getType(), $result);
 	}
 }
