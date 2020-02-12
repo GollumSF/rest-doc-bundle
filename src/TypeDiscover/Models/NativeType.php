@@ -3,10 +3,10 @@
 namespace GollumSF\RestDocBundle\TypeDiscover\Models;
 
 class NativeType implements TypeInterface {
-	
+
 	/** @var string */
 	private $type;
-	
+
 	public function __construct(string $type) {
 		$this->type = $type;
 	}
@@ -15,7 +15,7 @@ class NativeType implements TypeInterface {
 		return $this->type;
 	}
 
-	public function toJson(array $groups = null): array {
+	public function toJson(array $groups = null, $isRoot = true): array {
 		return [
 			'type' => $this->getType()
 		];

@@ -3,7 +3,9 @@
 namespace GollumSF\RestDocBundle\TypeDiscover\Models;
 
 class ObjectType implements TypeInterface {
-	
+
+	public static $circularRef = [];
+
 	/** @var string */
 	private $class;
 
@@ -29,7 +31,7 @@ class ObjectType implements TypeInterface {
 		}
 		return $xmlName;
 	}
- 
+
 	public function addProperty(ObjectProperty $property): self {
 		$this->properties[$property->getSerializeName()] = $property;
 		return $this;
@@ -42,8 +44,13 @@ class ObjectType implements TypeInterface {
 		return $this->properties;
 	}
 
-	public function toJson(array $groups = null): array {
-		
+	public function getPropertiesJson(array $groups = null, $isRoot = true) {
+		if ($isRoot) {
+			ObjectType::$circularRef = [];
+		}
+		ObjectType::$circularRef[] = $this->getClass();
+
+		/** @var ObjectProperty[] $properties */
 		$properties = array_filter($this->getProperties(), function (ObjectProperty $property) use ($groups) {
 			return
 				!!count($property->getGroups()) &&
@@ -51,19 +58,46 @@ class ObjectType implements TypeInterface {
 					$groups === null ||
 					count(array_intersect($groups, $property->getGroups()))
 				)
-			;
+				;
 		});
-		
+
+		$json = [];
+		foreach ($properties as $property) {
+			$json[$property->getSerializeName()] = $property->getType()->toJson($groups, false);
+		}
+		return $json;
+	}
+
+	public function toJson(array $groups = null, $isRoot = true): array {
+		if ($isRoot) {
+			ObjectType::$circularRef = [];
+		} else if (in_array($this->getClass(), ObjectType::$circularRef)) {
+			return [
+				'type' => 'integer',
+			];
+		}
+		ObjectType::$circularRef[] = $this->getClass();
+
+		$properties = array_filter($this->getProperties(), function (ObjectProperty $property) use ($groups) {
+			return
+				!!count($property->getGroups()) &&
+				(
+					$groups === null ||
+					count(array_intersect($groups, $property->getGroups()))
+				)
+				;
+		});
+
 		if (count($properties) === 0) {
 			return [
 				'type' => 'integer',
 			];
 		}
-		
+
 		$json = [
 			'type' => $this->getType(),
 			'properties' => array_map(function (ObjectProperty $property) use ($groups) {
-					return $property->toJson($groups);
+				return $property->toJson($groups, false);
 			}, $properties),
 			'xml' => [
 				'name' => $this->getXMLName()

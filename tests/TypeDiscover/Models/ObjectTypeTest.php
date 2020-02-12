@@ -16,7 +16,7 @@ class ObjectTypeTest extends TestCase {
 		$this->assertEquals($type->getClass(), 'App\\Entity\\ClassName');
 		$this->assertEquals($type->getXMLName(), 'ClassName');
 	}
-	
+
 	public function testProperty() {
 		$prop1 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
 		$prop2 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
@@ -25,7 +25,7 @@ class ObjectTypeTest extends TestCase {
 		$prop1->expects($this->once())->method('getSerializeName')->willReturn('prop1');
 		$prop2->expects($this->once())->method('getSerializeName')->willReturn('prop2');
 		$prop3->expects($this->once())->method('getSerializeName')->willReturn('prop3');
-		
+
 		$type = new ObjectType('App\\Entity\\ClassName');
 		$type->addProperty($prop1);
 		$type->addProperty($prop2);
@@ -35,6 +35,41 @@ class ObjectTypeTest extends TestCase {
 			'prop1' => $prop1,
 			'prop2' => $prop2,
 			'prop3' => $prop3,
+		]);
+	}
+
+
+	public function testGetPropertiesJson() {
+		$type1 = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
+		$type2 = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
+
+		$type1->expects($this->once())->method('toJson')->with([ 'group1', 'group2' ])->willReturn([ 'KEY2' => 'VALUE1' ]);    
+		$type2->expects($this->once())->method('toJson')->with([ 'group1', 'group2' ])->willReturn([ 'KEY2' => 'VALUE2' ]);
+		
+		$prop1 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
+		$prop2 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
+		$prop3 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
+
+		$prop1->method('getGroups')->willReturn([ 'group1' ]);
+		$prop2->method('getGroups')->willReturn([ 'group2', 'group3' ]);
+		$prop3->method('getGroups')->willReturn([ 'group3' ]);
+
+		$prop1->method('getType')->willReturn($type1);
+		$prop2->method('getType')->willReturn($type2);
+		$prop3->expects($this->never())->method('getType');
+		
+		$prop1->method('getSerializeName')->willReturn('prop1');
+		$prop2->method('getSerializeName')->willReturn('prop2');
+		$prop3->method('getSerializeName')->willReturn('prop3');
+
+		$type = new ObjectType('App\\Entity\\ClassName');
+		$type->addProperty($prop1);
+		$type->addProperty($prop2);
+		$type->addProperty($prop3);
+
+		$this->assertEquals($type->getPropertiesJson([ 'group1', 'group2' ]), [
+			'prop1' => [ 'KEY2' => 'VALUE1' ],
+			'prop2' => [ 'KEY2' => 'VALUE2' ],
 		]);
 	}
 
@@ -104,6 +139,22 @@ class ObjectTypeTest extends TestCase {
 
 		$this->assertEquals($type->toJson($groups), $result);
 	}
+
+
+	public function testToJsonCircular() {
+
+		$type = new ObjectType('App\\Entity\\ClassName');
+		$prop = new ObjectProperty('prop1', 'prop_1', $type, [ 'group1' ]);
+		$type->addProperty($prop);
+
+		$this->assertEquals($type->toJson(), [
+			'type' => 'object',
+			'properties' => [
+				'prop_1' => [ 'type' => 'integer' ],
+			],
+			'xml' => ['name' => 'ClassName'],
+		]);
+	}
 	
 	public function testToJsonRef() {
 		$prop1 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
@@ -135,69 +186,4 @@ class ObjectTypeTest extends TestCase {
 			'xml' => [ 'name' => 'ClassName' ],
 		]);
 	}
-	
-//	public function getXMLName(): string {
-//		$xmlName = $this->getClass();
-//		if (($index = strrpos('\\', $xmlName)) === false) {
-//			$xmlName = substr($xmlName, $index + 1);
-//		}
-//		return $xmlName;
-//	}
-// 
-//	public function addProperty(ObjectProperty $property): self {
-//		$this->properties[$property->getSerializeName()] = $property;
-//		return $this;
-//	}
-//
-//	/**
-//	 * @return ObjectProperty[]
-//	 */
-//	public function getProperties(): array {
-//		return $this->properties;
-//	}
-//
-//	public function toJson(array $groups = null): array {
-//		
-//		$properties = array_filter($this->getProperties(), function (ObjectProperty $property) use ($groups) {
-//			return
-//				!!count($property->getGroups()) &&
-//				(
-//					$groups === null ||
-//					count(array_intersect($groups, $property->getGroups()))
-//				)
-//				;
-//		});
-//		if (count($properties) === 0) {
-//			return [
-//				'type' => 'integer',
-//			];
-//		}
-//		
-//		$json = [
-//			'type' => $this->getType(),
-//			'properties' => array_map(function (ObjectProperty $property) use ($groups) {
-//					return $property->toJson($groups);
-//			}, $properties),
-//			'xml' => [
-//				'name' => $this->getXMLName()
-//			]
-//		];
-//		return $json;
-//	}
-//	public function toJsonRef(): array {
-//		$json = [
-//			'type' => $this->getType(),
-//			'properties' => array_map(
-//				function (ObjectProperty $property) {
-//					return $property->toJsonRef();
-//				}, array_filter($this->getProperties(), function (ObjectProperty $property) {
-//					return !!count($property->getGroups());
-//				})
-//			),
-//			'xml' => [
-//				'name' => $this->getXMLName()
-//			]
-//		];
-//		return $json;
-//	}
 }

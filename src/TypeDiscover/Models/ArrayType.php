@@ -3,10 +3,10 @@
 namespace GollumSF\RestDocBundle\TypeDiscover\Models;
 
 class ArrayType implements TypeInterface {
-	
+
 	/** @var TypeInterface */
 	private $subType;
-	
+
 	public function __construct(?TypeInterface $subType = null) {
 		$this->subType = $subType;
 	}
@@ -19,12 +19,15 @@ class ArrayType implements TypeInterface {
 		return $this->subType;
 	}
 
-	public function toJson(array $groups = null): array {
+	public function toJson(array $groups = null, $isRoot = true): array {
+		if ($isRoot) {
+			ObjectType::$circularRef = [];
+		}
 		$json = [
 			'type' => $this->getType(),
 		];
 		if ($this->getSubType()) {
-			$json['items'] = $this->getSubType()->toJson($groups);
+			$json['items'] = $this->getSubType()->toJson($groups, false);
 		}
 		return $json;
 	}
@@ -39,11 +42,11 @@ class ArrayType implements TypeInterface {
 					'$ref'=> '#/components/schemas/'.$subType->getClass(),
 				];
 			} else
-			if ($subType instanceof ArrayType) {
-				$json['items'] =   $subType->toJsonRef($groups);
-			} else {
-				$json['items'] =  $subType->toJson($groups);
-			}
+				if ($subType instanceof ArrayType) {
+					$json['items'] =   $subType->toJsonRef($groups);
+				} else {
+					$json['items'] =  $subType->toJson($groups);
+				}
 		}
 		return $json;
 	}

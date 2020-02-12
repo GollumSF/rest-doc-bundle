@@ -3,16 +3,16 @@
 namespace GollumSF\RestDocBundle\TypeDiscover\Models;
 
 class ObjectProperty {
-	
+
 	/** @var string */
 	private $name;
-	
+
 	/** @var string */
 	private $serializeName;
 
 	/** @var TypeInterface */
 	private $type;
-	
+
 	/** @var string[] */
 	private $groups;
 
@@ -39,9 +39,9 @@ class ObjectProperty {
 	public function getGroups(): array {
 		return $this->groups;
 	}
-	
+
 	public function toJson(array $groups = null): array {
-		return $this->getType()->toJson($groups);
+		return $this->getType()->toJson($groups, false);
 	}
 	public function toJsonRef(array $groups = null): array {
 
