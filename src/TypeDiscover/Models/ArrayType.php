@@ -19,18 +19,16 @@ class ArrayType implements TypeInterface {
 		return $this->subType;
 	}
 
-	public function toJson(array $groups = null, $isRoot = true): array {
-		if ($isRoot) {
-			ObjectType::$circularRef = [];
-		}
+	public function toJson(array $groups = null): array {
 		$json = [
 			'type' => $this->getType(),
 		];
 		if ($this->getSubType()) {
-			$json['items'] = $this->getSubType()->toJson($groups, false);
+			$json['items'] = $this->getSubType()->toJson($groups);
 		}
 		return $json;
 	}
+	
 	public function toJsonRef(array $groups = null): array {
 		$json = [
 			'type' => $this->getType(),

@@ -4,7 +4,7 @@ namespace GollumSF\RestDocBundle\TypeDiscover\Models;
 
 class ObjectType implements TypeInterface {
 
-	public static $circularRef = [];
+	private static $circularRef = [];
 
 	/** @var string */
 	private $class;
@@ -44,12 +44,7 @@ class ObjectType implements TypeInterface {
 		return $this->properties;
 	}
 
-	public function getPropertiesJson(array $groups = null, $isRoot = true) {
-		if ($isRoot) {
-			ObjectType::$circularRef = [];
-		}
-		ObjectType::$circularRef[] = $this->getClass();
-
+	public function getPropertiesJson(array $groups = null) {
 		/** @var ObjectProperty[] $properties */
 		$properties = array_filter($this->getProperties(), function (ObjectProperty $property) use ($groups) {
 			return
@@ -62,22 +57,20 @@ class ObjectType implements TypeInterface {
 		});
 
 		$json = [];
+		ObjectType::$circularRef[] = $this->getClass();
 		foreach ($properties as $property) {
-			$json[$property->getSerializeName()] = $property->getType()->toJson($groups, false);
+			$json[$property->getSerializeName()] = $property->getType()->toJson($groups);
 		}
+		array_pop(ObjectType::$circularRef);
 		return $json;
 	}
 
-	public function toJson(array $groups = null, $isRoot = true): array {
-		if ($isRoot) {
-			ObjectType::$circularRef = [];
-		} else if (in_array($this->getClass(), ObjectType::$circularRef)) {
+	public function toJson(array $groups = null): array {
+		if (in_array($this->getClass(), ObjectType::$circularRef)) {
 			return [
 				'type' => 'integer',
 			];
 		}
-		ObjectType::$circularRef[] = $this->getClass();
-
 		$properties = array_filter($this->getProperties(), function (ObjectProperty $property) use ($groups) {
 			return
 				!!count($property->getGroups()) &&
@@ -94,17 +87,20 @@ class ObjectType implements TypeInterface {
 			];
 		}
 
+		ObjectType::$circularRef[] = $this->getClass();
 		$json = [
 			'type' => $this->getType(),
 			'properties' => array_map(function (ObjectProperty $property) use ($groups) {
-				return $property->toJson($groups, false);
+				return $property->toJson($groups);
 			}, $properties),
 			'xml' => [
 				'name' => $this->getXMLName()
 			]
 		];
+		array_pop(ObjectType::$circularRef);
 		return $json;
 	}
+
 	public function toJsonRef(): array {
 		$json = [
 			'type' => $this->getType(),

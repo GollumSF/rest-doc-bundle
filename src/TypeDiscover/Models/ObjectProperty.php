@@ -41,8 +41,9 @@ class ObjectProperty {
 	}
 
 	public function toJson(array $groups = null): array {
-		return $this->getType()->toJson($groups, false);
+		return $this->getType()->toJson($groups);
 	}
+	
 	public function toJsonRef(array $groups = null): array {
 
 		$type = $this->getType();
