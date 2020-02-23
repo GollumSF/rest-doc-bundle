@@ -320,6 +320,7 @@ class OpenApiGeneratorTest extends TestCase {
 				[ 'Class1', '/api/users', ['GET'], true, 'SUMMARY1' ],
 				[ 'Class1', '/api/users/list', ['GET', 'POST'], false, 'SUMMARY2' ],
 				[ 'Class2', '/api/games', ['PATCH'], false, null ],
+				[ 'Class3', '/api', ['GET'], false, null ],
 			], [
 				'/users' => [
 					'get' => [
@@ -350,7 +351,14 @@ class OpenApiGeneratorTest extends TestCase {
 						'parameters' => [ 'PARAMETER' => '/games', 'METHOD' => 'PATCH' ],
 						'responses' => [ 'RESPONSE' => 'VALUE', 'METHOD' => 'PATCH' ],
 					]
-				]
+				],
+				'/' => [
+					'get' => [
+						'tags' => [ 'Class3' ],
+						'parameters' => [ 'PARAMETER' => '/', 'METHOD' => 'GET' ],
+						'responses' => [ 'RESPONSE' => 'VALUE', 'METHOD' => 'GET' ],
+					]
+				],
 			] ],
 		];
 	}

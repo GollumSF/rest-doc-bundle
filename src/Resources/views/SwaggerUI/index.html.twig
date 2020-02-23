@@ -52,27 +52,30 @@ file that was distributed with this source code. #}
 				layout: "StandaloneLayout"
 			});
 
-			document.querySelector('.auth-wrapper .btn.authorize').addEventListener('click', function() {
-				setTimeout(function() {
-					if (data.components && data.components.securitySchemes)  {
-						var i = 0;
-						for (var name in data.components.securitySchemes) {
-							var security = data.components.securitySchemes[name];
-							if (security.defaultValue) {
-								var input = document.querySelector('.auth-wrapper .auth-container:nth-child('+(i+1)+') input');
-								if(input && !input.value) {
-									input.value = security.defaultValue;
-
-									var event = new Event('change', {bubbles: true});
-									event.simulated = true;
-									input.dispatchEvent(event);
+			var btnAuth = document.querySelector('.auth-wrapper .btn.authorize');
+			if (btnAuth) {
+				btnAuth.addEventListener('click', function() {
+					setTimeout(function() {
+						if (data.components && data.components.securitySchemes)  {
+							var i = 0;
+							for (var name in data.components.securitySchemes) {
+								var security = data.components.securitySchemes[name];
+								if (security.defaultValue) {
+									var input = document.querySelector('.auth-wrapper .auth-container:nth-child('+(i+1)+') input');
+									if(input && !input.value) {
+										input.value = security.defaultValue;
+	
+										var event = new Event('change', {bubbles: true});
+										event.simulated = true;
+										input.dispatchEvent(event);
+									}
 								}
+								i++;
 							}
-							i++;
 						}
-					}
-				}, 100);
-			});
+					}, 100);
+				});
+			}
 		}
 	</script>
 {% endblock swagger_initialization %}

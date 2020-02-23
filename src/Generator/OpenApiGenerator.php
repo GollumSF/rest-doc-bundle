@@ -69,8 +69,6 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 	}
 	
 	public function generate(): array {
-
-		$security = $this->generateSecurity();
 		
 		$json = [
 			'openapi' => self::OPEN_API_VERSION,
@@ -80,10 +78,14 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			'tags'    => array_values(array_map(function (Tag $tag) { return $tag->toJson(); }, $this->tagbuilder->getAllTags())),
 			'components' => [
 				'schemas' => array_map(function (ObjectType $model) { return $model->toJsonRef(); }, $this->modelbuilder->getAllModels()),
-				'securitySchemes' => $security
 			],
-			'security' => array_map(function ($value) { return [ $value => [] ]; }, array_keys($security))
 		];
+
+		$security = $this->generateSecurity();
+		if ($security) {
+			$json['components']['securitySchemes'] = $security;
+			$json['security'] = array_map(function ($value) { return [ $value => [] ]; }, array_keys($security));
+		}
 
 		$externalDocs = $this->generateExternalDocs();
 		if ($externalDocs) {
@@ -139,7 +141,9 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 			$url = $route->getPath();
 			$methods = $route->getMethods();
 			$url = substr($url, strlen($basePath));
-
+			if ($url === '') {
+				$url = '/';
+			}
 
 			if (!isset($paths[$url])) {
 				$paths[$url] = [];
