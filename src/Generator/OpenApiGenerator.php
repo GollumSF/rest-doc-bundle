@@ -80,6 +80,8 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 				'schemas' => array_map(function (ObjectType $model) { return $model->toJsonRef(); }, $this->modelbuilder->getAllModels()),
 			],
 		];
+		
+		ksort($json['components']['schemas']);
 
 		$security = $this->generateSecurity();
 		if ($security) {
