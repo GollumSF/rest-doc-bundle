@@ -57,7 +57,7 @@ class PropertyDecoratorTest extends TestCase {
 			->method('getType')
 			->withConsecutive(
 				[ \stdClass::class, 'propName1' ],
-				[ \stdClass::class, 'propName2' ],
+				[ \stdClass::class, 'propName2' ]
 			)
 			->willReturnOnConsecutiveCalls(
 				$type1,

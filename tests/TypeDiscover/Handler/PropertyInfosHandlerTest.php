@@ -125,7 +125,6 @@ class PropertyInfosHandlerTest extends TestCase {
 	public function providerCreateTypeNull() {
 		return [
 			[ [ new Type('resource') ] ],
-//			[ [ new Type('object') ] ],
 			[ [ new Type('array') ] ],
 			[ [ new Type('null') ] ],
 			[ [ new Type('callable') ] ],
@@ -228,8 +227,6 @@ class PropertyInfosHandlerTest extends TestCase {
 	public function testCreateTypeObjectSubDateTime() {
 		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
 		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-
-		$model = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
 
 		$types = [
 			new Type('object', false, SubDateTime::class)
