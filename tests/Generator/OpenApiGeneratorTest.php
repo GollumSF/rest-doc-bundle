@@ -383,28 +383,29 @@ class OpenApiGeneratorTest extends TestCase {
 		$openApiGenerator->basePath = $basePath;
 
 		$metadatas = [];
+		$tagbuilderCalls = [];
 		foreach ($metadataInfos as $i => $metadataInfo) {
 
 			$route = $this->getMockBuilder(Route::class)->disableOriginalConstructor()->getMock();
 			$route
-				->expects($this->at(0))
+				->expects($this->once())
 				->method('getPath')
 				->willReturn($metadataInfo[1])
 			;
 			$route
-				->expects($this->at(1))
+				->expects($this->once())
 				->method('getMethods')
 				->willReturn($metadataInfo[2])
 			;
 			
 			$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 			$metadata
-				->expects($this->at(0))
+				->expects($this->once())
 				->method('getRoute')
 				->willReturn($route)
 			;
 			$metadata
-				->expects($this->at(1))
+				->expects($this->once())
 				->method('getEntity')
 				->willReturn($metadataInfo[0])
 			;
@@ -420,13 +421,20 @@ class OpenApiGeneratorTest extends TestCase {
 				->method('getClass')
 				->willReturn($metadataInfo[0])
 			;
-			$this->tagbuilder
-				->expects($this->at($i))
-				->method('getTag')
-				->with($metadataInfo[0])
-				->willReturn($tag)
-			;
+			
+			$tagbuilderCalls[] = [ $metadataInfo[0], $tag ];
 		}
+		$at = -1;
+		$this->tagbuilder
+			->expects($this->exactly(count($tagbuilderCalls)))
+			->method('getTag')
+			->willReturnCallback(function ($metadta) use (&$tagbuilderCalls, &$at) {
+				$at++;
+				$this->assertTrue(!!$tagbuilderCalls[$at]);
+				$this->assertEquals($tagbuilderCalls[$at][0], $metadta);
+				return $tagbuilderCalls[$at][1];
+			})
+		;
 
 		$this->metadataBuilder
 			->expects($this->once())
@@ -568,16 +576,16 @@ class OpenApiGeneratorTest extends TestCase {
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 
 		$this->requestBodyGenerator
-			->expects($this->at(0))
+			->expects($this->exactly(2))
 			->method('hasRequestBody')
-			->with($metadata, 'GET')
-			->willReturn(true)
-		;
-		$this->requestBodyGenerator
-			->expects($this->at(1))
-			->method('hasRequestBody')
-			->with($metadata, 'GET')
-			->willReturn(false)
+			->withConsecutive(
+				[ $metadata, 'GET' ],
+				[ $metadata, 'GET' ]
+			)
+			->willReturnOnConsecutiveCalls(
+				true,
+				false
+			)
 		;
 
 		$this->assertEquals(

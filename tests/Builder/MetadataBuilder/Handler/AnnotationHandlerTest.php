@@ -80,22 +80,18 @@ class AnnotationHandlerTest extends TestCase {
 		;
 
 		$controllerActionExtractor
-			->expects($this->at(0))
+			->expects($this->exactly(3))
 			->method('extractFromRoute')
-			->with($route1)
-			->willReturn($controllerAction1)
-		;
-		$controllerActionExtractor
-			->expects($this->at(1))
-			->method('extractFromRoute')
-			->with($route2)
-			->willReturn($controllerAction2)
-		;
-		$controllerActionExtractor
-			->expects($this->at(2))
-			->method('extractFromRoute')
-			->with($route3)
-			->willReturn($controllerAction3)
+			->withConsecutive(
+				[ $route1 ],
+				[ $route2 ],
+				[ $route3 ]
+			)
+			->willReturnOnConsecutiveCalls(
+				$controllerAction1,
+				$controllerAction2,
+				$controllerAction3
+			)
 		;
 		
 		$annotationHandler = new AnnotationHandlerGetMetadataCollection(
@@ -216,7 +212,7 @@ class AnnotationHandlerTest extends TestCase {
 		$route = $this->getMockBuilder(Route::class)->disableOriginalConstructor()->getMock();
 
 		$reader
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('getClassAnnotation')
 			->willReturnCallback(function ($rClass, $annoClass) use ($describeClass){
 				$this->assertInstanceOf(\ReflectionClass::class, $rClass);
@@ -226,34 +222,36 @@ class AnnotationHandlerTest extends TestCase {
 			})
 		;
 
+		$at = 0;
 		$reader
-			->expects($this->at(1))
+			->expects($this->exactly(3))
 			->method('getMethodAnnotation')
-			->willReturnCallback(function ($rMethod, $annoClass) use ($describeMethod) {
-				$this->assertInstanceOf(\ReflectionMethod::class, $rMethod);
-				$this->assertEquals($rMethod->getName(), 'dummyAction');
-				$this->assertEquals($annoClass, ApiDescribe::class);
-				return $describeMethod;
-			})
-		;
-		$reader
-			->expects($this->at(2))
-			->method('getMethodAnnotation')
-			->willReturnCallback(function ($rMethod, $annoClass) use ($annoSerialize) {
-				$this->assertInstanceOf(\ReflectionMethod::class, $rMethod);
-				$this->assertEquals($rMethod->getName(), 'dummyAction');
-				$this->assertEquals($annoClass, Serialize::class);
-				return $annoSerialize;
-			})
-		;
-		$reader
-			->expects($this->at(3))
-			->method('getMethodAnnotation')
-			->willReturnCallback(function ($rMethod, $annoClass) use ($annoUnserialize) {
-				$this->assertInstanceOf(\ReflectionMethod::class, $rMethod);
-				$this->assertEquals($rMethod->getName(), 'dummyAction');
-				$this->assertEquals($annoClass, Unserialize::class);
-				return $annoUnserialize;
+			->willReturnCallback(function ($rMethod, $annoClass) use (
+				$describeMethod,
+				$annoSerialize,
+				$annoUnserialize,
+				&$at
+			) {
+				$at++;
+				if ($at === 1) {
+					$this->assertInstanceOf(\ReflectionMethod::class, $rMethod);
+					$this->assertEquals($rMethod->getName(), 'dummyAction');
+					$this->assertEquals($annoClass, ApiDescribe::class);
+					return $describeMethod;
+				}
+				if ($at === 2) {
+					$this->assertInstanceOf(\ReflectionMethod::class, $rMethod);
+					$this->assertEquals($rMethod->getName(), 'dummyAction');
+					$this->assertEquals($annoClass, Serialize::class);
+					return $annoSerialize;
+				}
+				if ($at === 3) {
+					$this->assertInstanceOf(\ReflectionMethod::class, $rMethod);
+					$this->assertEquals($rMethod->getName(), 'dummyAction');
+					$this->assertEquals($annoClass, Unserialize::class);
+					return $annoUnserialize;
+				}
+				$this->assertTrue(false);
 			})
 		;
 
@@ -300,7 +298,7 @@ class AnnotationHandlerTest extends TestCase {
 		$route = $this->getMockBuilder(Route::class)->disableOriginalConstructor()->getMock();
 
 		$reader
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('getClassAnnotation')
 			->willReturnCallback(function ($rClass, $annoClass) use ($describeClass){
 				$this->assertInstanceOf(\ReflectionClass::class, $rClass);
@@ -311,7 +309,7 @@ class AnnotationHandlerTest extends TestCase {
 		;
 
 		$reader
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('getMethodAnnotation')
 			->willReturnCallback(function ($rMethod, $annoClass) use ($describeMethod) {
 				$this->assertInstanceOf(\ReflectionMethod::class, $rMethod);

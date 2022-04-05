@@ -19,14 +19,9 @@ class GroupHandlerTest extends TestCase {
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$metadata
-			->expects($this->at(0))
+			->expects($this->exactly(2))
 			->method('getSerializeGroups')
-			->willReturn([])
-		;
-		$metadata
-			->expects($this->at(1))
-			->method('getSerializeGroups')
-			->willReturn([ 'group1', 'group2' ])
+			->willReturnOnConsecutiveCalls([], [ 'group1', 'group2' ])
 		;
 
 		$handler = new GroupHandler($modelBuilder);
@@ -58,12 +53,12 @@ class GroupHandlerTest extends TestCase {
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$metadata
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('getSerializeGroups')
 			->willReturn([ 'group1', 'group2' ])
 		;
 		$metadata
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('getEntity')
 			->willReturn(\stdClass::class)
 		;

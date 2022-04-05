@@ -26,14 +26,14 @@ class PropertyDecoratorTest extends TestCase {
 		$attribute1 = $this->getMockBuilder(AttributeMetadataInterface::class)->getMockForAbstractClass();
 		$attribute2 = $this->getMockBuilder(AttributeMetadataInterface::class)->getMockForAbstractClass();
 
-		$attribute1->expects($this->at(0))->method('getName')->willReturn('propName1');
-		$attribute2->expects($this->at(0))->method('getName')->willReturn('propName2');
+		$attribute1->expects($this->once())->method('getName')->willReturn('propName1');
+		$attribute2->expects($this->once())->method('getName')->willReturn('propName2');
 
-		$attribute1->expects($this->at(1))->method('getSerializedName')->willReturn('prop_name1');
-		$attribute2->expects($this->at(1))->method('getSerializedName')->willReturn(null);
+		$attribute1->expects($this->once())->method('getSerializedName')->willReturn('prop_name1');
+		$attribute2->expects($this->once())->method('getSerializedName')->willReturn(null);
 		
-		$attribute1->expects($this->at(2))->method('getGroups')->willReturn([ 'group1' ]);
-		$attribute2->expects($this->at(2))->method('getGroups')->willReturn([]);
+		$attribute1->expects($this->once())->method('getGroups')->willReturn([ 'group1' ]);
+		$attribute2->expects($this->once())->method('getGroups')->willReturn([]);
 		
 		$metadata = $this->getMockBuilder(ClassMetadataInterface::class)->getMockForAbstractClass();
 		$metadata
@@ -53,16 +53,16 @@ class PropertyDecoratorTest extends TestCase {
 		;
 
 		$typeDiscover
-			->expects($this->at(0))
+			->expects($this->exactly(2))
 			->method('getType')
-			->with(\stdClass::class, 'propName1')
-			->willReturn($type1)
-		;
-		$typeDiscover
-			->expects($this->at(1))
-			->method('getType')
-			->with(\stdClass::class, 'propName2')
-			->willReturn($type2)
+			->withConsecutive(
+				[ \stdClass::class, 'propName1' ],
+				[ \stdClass::class, 'propName2' ],
+			)
+			->willReturnOnConsecutiveCalls(
+				$type1,
+				$type2
+			)
 		;
 		
 		$nameConverter

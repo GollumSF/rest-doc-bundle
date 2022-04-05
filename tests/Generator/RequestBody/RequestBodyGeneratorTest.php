@@ -85,20 +85,12 @@ class RequestBodyGeneratorTest extends TestCase {
 			})
 		;
 		$handler1
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('hasRequestBody')
 			->with($metadata, 'GET')
 			->willReturn(true)
 		;
-		$handler1
-			->expects($this->at(1))
-			->method('generateProperties')
-			->willReturnCallback(function ($collectionParam, $metadataParam, string $method) use ($collection, $metadata) {
-				$this->assertEquals($collectionParam, $collection);
-				$this->assertEquals($metadataParam, $metadata);
-				$this->assertEquals($method, 'GET');
-			})
-		;
+		
 		$handler2
 			->expects($this->once())
 			->method('hasRequestBody')

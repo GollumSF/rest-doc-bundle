@@ -121,9 +121,9 @@ class ObjectTypeTest extends TestCase {
 		$prop2 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
 		$prop3 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
 
-		$prop1->expects($this->at(0))->method('getSerializeName')->willReturn('prop1');
-		$prop2->expects($this->at(0))->method('getSerializeName')->willReturn('prop2');
-		$prop3->expects($this->at(0))->method('getSerializeName')->willReturn('prop3');
+		$prop1->expects($this->once())->method('getSerializeName')->willReturn('prop1');
+		$prop2->expects($this->once())->method('getSerializeName')->willReturn('prop2');
+		$prop3->expects($this->once())->method('getSerializeName')->willReturn('prop3');
 
 		$prop1->method('getGroups')->willReturn(['group1']);
 		$prop2->method('getGroups')->willReturn(['group2']);
@@ -161,16 +161,16 @@ class ObjectTypeTest extends TestCase {
 		$prop2 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
 		$prop3 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();
 
-		$prop1->expects($this->at(0))->method('getSerializeName')->willReturn('prop1');
-		$prop2->expects($this->at(0))->method('getSerializeName')->willReturn('prop2');
-		$prop3->expects($this->at(0))->method('getSerializeName')->willReturn('prop3');
+		$prop1->expects($this->once())->method('getSerializeName')->willReturn('prop1');
+		$prop2->expects($this->once())->method('getSerializeName')->willReturn('prop2');
+		$prop3->expects($this->once())->method('getSerializeName')->willReturn('prop3');
 
-		$prop1->expects($this->at(1))->method('getGroups')->willReturn([ 'group1' ]);
-		$prop2->expects($this->at(1))->method('getGroups')->willReturn([ 'group2' ]);
-		$prop3->expects($this->at(1))->method('getGroups')->willReturn([]);
+		$prop1->expects($this->once())->method('getGroups')->willReturn([ 'group1' ]);
+		$prop2->expects($this->once())->method('getGroups')->willReturn([ 'group2' ]);
+		$prop3->expects($this->once())->method('getGroups')->willReturn([]);
 
-		$prop1->expects($this->at(2))->method('toJsonRef')->willReturn([ 'JSON_REF_1' ]);
-		$prop2->expects($this->at(2))->method('toJsonRef')->willReturn([ 'JSON_REF_2' ]);
+		$prop1->expects($this->once())->method('toJsonRef')->willReturn([ 'JSON_REF_1' ]);
+		$prop2->expects($this->once())->method('toJsonRef')->willReturn([ 'JSON_REF_2' ]);
 
 		$type = new ObjectType('App\\Entity\\ClassName');
 		$type->addProperty($prop1);
