@@ -6,6 +6,7 @@ namespace GollumSF\RestDocBundle\Annotation;
  * @Annotation
  * @Target({"CLASS"})
  */
+#[\Attribute(\Attribute::TARGET_CLASS)]
 class ApiEntity {
 	
 	/** @var string */
@@ -16,15 +17,31 @@ class ApiEntity {
 
 	/** @var string */
 	private $docDescription;
-
-    public function __construct(array $values) {
-        foreach ($values as $k => $v) {
-            if (!method_exists($this, $name = 'set'.$k)) {
-                throw new \RuntimeException(sprintf('Unknown key "%s" for annotation "@%s".', $k, \get_class($this)));
-            }
-
-            $this->$name($v);
-        }
+	
+	/**
+	 * @param string $description
+	 * @param string $url
+	 * @param string $docDescription
+	 */
+    public function __construct(
+		$description = null,
+		$url = null,
+		$docDescription = null
+	) {
+		if (is_array($description)) {
+			if (function_exists('trigger_deprecation')) {
+				// @codeCoverageIgnoreStart
+				trigger_deprecation('gollumsf/rest__doc_bundle', '2.8', 'Use native php attributes for %s', __CLASS__);
+				// @codeCoverageIgnoreEnd
+			}
+			$this->description = isset($description['description']) ? $description['description'] : null;
+			$this->url = isset($description['url']) ? $description['url'] : $url;
+			$this->docDescription = isset($description['docDescription']) ? $description['docDescription'] : $docDescription;
+			return;
+		}
+		$this->description = $description;
+		$this->url = $url;
+		$this->docDescription = $docDescription;
     }
 
 	/////////////
@@ -41,24 +58,5 @@ class ApiEntity {
 
 	public function getDocDescription(): ?string {
 		return $this->docDescription;
-	}
-
-	/////////////
-	// Setters //
-	/////////////
-
-	public function setDescription(?string $description): self {
-		$this->description = $description;
-		return $this;
-	}
-
-	public function setUrl(?string $url): self {
-		$this->url = $url;
-		return $this;
-	}
-
-	public function setDocDescription(?string $docDescription): self {
-		$this->docDescription = $docDescription;
-		return $this;
 	}
 }

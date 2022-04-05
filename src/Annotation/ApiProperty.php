@@ -6,22 +6,35 @@ namespace GollumSF\RestDocBundle\Annotation;
  * @Annotation
  * @Target({"PROPERTY", "METHOD"})
  */
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD)]
 class ApiProperty
 {
 	/** @var string */
 	public $type;
-
+	
 	/** @var boolean */
-	public $collection = false;
-
-	public function __construct(array $values) {
-		foreach ($values as $k => $v) {
-			if (!method_exists($this, $name = 'set'.$k)) {
-				throw new \RuntimeException(sprintf('Unknown key "%s" for annotation "@%s".', $k, \get_class($this)));
+	public $collection;
+	
+	/**
+	 * @param string $type
+	 * @param boolean $collection
+	 */
+	public function __construct(
+		$type = null,
+		$collection = false
+	) {
+		if (is_array($type)) {
+			if (function_exists('trigger_deprecation')) {
+				// @codeCoverageIgnoreStart
+				trigger_deprecation('gollumsf/rest__doc_bundle', '2.8', 'Use native php attributes for %s', __CLASS__);
+				// @codeCoverageIgnoreEnd
 			}
-
-			$this->$name($v);
+			$this->type = isset($type['type']) ? $type['type'] : null;
+			$this->collection = isset($type['collection']) ? $type['collection'] : $collection;
+			return;
 		}
+		$this->type = $type;
+		$this->collection = $collection;
 	}
 
 	/////////////
@@ -34,19 +47,5 @@ class ApiProperty
 
 	public function isCollection(): bool {
 		return $this->collection;
-	}
-
-	/////////////
-	// Setters //
-	/////////////
-
-	public function setType(?string $type): self {
-		$this->type = $type;
-		return $this;
-	}
-
-	public function setCollection(bool $collection): self {
-		$this->collection = $collection;
-		return $this;
 	}
 }

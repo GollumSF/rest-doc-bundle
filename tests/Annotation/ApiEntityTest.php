@@ -6,8 +6,8 @@ use GollumSF\RestDocBundle\Annotation\ApiEntity;
 use PHPUnit\Framework\TestCase;
 
 class ApiEntityTest extends TestCase {
-
-	public function provideConstruct() {
+	
+	public function provideConstructLegacy() {
 		return [
 			[ [], null, null, null ],
 			[ [ 'description' => 'DESCRIPTION' ], 'DESCRIPTION', null, null ],
@@ -15,19 +15,34 @@ class ApiEntityTest extends TestCase {
 			[ [ 'docDescription' => 'DOC DESCRIPTION' ], null, null, 'DOC DESCRIPTION' ],
 		];
 	}
-
+	
 	/**
-	 * @dataProvider provideConstruct
+	 * @dataProvider provideConstructLegacy
 	 */
-	public function testConstruct($param, $description, $url, $docDescription) {
+	public function testConstructLegacy($param, $description, $url, $docDescription) {
 		$annotation = new ApiEntity($param);
 		$this->assertEquals($annotation->getDescription()   , $description);
 		$this->assertEquals($annotation->getUrl()           , $url);
 		$this->assertEquals($annotation->getDocDescription(), $docDescription);
 	}
 	
-	public function testConstructException() {
-		$this->expectException(\RuntimeException::class);
-		$annotation = new ApiEntity(['bad' => 'value']);
+	public function provideConstruct() {
+		return [
+			[ null, null, null ],
+			[ 'DESCRIPTION', null, null ],
+			[ null, 'http://URL', null ],
+			[ null, null, 'DOC DESCRIPTION' ],
+		];
 	}
+	
+	/**
+	 * @dataProvider provideConstruct
+	 */
+	public function testConstruct($description, $url, $docDescription) {
+		$annotation = new ApiEntity($description, $url, $docDescription);
+		$this->assertEquals($annotation->getDescription()   , $description);
+		$this->assertEquals($annotation->getUrl()           , $url);
+		$this->assertEquals($annotation->getDocDescription(), $docDescription);
+	}
+
 }

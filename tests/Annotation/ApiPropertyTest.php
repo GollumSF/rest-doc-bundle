@@ -6,8 +6,8 @@ use GollumSF\RestDocBundle\Annotation\ApiProperty;
 use PHPUnit\Framework\TestCase;
 
 class ApiPropertyTest extends TestCase {
-
-	public function provideConstruct() {
+	
+	public function provideConstructLegacy() {
 		return [
 			[ [], null, null ],
 			[ [ 'type' => 'TYPE' ], 'TYPE', null ],
@@ -15,18 +15,32 @@ class ApiPropertyTest extends TestCase {
 			[ [ 'collection' => false ], null, false ],
 		];
 	}
-
+	
 	/**
-	 * @dataProvider provideConstruct
+	 * @dataProvider provideConstructLegacy
 	 */
-	public function testConstruct($param, $type, $collection) {
+	public function testConstructLegacy($param, $type, $collection) {
 		$annotation = new ApiProperty($param);
 		$this->assertEquals($annotation->getType()     , $type);
 		$this->assertEquals($annotation->isCollection(), $collection);
 	}
-
-	public function testConstructException() {
-		$this->expectException(\RuntimeException::class);
-		$annotation = new ApiProperty(['bad' => 'value']);
+	
+	public function provideConstruct() {
+		return [
+			[ null, false ],
+			[ 'TYPE', false ],
+			[ null, true ],
+			[ null, false ],
+		];
 	}
+	
+	/**
+	 * @dataProvider provideConstruct
+	 */
+	public function testConstruc($type, $collection) {
+		$annotation = new ApiProperty($type, $collection);
+		$this->assertEquals($annotation->getType()     , $type);
+		$this->assertEquals($annotation->isCollection(), $collection);
+	}
+	
 }

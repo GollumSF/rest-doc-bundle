@@ -2,13 +2,14 @@
 
 namespace GollumSF\RestDocBundle\Annotation;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface;
 
 /**
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class ApiDescribe extends ConfigurationAnnotation {
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
+class ApiDescribe implements ConfigurationInterface {
 	
 	const ALIAS_NAME = 'gsf_api_describe';
 	
@@ -29,8 +30,54 @@ class ApiDescribe extends ConfigurationAnnotation {
 
 	/** @var array */
 	private $response = [];
-
+	
+	/** @var string */
 	private $summary = null;
+	
+	/**
+	 * @param string $entity
+	 * @param boolean $collection
+	 * @param string|string[] $serializeGroups
+	 * @param string|string[]$unserializeGroups
+	 * @param array $request
+	 * @param array $response
+	 * @param string $summary
+	 */
+	public function __construct(
+		$entity,
+		$collection = false,
+		$serializeGroups = [],
+		$unserializeGroups = [],
+		$request = [],
+		$response = [],
+		$summary = null
+	)
+	{
+		if (is_array($entity)) {
+			if (function_exists('trigger_deprecation')) {
+				// @codeCoverageIgnoreStart
+				trigger_deprecation('gollumsf/rest__doc_bundle', '2.8', 'Use native php attributes for %s', __CLASS__);
+				// @codeCoverageIgnoreEnd
+			}
+			$this->entity = isset($entity['entity']) ? $entity['entity'] : null;
+			$this->entity = isset($entity['value']) ? $entity['value'] : $this->entity;
+			$this->collection = isset($entity['collection']) ? $entity['collection'] : $collection;
+			$this->serializeGroups = isset($entity['serializeGroups']) ? (is_array($entity['serializeGroups']) ? $entity['serializeGroups'] : [ $entity['serializeGroups'] ]) : $serializeGroups;
+			$this->unserializeGroups = isset($entity['unserializeGroups']) ? (is_array($entity['unserializeGroups']) ? $entity['unserializeGroups'] : [ $entity['unserializeGroups'] ]) : $unserializeGroups;
+			$this->request = isset($entity['request']) ? $entity['request'] : $request;
+			$this->response = isset($entity['response']) ? $entity['response'] : $response;
+			$this->summary = isset($entity['summary']) ? $entity['summary'] : $summary;
+			
+			return;
+		}
+		$this->entity = $entity;
+		$this->collection = $collection;
+		$this->serializeGroups = is_array($serializeGroups) ? $serializeGroups : [ $serializeGroups ];
+		$this->unserializeGroups = is_array($unserializeGroups) ? $unserializeGroups : [ $unserializeGroups ];
+		$this->request = $request;
+		$this->response = $response;
+		$this->summary = $summary;
+	}
 	
 	/////////////
 	// Getters //
@@ -70,55 +117,5 @@ class ApiDescribe extends ConfigurationAnnotation {
 
 	public function allowArray() {
 		return true;
-	}
-
-	/////////////
-	// Setters //
-	/////////////
-
-	public function setEntity(?string $entity): self {
-		$this->entity = $entity;
-		return $this;
-	}
-
-	public function setCollection(bool $collection): self {
-		$this->collection = $collection;
-		return $this;
-	}
-
-	public function setSerializeGroups($serializeGroups): self {
-		if (!is_array($serializeGroups)) {
-			$serializeGroups = [$serializeGroups];
-		}
-		$this->serializeGroups = $serializeGroups;
-		return $this;
-	}
-
-	public function setUnserializeGroups($unserializeGroups): self {
-		if (!is_array($unserializeGroups)) {
-			$unserializeGroups = [$unserializeGroups];
-		}
-		$this->unserializeGroups = $unserializeGroups;
-		return $this;
-	}
-
-	public function setRequest(array $request): self {
-		$this->request = $request;
-		return $this;
-	}
-
-	public function setResponse(array $response): self {
-		$this->response = $response;
-		return $this;
-	}
-
-	public function setSummary(?string $summary): self {
-		$this->summary = $summary;
-		return $this;
-	}
-
-	public function setValue(?string $entity): self {
-		$this->entity = $entity;
-		return $this;
 	}
 }
