@@ -43,6 +43,9 @@ class PropertyInfosHandler implements HandlerInterface {
 	protected function createType(array $types): ?TypeInterface {
 		
 		foreach ($types as $type) {
+			if(is_array($type)) {
+				dd('dd');
+			}
 			$builtin = $type->getBuiltinType();
 			switch ($builtin) {
 				case 'int':
@@ -71,9 +74,9 @@ class PropertyInfosHandler implements HandlerInterface {
 				return $this->modelBuilder->getModel($class);
 			}
 			if ($type->isCollection()) {
-				$valueType = $type->getCollectionValueType();
+				$valueType = $type->getCollectionValueTypes();
 				return new ArrayType(
-					$valueType ? $this->createType([ $valueType ]) : null
+					$valueType ? $this->createType($valueType) : null
 				);
 			}
 		}

@@ -24,6 +24,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Route;
 
 class OpenApiGeneratorTestGenerate extends OpenApiGenerator {
@@ -823,7 +824,7 @@ class OpenApiGeneratorTest extends TestCase {
 		
 		$this->requestStack
 			->expects($this->once())
-			->method('getMasterRequest')
+			->method(version_compare(Kernel::VERSION, '6.0.0', '<') ? 'getMasterRequest' : 'getMainRequest')
 			->willReturn($request)
 		;
 

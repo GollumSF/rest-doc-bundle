@@ -52,26 +52,26 @@ class DoctrineHandlerTest extends TestCase {
 		;
 
 		$manager
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('getMetadataFactory')
 			->willReturn($metadataFactory)
 		;
 		$manager
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('getClassMetadata')
 			->with(\stdClass::class)
 			->willReturn($metadata)
 		;
 
 		$metadata
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('hasField')
 			->with('TARGET_NAME')
 			->willReturn(true)
 		;
 
 		$metadata
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('getTypeOfField')
 			->with('TARGET_NAME')
 			->willReturn($type)
@@ -111,26 +111,26 @@ class DoctrineHandlerTest extends TestCase {
 		;
 
 		$manager
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('getMetadataFactory')
 			->willReturn($metadataFactory)
 		;
 		$manager
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('getClassMetadata')
 			->with(\stdClass::class)
 			->willReturn($metadata)
 		;
 
 		$metadata
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('hasField')
 			->with('TARGET_NAME')
 			->willReturn(true)
 		;
 
 		$metadata
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('getTypeOfField')
 			->with('TARGET_NAME')
 			->willReturn('datetime')
@@ -169,37 +169,37 @@ class DoctrineHandlerTest extends TestCase {
 		;
 
 		$manager
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('getMetadataFactory')
 			->willReturn($metadataFactory)
 		;
 		$manager
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('getClassMetadata')
 			->with(\stdClass::class)
 			->willReturn($metadata)
 		;
 
 		$metadata
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('hasField')
 			->with('TARGET_NAME')
 			->willReturn(false)
 		;
 		$metadata
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('hasAssociation')
 			->with('TARGET_NAME')
 			->willReturn(true)
 		;
 		$metadata
-			->expects($this->at(2))
+			->expects($this->once())
 			->method('getAssociationTargetClass')
 			->with('TARGET_NAME')
 			->willReturn('SUB_CLASS')
 		;
 		$metadata
-			->expects($this->at(3))
+			->expects($this->once())
 			->method('isCollectionValuedAssociation')
 			->with('TARGET_NAME')
 			->willReturn(false)
@@ -244,37 +244,37 @@ class DoctrineHandlerTest extends TestCase {
 		;
 
 		$manager
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('getMetadataFactory')
 			->willReturn($metadataFactory)
 		;
 		$manager
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('getClassMetadata')
 			->with(\stdClass::class)
 			->willReturn($metadata)
 		;
 
 		$metadata
-			->expects($this->at(0))
+			->expects($this->once())
 			->method('hasField')
 			->with('TARGET_NAME')
 			->willReturn(false)
 		;
 		$metadata
-			->expects($this->at(1))
+			->expects($this->once())
 			->method('hasAssociation')
 			->with('TARGET_NAME')
 			->willReturn(true)
 		;
 		$metadata
-			->expects($this->at(2))
+			->expects($this->once())
 			->method('getAssociationTargetClass')
 			->with('TARGET_NAME')
 			->willReturn('SUB_CLASS')
 		;
 		$metadata
-			->expects($this->at(3))
+			->expects($this->once())
 			->method('isCollectionValuedAssociation')
 			->with('TARGET_NAME')
 			->willReturn(true)

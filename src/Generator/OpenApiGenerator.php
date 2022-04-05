@@ -14,6 +14,7 @@ use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGeneratorInterface
 use GollumSF\RestDocBundle\Generator\Security\SecurityGeneratorInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Kernel;
 
 class OpenApiGenerator implements OpenApiGeneratorInterface {
 
@@ -248,7 +249,7 @@ class OpenApiGenerator implements OpenApiGeneratorInterface {
 
 	protected function generateServers(): array
 	{
-		$request = $this->requestStack->getMasterRequest();
+		$request = version_compare(Kernel::VERSION, '6.0.0', '<') ? $this->requestStack->getMasterRequest() : $this->requestStack->getMainRequest();
 
 		$host = $this->apiDocConfiguration->getHost() ? $this->apiDocConfiguration->getHost() : [ $request->getHost() ];
 		$defaultHost = $this->apiDocConfiguration->getDefaultHost() ? $this->apiDocConfiguration->getDefaultHost() : $host[0];

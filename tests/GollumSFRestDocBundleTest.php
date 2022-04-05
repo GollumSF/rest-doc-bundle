@@ -23,7 +23,7 @@ use Nyholm\BundleTest\CompilerPass\PublicServicePass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Twig\Environment;
 
-class GollumSFRestDocBundletTest extends BaseBundleTestCase {
+class GollumSFRestDocBundleTest extends BaseBundleTestCase {
 
 	use ReflectionPropertyTrait;
 
