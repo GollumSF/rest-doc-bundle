@@ -3,53 +3,49 @@
 namespace Test\GollumSF\RestDocBundle\Builder\TagBuilder\Decorator;
 
 use Doctrine\Common\Annotations\Reader;
+use GollumSF\ReflectionPropertyTest\ReflectionPropertyTrait;
 use GollumSF\RestDocBundle\Annotation\ApiEntity;
 use GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\AnnotationDecorator;
-use GollumSF\RestDocBundle\Builder\TagBuilder\Tag;
 use PHPUnit\Framework\TestCase;
 
 class AnnotationDecoratorTest extends TestCase {
 	
-	public function providerDecorateTag() {
+	
+	use ReflectionPropertyTrait;
+	
+	public function provideGetClassDecorator() {
 		return [
-			[null, null, null, null ],
-			[ new ApiEntity([]), null, null, null ],
-			[ new ApiEntity([ 'url' => 'URL' ]), 'URL', null, null ],
-			[ new ApiEntity([ 'description' => 'DESCRIPTION' ]), null, 'DESCRIPTION', null ],
-			[ new ApiEntity([ 'docDescription' => 'DOC_DESCRIPTION' ]), null, null, 'DOC_DESCRIPTION' ],
-			[ new ApiEntity([
-				'description' => 'DESCRIPTION',
-				'url' => 'URL',
-				'docDescription' => 'DOC_DESCRIPTION',
-			]), 'URL', 'DESCRIPTION', 'DOC_DESCRIPTION' ],
+			[ new ApiEntity() ],
+			[ null ]
 		];
 	}
-
+	
 	/**
-	 * @dataProvider providerDecorateTag
+	 * @dataProvider provideGetClassDecorator
 	 */
-	public function testDecorateTag($annoApiEntity, $url, $description, $docDescription) {
-
+	public function testGetClassDecorator($apiEntity) {
+		
 		$reader = $this->getMockBuilder(Reader::class)->disableOriginalConstructor()->getMock();
-
-		$tag = new Tag(\stdClass::class);
+		
+		$rClass = new \ReflectionClass(\stdClass::class);
 		
 		$reader
 			->expects($this->once())
 			->method('getClassAnnotation')
-			->willReturnCallback(function ($rClass, $annoClass) use ($annoApiEntity) {
+			->willReturnCallback(function ($rClass, $annoClass) use ($apiEntity) {
 				$this->assertInstanceOf(\ReflectionClass::class, $rClass);
 				$this->assertEquals($rClass->getName(), \stdClass::class);
 				$this->assertEquals($annoClass, ApiEntity::class);
-				return $annoApiEntity;
+				return $apiEntity;
 			});
 		
-		$annotationDecorator = new AnnotationDecorator($reader);
+		$handler = new AnnotationDecorator(
+			$reader
+		);
 		
-		$this->assertEquals($annotationDecorator->decorateTag($tag), $tag);
-
-		$this->assertEquals($tag->getUrl(), $url);
-		$this->assertEquals($tag->getDescription(),$description);
-		$this->assertEquals($tag->getDocDescription(), $docDescription);
+		$this->assertEquals(
+			$this->reflectionCallMethod($handler, 'getClassDecorator', [ $rClass ]),
+			$apiEntity
+		);
 	}
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2dab275711a5333fb6c4e3f9e1c0339",
+    "content-hash": "5f4b24c8cba8d6cd59ccc916507e22e8",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1555,19 +1555,20 @@
         },
         {
             "name": "gollumsf/rest-bundle",
-            "version": "v2.8.0",
+            "version": "v2.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GollumSF/rest-bundle.git",
-                "reference": "de4234fd933c5370d0a4d84413da4eeca5ccd2ac"
+                "reference": "dc1dc0db5fd2e3013ace13ad994ba4c28f5cb9e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GollumSF/rest-bundle/zipball/de4234fd933c5370d0a4d84413da4eeca5ccd2ac",
-                "reference": "de4234fd933c5370d0a4d84413da4eeca5ccd2ac",
+                "url": "https://api.github.com/repos/GollumSF/rest-bundle/zipball/dc1dc0db5fd2e3013ace13ad994ba4c28f5cb9e3",
+                "reference": "dc1dc0db5fd2e3013ace13ad994ba4c28f5cb9e3",
                 "shasum": ""
             },
             "require": {
+                "gollumsf/controller-action-extractor-bundle": "^1.0",
                 "gollumsf/enum": "^1.0",
                 "php": ">=7.2",
                 "sensio/framework-extra-bundle": "^5|^6",
@@ -1621,10 +1622,10 @@
             "support": {
                 "email": "smeagolworms4@gmail.com",
                 "issues": "https://github.com/GollumSF/rest-bundle/issues",
-                "source": "https://github.com/GollumSF/rest-bundle/tree/v2.8.0",
+                "source": "https://github.com/GollumSF/rest-bundle/tree/v2.8.1",
                 "wiki": "https://github.com/GollumSF/rest-bundle/blob/master/README.md"
             },
-            "time": "2022-04-05T01:54:41+00:00"
+            "time": "2022-04-05T23:42:38+00:00"
         },
         {
             "name": "laminas/laminas-code",

@@ -4,6 +4,7 @@ namespace Test\GollumSF\RestDocBundle\Generator;
 
 use GollumSF\ReflectionPropertyTest\ReflectionPropertyTrait;
 use GollumSF\RestBundle\Annotation\Serialize;
+use GollumSF\RestBundle\Metadata\Serialize\MetadataSerialize;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface;
 use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
@@ -484,7 +485,7 @@ class OpenApiGeneratorTest extends TestCase {
 	public function providerGenerateResponse() {
 		return [
 			[ null, [] ],
-			[ new Serialize([]), [
+			[ new MetadataSerialize(200, [], []), [
 				Response::HTTP_OK => [
 					'content' => [
 						'application/json' => [
@@ -499,7 +500,7 @@ class OpenApiGeneratorTest extends TestCase {
 					]
 				]
 			] ],
-			[ new Serialize(['code' => Response::HTTP_INTERNAL_SERVER_ERROR]), [
+			[ new MetadataSerialize(Response::HTTP_INTERNAL_SERVER_ERROR, [], []), [
 				Response::HTTP_INTERNAL_SERVER_ERROR => [
 					'content' => [
 						'application/json' => [
@@ -520,7 +521,7 @@ class OpenApiGeneratorTest extends TestCase {
 	/**
 	 * @dataProvider providerGenerateResponse
 	 */
-	public function testGenerateResponse($anno, $result) {
+	public function testGenerateResponse($serialize, $result) {
 		$openApiGenerator = new OpenApiGenerator (
 			$this->metadataBuilder,
 			$this->modelbuilder,
@@ -537,7 +538,7 @@ class OpenApiGeneratorTest extends TestCase {
 		$metadata
 			->expects($this->once())
 			->method('getSerialize')
-			->willReturn($anno)
+			->willReturn($serialize)
 		;
 		
 		$collection = new ResponseBodyPropertyCollection();

@@ -54,8 +54,6 @@ class ApiDescribeTest extends TestCase {
 		$this->assertEquals($annotation->getRequest()          , $request);
 		$this->assertEquals($annotation->getResponse()         , $response);
 		$this->assertEquals($annotation->getSummary()          , $summary);
-		$this->assertEquals($annotation->getAliasName()        , ApiDescribe::ALIAS_NAME);
-		$this->assertTrue($annotation->allowArray());
 	}
 	
 	
@@ -116,7 +114,5 @@ class ApiDescribeTest extends TestCase {
 		$this->assertEquals($annotation->getRequest()          , $request);
 		$this->assertEquals($annotation->getResponse()         , $response);
 		$this->assertEquals($annotation->getSummary()          , $summary);
-		$this->assertEquals($annotation->getAliasName()        , ApiDescribe::ALIAS_NAME);
-		$this->assertTrue($annotation->allowArray());
 	}
 }

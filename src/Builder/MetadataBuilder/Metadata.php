@@ -2,8 +2,8 @@
 
 namespace GollumSF\RestDocBundle\Builder\MetadataBuilder;
 
-use GollumSF\RestBundle\Annotation\Serialize;
-use GollumSF\RestBundle\Annotation\Unserialize;
+use GollumSF\RestBundle\Metadata\Serialize\MetadataSerialize;
+use GollumSF\RestBundle\Metadata\Unserialize\MetadataUnserialize;
 use Symfony\Component\Routing\Route;
 
 class Metadata
@@ -36,10 +36,10 @@ class Metadata
 	/** @var string[] */
 	private $response;
 
-	/** @var Serialize */
+	/** @var MetadataSerialize */
 	private $serialize;
 
-	/** @var Unserialize */
+	/** @var MetadataUnserialize */
 	private $unserialize;
 
 	/** @var string */
@@ -56,8 +56,8 @@ class Metadata
 		array $request,
 		array $response,
 		?string $summary,
-		?Serialize $serialize,
-		?Unserialize $unserialize
+		?MetadataSerialize $serialize,
+		?MetadataUnserialize $unserialize
 	) {
 		$this->route = $route;
 		$this->controller = $controller;
@@ -113,11 +113,11 @@ class Metadata
 		return $this->summary;
 	}
 
-	public function getSerialize(): ?Serialize {
+	public function getSerialize(): ?MetadataSerialize {
 		return $this->serialize;
 	}
 
-	public function getUnserialize(): ?Unserialize {
+	public function getUnserialize(): ?MetadataUnserialize {
 		return $this->unserialize;
 	}
 	

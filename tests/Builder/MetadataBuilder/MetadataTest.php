@@ -2,8 +2,8 @@
 
 namespace Test\GollumSF\RestDocBundle\Builder\MetadataBuilder;
 
-use GollumSF\RestBundle\Annotation\Serialize;
-use GollumSF\RestBundle\Annotation\Unserialize;
+use GollumSF\RestBundle\Metadata\Serialize\MetadataSerialize;
+use GollumSF\RestBundle\Metadata\Unserialize\MetadataUnserialize;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Route;
@@ -25,8 +25,8 @@ class MetadataTest extends TestCase {
 				[ 'req_prop1' ],
 				[ 'resp_prop1' ],
 				'SUMMARY',
-				new Serialize([]),
-				new Unserialize([]),
+				new MetadataSerialize(200, [], []),
+				new MetadataUnserialize('', [], false),
 			],
 			[
 				$route,
@@ -59,8 +59,8 @@ class MetadataTest extends TestCase {
 		array $request,
 		array $response,
 		?string $summary,
-		?Serialize $serialize,
-		?Unserialize $unserialize
+		?MetadataSerialize $serialize,
+		?MetadataUnserialize $unserialize
 	) {
 
 		$annotation = new Metadata(

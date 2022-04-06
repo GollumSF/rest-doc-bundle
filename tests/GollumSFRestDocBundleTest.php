@@ -41,6 +41,10 @@ class GollumSFRestDocBundleTest extends BaseBundleTestCase {
 
 		// Create a new Kernel
 		$kernel = $this->createKernel();
+		
+		// Add some other bundles we depend on
+		$kernel->addBundle(\GollumSF\RestBundle\GollumSFRestBundle::class);
+		$kernel->addBundle(\GollumSF\ControllerActionExtractorBundle\GollumSFControllerActionExtractorBundle::class);
 
 		// Add some configuration
 		$kernel->addConfigFile(__DIR__.'/Resources/config.yaml');
@@ -61,6 +65,7 @@ class GollumSFRestDocBundleTest extends BaseBundleTestCase {
 		$kernel = $this->createKernel();
 
 		// Add some other bundles we depend on
+		$kernel->addBundle(\GollumSF\RestBundle\GollumSFRestBundle::class);
 		$kernel->addBundle(\GollumSF\ControllerActionExtractorBundle\GollumSFControllerActionExtractorBundle::class);
 
 		// Add some configuration
@@ -137,6 +142,7 @@ class GollumSFRestDocBundleTest extends BaseBundleTestCase {
 		$kernel = $this->createKernel();
 
 		// Add some other bundles we depend on
+		$kernel->addBundle(\GollumSF\RestBundle\GollumSFRestBundle::class);
 		$kernel->addBundle(\Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class);
 
 		// Add some configuration
@@ -157,6 +163,7 @@ class GollumSFRestDocBundleTest extends BaseBundleTestCase {
 		$kernel = $this->createKernel();
 
 		// Add some other bundles we depend on
+		$kernel->addBundle(\GollumSF\RestBundle\GollumSFRestBundle::class);
 		$kernel->addBundle(\Symfony\Bundle\TwigBundle\TwigBundle::class);
 
 		// Add some configuration

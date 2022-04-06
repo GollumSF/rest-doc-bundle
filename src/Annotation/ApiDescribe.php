@@ -2,14 +2,12 @@
 
 namespace GollumSF\RestDocBundle\Annotation;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface;
-
 /**
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
-class ApiDescribe implements ConfigurationInterface {
+class ApiDescribe {
 	
 	const ALIAS_NAME = 'gsf_api_describe';
 	
@@ -44,15 +42,14 @@ class ApiDescribe implements ConfigurationInterface {
 	 * @param string $summary
 	 */
 	public function __construct(
-		$entity,
+		$entity = '',
 		$collection = false,
 		$serializeGroups = [],
 		$unserializeGroups = [],
 		$request = [],
 		$response = [],
 		$summary = null
-	)
-	{
+	) {
 		if (is_array($entity)) {
 			if (function_exists('trigger_deprecation')) {
 				// @codeCoverageIgnoreStart
@@ -111,11 +108,4 @@ class ApiDescribe implements ConfigurationInterface {
 		return $this->summary;
 	}
 
-	public function getAliasName() {
-		return self::ALIAS_NAME;
-	}
-
-	public function allowArray() {
-		return true;
-	}
 }

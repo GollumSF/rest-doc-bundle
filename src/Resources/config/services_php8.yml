@@ -1,0 +1,26 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+        # fetching services directly from the container via $container->get() won't work.
+        # The best practice is to be explicit about your dependencies anyway.
+
+    GollumSF\RestDocBundle\Controller\:
+        autowire: true
+        public: false
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
+
+    GollumSF\RestDocBundle\TypeDiscover\Handler\AttributeHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\TypeDiscover\TypeDiscoverInterface::HANDLER_TAG', priority: 10 }
+
+    GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\AttributeHandler:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Builder\MetadataBuilder\MetadataBuilderInterface::HANDLER_TAG' }
+
+    GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\AttributeDecorator:
+        tags:
+            - { name: !php/const 'GollumSF\RestDocBundle\Builder\TagBuilder\TagBuilderInterface::DECORATOR_TAG' }
