@@ -8,9 +8,9 @@ namespace GollumSF\RestDocBundle\Annotation;
  */
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
 class ApiDescribe {
-	
+
 	const ALIAS_NAME = 'gsf_api_describe';
-	
+
 	/** @var string */
 	private $entity;
 
@@ -28,10 +28,10 @@ class ApiDescribe {
 
 	/** @var array */
 	private $response = [];
-	
+
 	/** @var string */
 	private $summary = null;
-	
+
 	/**
 	 * @param string $entity
 	 * @param boolean $collection
@@ -42,8 +42,8 @@ class ApiDescribe {
 	 * @param string $summary
 	 */
 	public function __construct(
-		$entity = '',
-		$collection = false,
+		$entity = null,
+		$collection = null,
 		$serializeGroups = [],
 		$unserializeGroups = [],
 		$request = [],
@@ -64,7 +64,7 @@ class ApiDescribe {
 			$this->request = isset($entity['request']) ? $entity['request'] : $request;
 			$this->response = isset($entity['response']) ? $entity['response'] : $response;
 			$this->summary = isset($entity['summary']) ? $entity['summary'] : $summary;
-			
+
 			return;
 		}
 		$this->entity = $entity;
@@ -75,7 +75,7 @@ class ApiDescribe {
 		$this->response = $response;
 		$this->summary = $summary;
 	}
-	
+
 	/////////////
 	// Getters //
 	/////////////
@@ -84,7 +84,7 @@ class ApiDescribe {
 		return $this->entity;
 	}
 
-	public function isCollection(): bool {
+	public function isCollection(): ?bool {
 		return $this->collection;
 	}
 
