@@ -35,6 +35,18 @@ class ParameterCollection implements \Iterator {
 	}
 
 	public function add(array $parameterData): self {
+		if (isset($parameterData['name'])) {
+			foreach ($this->parameters as $index => $existing) {
+				if (
+					isset($existing['name']) &&
+					$existing['name'] === $parameterData['name'] &&
+					(!isset($parameterData['in']) || !isset($existing['in']) || $parameterData['in'] === $existing['in'])
+				) {
+					$this->parameters[$index] = array_merge($existing, $parameterData);
+					return $this;
+				}
+			}
+		}
 		$this->parameters[] = $parameterData;
 		return $this;
 	}

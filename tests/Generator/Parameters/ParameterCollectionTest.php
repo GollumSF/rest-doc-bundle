@@ -66,4 +66,68 @@ class ParameterCollectionTest extends TestCase {
 			['4'],
 		]);
 	}
+
+	public function testAddMergeByNameWithoutIn() {
+		$collection = new ParameterCollection();
+		$collection->add(['name' => 'domain', 'in' => 'path']);
+		$collection->add(['name' => 'domain', 'schema' => ['type' => 'string', 'enum' => ['front', 'indications']]]);
+
+		$this->assertEquals($collection->toArray(), [
+			['name' => 'domain', 'in' => 'path', 'schema' => ['type' => 'string', 'enum' => ['front', 'indications']]],
+		]);
+	}
+
+	public function testAddMergeByNameWithSameIn() {
+		$collection = new ParameterCollection();
+		$collection->add(['name' => 'domain', 'in' => 'path']);
+		$collection->add(['name' => 'domain', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']]);
+
+		$this->assertEquals($collection->toArray(), [
+			['name' => 'domain', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']],
+		]);
+	}
+
+	public function testAddNoMergeWithDifferentIn() {
+		$collection = new ParameterCollection();
+		$collection->add(['name' => 'token', 'in' => 'path']);
+		$collection->add(['name' => 'token', 'in' => 'query']);
+
+		$this->assertEquals($collection->toArray(), [
+			['name' => 'token', 'in' => 'path'],
+			['name' => 'token', 'in' => 'query'],
+		]);
+	}
+
+	public function testAddNoMergeWithoutName() {
+		$collection = new ParameterCollection();
+		$collection->add(['key' => 'value1']);
+		$collection->add(['key' => 'value2']);
+
+		$this->assertEquals($collection->toArray(), [
+			['key' => 'value1'],
+			['key' => 'value2'],
+		]);
+	}
+
+	public function testAddMergePreservesPosition() {
+		$collection = new ParameterCollection();
+		$collection->add(['name' => 'id', 'in' => 'path']);
+		$collection->add(['name' => 'domain', 'in' => 'path']);
+		$collection->add(['name' => 'domain', 'schema' => ['type' => 'string', 'enum' => ['a', 'b']]]);
+
+		$this->assertEquals($collection->toArray(), [
+			['name' => 'id', 'in' => 'path'],
+			['name' => 'domain', 'in' => 'path', 'schema' => ['type' => 'string', 'enum' => ['a', 'b']]],
+		]);
+	}
+
+	public function testAddMergeOverridesValues() {
+		$collection = new ParameterCollection();
+		$collection->add(['name' => 'locale', 'in' => 'path', 'required' => false]);
+		$collection->add(['name' => 'locale', 'required' => true]);
+
+		$this->assertEquals($collection->toArray(), [
+			['name' => 'locale', 'in' => 'path', 'required' => true],
+		]);
+	}
 }

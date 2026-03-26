@@ -78,4 +78,31 @@ class RequestPropertiesHandlerTest extends TestCase {
 			[ 'name'=> 'NAME_ORI', 'key' =>'VALUE_ORI' ],
 		]);
 	}
+
+	public function testGenerateParameterMergeExisting() {
+
+		$collection = new ParameterCollection();
+		$collection->add([ 'name' => 'domain', 'in' => 'path' ]);
+		$collection->add([ 'name' => 'locale', 'in' => 'path' ]);
+
+		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
+		$metadata
+			->expects($this->once())
+			->method('getRequest')
+			->willReturn([
+				'parameters' => [
+					'domain' => [ 'schema' => ['type' => 'string', 'enum' => ['front', 'indications']] ],
+					'locale' => [ 'schema' => ['type' => 'string', 'enum' => ['fr']] ],
+				]
+			])
+		;
+
+		$handler = new RequestPropertiesHandler();
+		$handler->generateParameter($collection, 'URL', $metadata, 'GET');
+
+		$this->assertEquals($collection->toArray(), [
+			[ 'name' => 'domain', 'in' => 'path', 'schema' => ['type' => 'string', 'enum' => ['front', 'indications']] ],
+			[ 'name' => 'locale', 'in' => 'path', 'schema' => ['type' => 'string', 'enum' => ['fr']] ],
+		]);
+	}
 }
