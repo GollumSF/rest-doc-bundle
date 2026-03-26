@@ -5,10 +5,11 @@ use GollumSF\RestDocBundle\Configuration\ApiDocConfigurationInterface;
 use GollumSF\RestDocBundle\Generator\Security\Handler\CustomHandler;
 use GollumSF\RestDocBundle\Generator\Security\SecurityCollection;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class CustomHandlerTest extends TestCase {
 	
-	public function providerGenerateSecurities() {
+	public static function providerGenerateSecurities() {
 		return [
 			[ [], [] ],
 		
@@ -55,12 +56,10 @@ class CustomHandlerTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerGenerateSecurities
-	 */
+	#[DataProvider('providerGenerateSecurities')]
 	public function testGenerateSecurities($securities, $result) {
 		
-		$apiDocConfiguration = $this->getMockForAbstractClass(ApiDocConfigurationInterface::class);
+		$apiDocConfiguration = $this->createMock(ApiDocConfigurationInterface::class);
 		$apiDocConfiguration
 			->expects($this->once())
 			->method('getSecurities')

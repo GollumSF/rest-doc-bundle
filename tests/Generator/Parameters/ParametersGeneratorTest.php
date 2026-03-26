@@ -13,9 +13,9 @@ class ParametersGeneratorTest extends TestCase {
 	use ReflectionPropertyTrait;
 
 	public function testAddHandler() {
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler3 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
+		$handler3 = $this->createMock(HandlerInterface::class);
 
 		$parametersGenerator = new ParametersGenerator();
 
@@ -28,8 +28,8 @@ class ParametersGeneratorTest extends TestCase {
 	}
 
 	public function testGenerateParameter() {
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$collection = new ParameterCollection();

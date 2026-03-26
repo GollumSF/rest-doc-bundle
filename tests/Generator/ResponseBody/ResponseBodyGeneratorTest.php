@@ -7,15 +7,16 @@ use GollumSF\RestDocBundle\Generator\ResponseBody\Handler\HandlerInterface;
 use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyGenerator;
 use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyPropertyCollection;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ResponseBodyGeneratorTest extends TestCase {
 
 	use ReflectionPropertyTrait;
 
 	public function testAddHandler() {
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler3 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
+		$handler3 = $this->createMock(HandlerInterface::class);
 
 		$parametersGenerator = new ResponseBodyGenerator();
 
@@ -27,7 +28,7 @@ class ResponseBodyGeneratorTest extends TestCase {
 		$this->assertEquals($this->reflectionGetValue($parametersGenerator, 'handlers'), [ $handler1, $handler2, $handler3 ]);
 	}
 
-	public function providerHasRequestBody() {
+	public static function providerHasRequestBody() {
 		return [
 			[ false, false, false ],
 			[ true, false, true ],
@@ -36,13 +37,11 @@ class ResponseBodyGeneratorTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerHasRequestBody
-	 */
+	#[DataProvider('providerHasRequestBody')]
 	public function testHasResponseBody($first, $second, $result) {
 
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 
@@ -68,8 +67,8 @@ class ResponseBodyGeneratorTest extends TestCase {
 	}
 
 	public function testGenerateProperties() {
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$collection = new ResponseBodyPropertyCollection();

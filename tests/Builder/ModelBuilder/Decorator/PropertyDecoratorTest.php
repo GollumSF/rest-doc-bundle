@@ -14,17 +14,17 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 class PropertyDecoratorTest extends TestCase {
 	
 	public function testDecorateModel() {
-		$nameConverter        = $this->getMockBuilder(NameConverterInterface::class)       ->getMockForAbstractClass();
-		$classMetadataFactory = $this->getMockBuilder(ClassMetadataFactoryInterface::class)->getMockForAbstractClass();
-		$typeDiscover         = $this->getMockBuilder(TypeDiscoverInterface::class)        ->getMockForAbstractClass();
+		$nameConverter        = $this->createMock(NameConverterInterface::class);
+		$classMetadataFactory = $this->createMock(ClassMetadataFactoryInterface::class);
+		$typeDiscover         = $this->createMock(TypeDiscoverInterface::class);
 
 		$model = new ObjectType(\stdClass::class);
 
-		$type1 = $this->getMockBuilder(TypeInterface::class)->getMockForAbstractClass();
-		$type2 = $this->getMockBuilder(TypeInterface::class)->getMockForAbstractClass();
+		$type1 = $this->createMock(TypeInterface::class);
+		$type2 = $this->createMock(TypeInterface::class);
 		
-		$attribute1 = $this->getMockBuilder(AttributeMetadataInterface::class)->getMockForAbstractClass();
-		$attribute2 = $this->getMockBuilder(AttributeMetadataInterface::class)->getMockForAbstractClass();
+		$attribute1 = $this->createMock(AttributeMetadataInterface::class);
+		$attribute2 = $this->createMock(AttributeMetadataInterface::class);
 
 		$attribute1->expects($this->once())->method('getName')->willReturn('propName1');
 		$attribute2->expects($this->once())->method('getName')->willReturn('propName2');
@@ -35,7 +35,7 @@ class PropertyDecoratorTest extends TestCase {
 		$attribute1->expects($this->once())->method('getGroups')->willReturn([ 'group1' ]);
 		$attribute2->expects($this->once())->method('getGroups')->willReturn([]);
 		
-		$metadata = $this->getMockBuilder(ClassMetadataInterface::class)->getMockForAbstractClass();
+		$metadata = $this->createMock(ClassMetadataInterface::class);
 		$metadata
 			->expects($this->once())
 			->method('getAttributesMetadata')
@@ -52,17 +52,20 @@ class PropertyDecoratorTest extends TestCase {
 			->willReturn($metadata)
 		;
 
+		$typeCallCount = 0;
 		$typeDiscover
 			->expects($this->exactly(2))
 			->method('getType')
-			->withConsecutive(
-				[ \stdClass::class, 'propName1' ],
-				[ \stdClass::class, 'propName2' ]
-			)
-			->willReturnOnConsecutiveCalls(
-				$type1,
-				$type2
-			)
+			->willReturnCallback(function ($class, $propName) use (&$typeCallCount, $type1, $type2) {
+				$expected = [
+					[\stdClass::class, 'propName1'],
+					[\stdClass::class, 'propName2'],
+				];
+				$returns = [$type1, $type2];
+				$this->assertSame($expected[$typeCallCount][0], $class);
+				$this->assertSame($expected[$typeCallCount][1], $propName);
+				return $returns[$typeCallCount++];
+			})
 		;
 		
 		$nameConverter

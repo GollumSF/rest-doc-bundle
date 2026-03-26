@@ -4,6 +4,7 @@ namespace Test\GollumSF\RestDocBundle\Builder\TagBuilder;
 
 use GollumSF\RestDocBundle\Builder\TagBuilder\Tag;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TagTest extends TestCase {
 
@@ -24,7 +25,7 @@ class TagTest extends TestCase {
 		$this->assertEquals($tag->getDocDescription(), 'DOC_DESCRIPTION');
 	}
 	
-	public function providerToJson() {
+	public static function providerToJson() {
 		return [
 			[ null, null, null, [
 				'name' => \stdClass::class,
@@ -70,9 +71,7 @@ class TagTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider providerToJson
-	 */
+	#[DataProvider('providerToJson')]
 	public function testToJson($description, $url, $docDescription, $result) {
 		$tag = new Tag(\stdClass::class);
 		$tag

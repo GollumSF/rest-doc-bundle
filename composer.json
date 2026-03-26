@@ -23,16 +23,17 @@
         "wiki": "https://github.com/GollumSF/rest-doc-bundle/blob/master/README.md"
     },
     "require" : {
-        "php": ">=7.2",
-        "gollumsf/rest-bundle": "^2.8.1",
-        "gollumsf/controller-action-extractor-bundle": "^1.0",
-        "symfony/twig-bundle": "^4.4|^5|^6"
+        "php": ">=8.2",
+        "gollumsf/rest-bundle": "^2.8.1|^3.0",
+        "gollumsf/controller-action-extractor-bundle": "^1.0|^2.0",
+        "symfony/twig-bundle": "^6.4|^7.0|^8.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.3",
+        "phpunit/phpunit": "^11.0",
         "gollumsf/reflection-property-test": "^1.0",
-        "matthiasnoback/symfony-dependency-injection-test": "^4.1",
-        "nyholm/symfony-bundle-test": "1.8.1"
+        "matthiasnoback/symfony-dependency-injection-test": "^4.1|^5.0|^6.0|^7.0",
+        "nyholm/symfony-bundle-test": "^3.0",
+        "doctrine/annotations": "^1.0|^2.0"
     },
     "autoload" : {
         "psr-4" : {

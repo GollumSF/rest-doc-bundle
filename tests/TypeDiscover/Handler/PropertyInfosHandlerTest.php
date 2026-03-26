@@ -12,16 +12,7 @@ use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\TypeInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
-use Symfony\Component\PropertyInfo\Type;
-
-class PropertyInfosHandlerTestGetType extends PropertyInfosHandler {
-	
-	public $type;
-	
-	protected function createType(array $types): ?TypeInterface {
-		return $this->type;
-	}
-}
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class SubDateTime extends \DateTime {
 }
@@ -29,42 +20,66 @@ class SubDateTime extends \DateTime {
 class PropertyInfosHandlerTest extends TestCase {
 
 	use ReflectionPropertyTrait;
-	
+
+	private static function usesTypeInfo(): bool {
+		return method_exists(PropertyInfoExtractorInterface::class, 'getType');
+	}
+
 	public function testGetType() {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
-		$propertyInfoExtractor
-			->expects($this->once())
-			->method('getTypes')
-			->with(\stdClass::class, 'TARGET_NAME')
-			->willReturn([ 'TYPE' ])
-		;
+		if (self::usesTypeInfo()) {
+			// Symfony 7.1+/8.0+ - uses getType() returning a TypeInfo Type
+			$typeInfoType = \Symfony\Component\TypeInfo\Type::int();
+			$propertyInfoExtractor
+				->expects($this->once())
+				->method('getType')
+				->with(\stdClass::class, 'TARGET_NAME')
+				->willReturn($typeInfoType)
+			;
+		} else {
+			// Symfony 6.4/7.0 - uses getTypes() returning PropertyInfo Type[]
+			$legacyType = new \Symfony\Component\PropertyInfo\Type('int');
+			$propertyInfoExtractor
+				->expects($this->once())
+				->method('getTypes')
+				->with(\stdClass::class, 'TARGET_NAME')
+				->willReturn([$legacyType])
+			;
+		}
 
-		$handler = new PropertyInfosHandlerTestGetType(
+		$handler = new PropertyInfosHandler(
 			$propertyInfoExtractor,
 			$modelBuilder
 		);
-		$handler->type = $type;
 
-		$this->assertEquals(
-			$handler->getType(\stdClass::class, 'TARGET_NAME'), $type
-		);
+		$result = $handler->getType(\stdClass::class, 'TARGET_NAME');
+		$this->assertInstanceOf(NativeType::class, $result);
+		$this->assertEquals('integer', $result->getType());
 	}
 
 	public function testGetTypeNull() {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
-		$propertyInfoExtractor
-			->expects($this->once())
-			->method('getTypes')
-			->with(\stdClass::class, 'TARGET_NAME')
-			->willReturn([ 'TYPE' ])
-		;
+		if (self::usesTypeInfo()) {
+			$propertyInfoExtractor
+				->expects($this->once())
+				->method('getType')
+				->with(\stdClass::class, 'TARGET_NAME')
+				->willReturn(null)
+			;
+		} else {
+			$propertyInfoExtractor
+				->expects($this->once())
+				->method('getTypes')
+				->with(\stdClass::class, 'TARGET_NAME')
+				->willReturn(null)
+			;
+		}
 
-		$handler = new PropertyInfosHandlerTestGetType(
+		$handler = new PropertyInfosHandler(
 			$propertyInfoExtractor,
 			$modelBuilder
 		);
@@ -75,17 +90,26 @@ class PropertyInfosHandlerTest extends TestCase {
 	}
 
 	public function testGetTypeException() {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
-		$propertyInfoExtractor
-			->expects($this->once())
-			->method('getTypes')
-			->with(\stdClass::class, 'TARGET_NAME')
-			->willThrowException(new \Exception())
-		;
+		if (self::usesTypeInfo()) {
+			$propertyInfoExtractor
+				->expects($this->once())
+				->method('getType')
+				->with(\stdClass::class, 'TARGET_NAME')
+				->willThrowException(new \Exception())
+			;
+		} else {
+			$propertyInfoExtractor
+				->expects($this->once())
+				->method('getTypes')
+				->with(\stdClass::class, 'TARGET_NAME')
+				->willThrowException(new \Exception())
+			;
+		}
 
-		$handler = new PropertyInfosHandlerTestGetType(
+		$handler = new PropertyInfosHandler(
 			$propertyInfoExtractor,
 			$modelBuilder
 		);
@@ -94,93 +118,113 @@ class PropertyInfosHandlerTest extends TestCase {
 			$handler->getType(\stdClass::class, 'TARGET_NAME')
 		);
 	}
-	
-	public function providerCreateTypeNative() {
+
+	public static function providerCreateTypeNative() {
+		if (self::usesTypeInfo()) {
+			return [
+				[ \Symfony\Component\TypeInfo\Type::int(), 'integer' ],
+				[ \Symfony\Component\TypeInfo\Type::float(), 'number' ],
+				[ \Symfony\Component\TypeInfo\Type::string(), 'string' ],
+				[ \Symfony\Component\TypeInfo\Type::bool(), 'boolean' ],
+			];
+		}
 		return [
-			[ [ new Type('int') ], 'integer' ],
-			[ [ new Type('resource'), new Type('int') ], 'integer' ],
-			[ [ new Type('float') ], 'number' ],
-			[ [ new Type('string') ], 'string' ],
-			[ [ new Type('bool') ], 'boolean' ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('int') ], 'integer' ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('resource'), new \Symfony\Component\PropertyInfo\Type('int') ], 'integer' ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('float') ], 'number' ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('string') ], 'string' ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('bool') ], 'boolean' ],
 		];
 	}
 
-	/**
-	 * @dataProvider providerCreateTypeNative
-	 */
+	#[DataProvider('providerCreateTypeNative')]
 	public function testCreateTypeNative($types, $resultType) {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$handler = new PropertyInfosHandler(
 			$propertyInfoExtractor,
 			$modelBuilder
 		);
 
-		$result = $this->reflectionCallMethod($handler, 'createType', [ $types ]);
+		if (self::usesTypeInfo()) {
+			$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $types ]);
+		} else {
+			$result = $this->reflectionCallMethod($handler, 'createTypeLegacy', [ $types ]);
+		}
 		$this->assertInstanceOf(NativeType::class, $result);
 		$this->assertEquals($result->getType(), $resultType);
 	}
 
-	public function providerCreateTypeNull() {
+	public static function providerCreateTypeNull() {
+		if (self::usesTypeInfo()) {
+			// TypeInfo types that should return null
+			return [
+				[ \Symfony\Component\TypeInfo\Type::null() ],
+			];
+		}
 		return [
-			[ [ new Type('resource') ] ],
-			[ [ new Type('array') ] ],
-			[ [ new Type('null') ] ],
-			[ [ new Type('callable') ] ],
-			[ [ new Type('iterable') ] ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('resource') ] ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('array') ] ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('null') ] ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('callable') ] ],
+			[ [ new \Symfony\Component\PropertyInfo\Type('iterable') ] ],
 		];
 	}
 
 
-	/**
-	 * @dataProvider providerCreateTypeNull
-	 */
+	#[DataProvider('providerCreateTypeNull')]
 	public function testCreateTypeNull($types) {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$handler = new PropertyInfosHandler(
 			$propertyInfoExtractor,
 			$modelBuilder
 		);
 
-		$this->assertNull(
-			$this->reflectionCallMethod($handler, 'createType', [ $types ])
-		);
+		if (self::usesTypeInfo()) {
+			$this->assertNull(
+				$this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $types ])
+			);
+		} else {
+			$this->assertNull(
+				$this->reflectionCallMethod($handler, 'createTypeLegacy', [ $types ])
+			);
+		}
 	}
 
 	public function testCreateTypeCollection() {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
-		$types = [
-			new Type('array', false, null, true, null, new Type('int'))
-		];
-		
 		$handler = new PropertyInfosHandler(
 			$propertyInfoExtractor,
 			$modelBuilder
 		);
 
-		/** @var ArrayType $result */
-		$result = $this->reflectionCallMethod($handler, 'createType', [ $types ]);
-		
-		
+		if (self::usesTypeInfo()) {
+			$type = \Symfony\Component\TypeInfo\Type::list(\Symfony\Component\TypeInfo\Type::int());
+			/** @var ArrayType $result */
+			$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $type ]);
+		} else {
+			$types = [
+				new \Symfony\Component\PropertyInfo\Type('array', false, null, true, null, new \Symfony\Component\PropertyInfo\Type('int'))
+			];
+			/** @var ArrayType $result */
+			$result = $this->reflectionCallMethod($handler, 'createTypeLegacy', [ $types ]);
+		}
+
 		$this->assertInstanceOf(ArrayType::class, $result);
 		$this->assertInstanceOf(NativeType::class, $result->getSubType());
 		$this->assertEquals($result->getSubType()->getType(), 'integer');
 	}
 
 	public function testCreateTypeObject() {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$model = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
-
-		$types = [
-			new Type('object', false, \stdClass::class)
-		];
 
 		$modelBuilder
 			->expects($this->once())
@@ -194,20 +238,22 @@ class PropertyInfosHandlerTest extends TestCase {
 			$modelBuilder
 		);
 
-		$this->assertEquals(
-			$this->reflectionCallMethod($handler, 'createType', [ $types ]), $model
-		);
+		if (self::usesTypeInfo()) {
+			$type = \Symfony\Component\TypeInfo\Type::object(\stdClass::class);
+			$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $type ]);
+		} else {
+			$types = [
+				new \Symfony\Component\PropertyInfo\Type('object', false, \stdClass::class)
+			];
+			$result = $this->reflectionCallMethod($handler, 'createTypeLegacy', [ $types ]);
+		}
+
+		$this->assertEquals($result, $model);
 	}
 
 	public function testCreateTypeObjectDateTime() {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-
-		$model = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
-
-		$types = [
-			new Type('object', false, \DateTime::class)
-		];
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$modelBuilder
 			->expects($this->never())
@@ -219,18 +265,22 @@ class PropertyInfosHandlerTest extends TestCase {
 			$modelBuilder
 		);
 
-		$this->assertInstanceOf(
-			DateTimeType::class, $this->reflectionCallMethod($handler, 'createType', [ $types ])
-		);
+		if (self::usesTypeInfo()) {
+			$type = \Symfony\Component\TypeInfo\Type::object(\DateTime::class);
+			$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $type ]);
+		} else {
+			$types = [
+				new \Symfony\Component\PropertyInfo\Type('object', false, \DateTime::class)
+			];
+			$result = $this->reflectionCallMethod($handler, 'createTypeLegacy', [ $types ]);
+		}
+
+		$this->assertInstanceOf(DateTimeType::class, $result);
 	}
 
 	public function testCreateTypeObjectSubDateTime() {
-		$propertyInfoExtractor = $this->getMockForAbstractClass(PropertyInfoExtractorInterface::class);
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-
-		$types = [
-			new Type('object', false, SubDateTime::class)
-		];
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$modelBuilder
 			->expects($this->never())
@@ -242,8 +292,16 @@ class PropertyInfosHandlerTest extends TestCase {
 			$modelBuilder
 		);
 
-		$this->assertInstanceOf(
-			DateTimeType::class, $this->reflectionCallMethod($handler, 'createType', [ $types ])
-		);
+		if (self::usesTypeInfo()) {
+			$type = \Symfony\Component\TypeInfo\Type::object(SubDateTime::class);
+			$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $type ]);
+		} else {
+			$types = [
+				new \Symfony\Component\PropertyInfo\Type('object', false, SubDateTime::class)
+			];
+			$result = $this->reflectionCallMethod($handler, 'createTypeLegacy', [ $types ]);
+		}
+
+		$this->assertInstanceOf(DateTimeType::class, $result);
 	}
 }

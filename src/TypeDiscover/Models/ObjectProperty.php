@@ -40,11 +40,11 @@ class ObjectProperty {
 		return $this->groups;
 	}
 
-	public function toJson(array $groups = null): array {
+	public function toJson(?array $groups = null): array {
 		return $this->getType()->toJson($groups);
 	}
 	
-	public function toJsonRef(array $groups = null): array {
+	public function toJsonRef(?array $groups = null): array {
 
 		$type = $this->getType();
 		if ($type instanceof ObjectType) {

@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class ObjectPropertyTest extends TestCase {
 
 	public function testGetter() {
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$type = $this->createMock(TypeInterface::class);
 		$property = new ObjectProperty('NAME', 'prop1', $type, [ 'GROUP1' ]);
 
 		$this->assertEquals($property->getName(), 'NAME');
@@ -21,7 +21,7 @@ class ObjectPropertyTest extends TestCase {
 	}
 
 	public function testToJson() {
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$type = $this->createMock(TypeInterface::class);
 		$property = new ObjectProperty('NAME', 'prop1', $type, [ 'GROUP1' ]);
 
 		$type
@@ -34,7 +34,7 @@ class ObjectPropertyTest extends TestCase {
 	}
 
 	public function testToJsonRef() {
-		$type1 = $this->getMockForAbstractClass(TypeInterface::class);
+		$type1 = $this->createMock(TypeInterface::class);
 		$type2 = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
 		$type3 = $this->getMockBuilder(ArrayType::class)->disableOriginalConstructor()->getMock();
 		$property1 = new ObjectProperty('NAME', 'prop1', $type1, [ 'GROUP1' ]);

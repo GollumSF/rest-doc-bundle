@@ -13,10 +13,11 @@ use GollumSF\RestDocBundle\TypeDiscover\Models\DateTimeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\NativeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DoctrineHandlerTest extends TestCase {
 
-	public function providerGetTypeNative() {
+	public static function providerGetTypeNative() {
 		return [
 			[ 'integer', 'integer' ],
 			[ 'float'  , 'number' ],
@@ -26,16 +27,14 @@ class DoctrineHandlerTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider providerGetTypeNative
-	 */
+	#[DataProvider('providerGetTypeNative')]
 	public function testGetTypeNative($type, $result) {
 		
 		$doctrine        = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-		$manager         = $this->getMockForAbstractClass(ObjectManager::class);
-		$metadataFactory = $this->getMockForAbstractClass(ClassMetadataFactory::class);
-		$metadata        = $this->getMockBuilder(ClassMetadata::class)->disableOriginalConstructor()->getMockForAbstractClass();
+		$modelBuilder    = $this->createMock(ModelBuilderInterface::class);
+		$manager         = $this->createMock(ObjectManager::class);
+		$metadataFactory = $this->createMock(ClassMetadataFactory::class);
+		$metadata        = $this->createMock(ClassMetadata::class);
 		
 		$doctrine
 			->expects($this->once())
@@ -91,10 +90,10 @@ class DoctrineHandlerTest extends TestCase {
 	public function testGetTypeDateTime() {
 
 		$doctrine        = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-		$manager         = $this->getMockForAbstractClass(ObjectManager::class);
-		$metadataFactory = $this->getMockForAbstractClass(ClassMetadataFactory::class);
-		$metadata        = $this->getMockBuilder(ClassMetadata::class)->disableOriginalConstructor()->getMockForAbstractClass();
+		$modelBuilder    = $this->createMock(ModelBuilderInterface::class);
+		$manager         = $this->createMock(ObjectManager::class);
+		$metadataFactory = $this->createMock(ClassMetadataFactory::class);
+		$metadata        = $this->createMock(ClassMetadata::class);
 
 		$doctrine
 			->expects($this->once())
@@ -148,10 +147,10 @@ class DoctrineHandlerTest extends TestCase {
 	public function testGetTypeAssociation() {
 
 		$doctrine        = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-		$manager         = $this->getMockForAbstractClass(ObjectManager::class);
-		$metadataFactory = $this->getMockForAbstractClass(ClassMetadataFactory::class);
-		$metadata        = $this->getMockBuilder(ClassMetadata::class)->disableOriginalConstructor()->getMockForAbstractClass();
+		$modelBuilder    = $this->createMock(ModelBuilderInterface::class);
+		$manager         = $this->createMock(ObjectManager::class);
+		$metadataFactory = $this->createMock(ClassMetadataFactory::class);
+		$metadata        = $this->createMock(ClassMetadata::class);
 		$type            = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
 
 		$doctrine
@@ -223,10 +222,10 @@ class DoctrineHandlerTest extends TestCase {
 	public function testGetTypeAssociationCollection() {
 
 		$doctrine        = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-		$manager         = $this->getMockForAbstractClass(ObjectManager::class);
-		$metadataFactory = $this->getMockForAbstractClass(ClassMetadataFactory::class);
-		$metadata        = $this->getMockBuilder(ClassMetadata::class)->disableOriginalConstructor()->getMockForAbstractClass();
+		$modelBuilder    = $this->createMock(ModelBuilderInterface::class);
+		$manager         = $this->createMock(ObjectManager::class);
+		$metadataFactory = $this->createMock(ClassMetadataFactory::class);
+		$metadata        = $this->createMock(ClassMetadata::class);
 		$type            = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
 
 		$doctrine
@@ -300,7 +299,7 @@ class DoctrineHandlerTest extends TestCase {
 	public function testGetTypeNoEntity() {
 
 		$doctrine        = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder    = $this->createMock(ModelBuilderInterface::class);
 
 		$doctrine
 			->expects($this->once())
@@ -321,7 +320,7 @@ class DoctrineHandlerTest extends TestCase {
 	public function testGetTypeException() {
 
 		$doctrine        = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder    = $this->createMock(ModelBuilderInterface::class);
 
 		$doctrine
 			->expects($this->once())
@@ -341,7 +340,7 @@ class DoctrineHandlerTest extends TestCase {
 
 	public function testGetTypeNoDoctrine() {
 
-		$modelBuilder    = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder    = $this->createMock(ModelBuilderInterface::class);
 		$handler = new DoctrineHandler(
 			$modelBuilder
 		);

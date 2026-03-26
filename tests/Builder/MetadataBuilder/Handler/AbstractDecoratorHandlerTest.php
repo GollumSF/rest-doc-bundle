@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AbstractDecoratorHandlerGetMetadataCollection extends AbstractDecoratorHandler {
 	
@@ -100,10 +101,10 @@ class AbstractDecoratorHandlerTest extends TestCase {
 	
 	public function testGetMetadataCollection() {
 
-		$router                     = $this->getMockForAbstractClass(RouterInterface::class);
-		$controllerActionExtractor  = $this->getMockForAbstractClass(ControllerActionExtractorInterface::class);
-		$metadataSerializeManager   = $this->getMockForAbstractClass(MetadataSerializeManagerInterface::class);
-		$metadataUnserializeManager = $this->getMockForAbstractClass(MetadataUnserializeManagerInterface::class);
+		$router                     = $this->createMock(RouterInterface::class);
+		$controllerActionExtractor  = $this->createMock(ControllerActionExtractorInterface::class);
+		$metadataSerializeManager   = $this->createMock(MetadataSerializeManagerInterface::class);
+		$metadataUnserializeManager = $this->createMock(MetadataUnserializeManagerInterface::class);
 
 		$metadata1 = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$metadata2 = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
@@ -128,19 +129,16 @@ class AbstractDecoratorHandlerTest extends TestCase {
 			->willReturn($routeCollection)
 		;
 
+		$extractCallCount = 0;
 		$controllerActionExtractor
 			->expects($this->exactly(3))
 			->method('extractFromRoute')
-			->withConsecutive(
-				[ $route1 ],
-				[ $route2 ],
-				[ $route3 ]
-			)
-			->willReturnOnConsecutiveCalls(
-				$controllerAction1,
-				$controllerAction2,
-				$controllerAction3
-			)
+			->willReturnCallback(function ($route) use (&$extractCallCount, $route1, $route2, $route3, $controllerAction1, $controllerAction2, $controllerAction3) {
+				$expected = [$route1, $route2, $route3];
+				$returns = [$controllerAction1, $controllerAction2, $controllerAction3];
+				$this->assertSame($expected[$extractCallCount], $route);
+				return $returns[$extractCallCount++];
+			})
 		;
 		
 		$handler = new AbstractDecoratorHandlerGetMetadataCollection(
@@ -176,7 +174,7 @@ class AbstractDecoratorHandlerTest extends TestCase {
 		]);
 	}
 	
-	public function providerCreateMatadata() {
+	public static function providerCreateMatadata() {
 		return [
 			
 			// Entity Class
@@ -232,9 +230,7 @@ class AbstractDecoratorHandlerTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider  providerCreateMatadata
-	 */
+	#[DataProvider('providerCreateMatadata')]
 	public function testCreateMetadata(
 		$describeClass, $describeMethod, $metadataSerialize, $metadataUnserialize,
 		$entity,
@@ -245,10 +241,10 @@ class AbstractDecoratorHandlerTest extends TestCase {
 		$response
 	) {
 		
-		$router                     = $this->getMockForAbstractClass(RouterInterface::class);
-		$controllerActionExtractor  = $this->getMockForAbstractClass(ControllerActionExtractorInterface::class);
-		$metadataSerializeManager   = $this->getMockForAbstractClass(MetadataSerializeManagerInterface::class);
-		$metadataUnserializeManager = $this->getMockForAbstractClass(MetadataUnserializeManagerInterface::class);
+		$router                     = $this->createMock(RouterInterface::class);
+		$controllerActionExtractor  = $this->createMock(ControllerActionExtractorInterface::class);
+		$metadataSerializeManager   = $this->createMock(MetadataSerializeManagerInterface::class);
+		$metadataUnserializeManager = $this->createMock(MetadataUnserializeManagerInterface::class);
 		$mock                       = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
 		$controllerAction           = new ControllerAction(DummyController::class, 'dummyAction');
 
@@ -312,7 +308,7 @@ class AbstractDecoratorHandlerTest extends TestCase {
 		$this->assertEquals($metadata->getUnserialize(), $metadataUnserialize);
 	}
 	
-	public function providerCreateMetadataNull() {
+	public static function providerCreateMetadataNull() {
 		return [
 			[ null, null ],
 			[ new ApiDescribe(), null ],
@@ -321,15 +317,13 @@ class AbstractDecoratorHandlerTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider  providerCreateMetadataNull
-	 */
+	#[DataProvider('providerCreateMetadataNull')]
 	public function testCreateMetadataNull($describeClass, $describeMethod) {
 		
-		$router                     = $this->getMockForAbstractClass(RouterInterface::class);
-		$controllerActionExtractor  = $this->getMockForAbstractClass(ControllerActionExtractorInterface::class);
-		$metadataSerializeManager   = $this->getMockForAbstractClass(MetadataSerializeManagerInterface::class);
-		$metadataUnserializeManager = $this->getMockForAbstractClass(MetadataUnserializeManagerInterface::class);
+		$router                     = $this->createMock(RouterInterface::class);
+		$controllerActionExtractor  = $this->createMock(ControllerActionExtractorInterface::class);
+		$metadataSerializeManager   = $this->createMock(MetadataSerializeManagerInterface::class);
+		$metadataUnserializeManager = $this->createMock(MetadataUnserializeManagerInterface::class);
 		$mock                       = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
 		$controllerAction           = new ControllerAction(DummyController::class, 'dummyAction');
 

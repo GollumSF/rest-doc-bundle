@@ -1,4 +1,5 @@
 framework:
     serializer:
     property_info:
+    validation:
 twig:

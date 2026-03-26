@@ -1,4 +1,4 @@
-name: PHP 7.2
+name: Symfony 7.1
 
 on:
   push:
@@ -14,9 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: ./.github/actions/test
       with:
-        php_version: '7.2'
+        php_version: '8.2'
+        symfony_version: '7.1'
         github_token: ${{ secrets.GITHUB_TOKEN }}
         discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}

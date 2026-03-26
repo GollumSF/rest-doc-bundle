@@ -7,6 +7,7 @@ use GollumSF\RestDocBundle\Annotation\ApiProperty;
 use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Handler\AttributeHandler;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DummyClassNull {
 	private $dummyProp;
@@ -21,26 +22,21 @@ class DummyClassAttribute {
 	private function dummyMethod() {}
 }
 
-/**
- * @requires PHP 8.0.0
- */
 class AttributeHandlerTest extends TestCase {
 	
 	use ReflectionPropertyTrait;
 	
-	public function provideGetPropertyDecorator() {
+	public static function provideGetPropertyDecorator() {
 		return [
 			[ DummyClassAttribute::class, 'PROPERTY' ],
 			[ DummyClassNull::class, null ]
 		];
 	}
 	
-	/**
-	 * @dataProvider provideGetPropertyDecorator
-	 */
+	#[DataProvider('provideGetPropertyDecorator')]
 	public function testGetPropertyDecorator($class, $name) {
 		
-		$modelBuilder = $this->getMockBuilder(ModelBuilderInterface::class)->getMockForAbstractClass();
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 		
 		$rClass = new \ReflectionClass($class);
 		$rProperty = $rClass->getProperty('dummyProp');
@@ -58,7 +54,7 @@ class AttributeHandlerTest extends TestCase {
 		}
 	}
 	
-	public function provideGetMethodDecorator() {
+	public static function provideGetMethodDecorator() {
 		return [
 			[ DummyClassAttribute::class, 'METHOD' ],
 			[ DummyClassNull::class, null ]
@@ -66,12 +62,10 @@ class AttributeHandlerTest extends TestCase {
 	}
 	
 	
-	/**
-	 * @dataProvider provideGetMethodDecorator
-	 */
+	#[DataProvider('provideGetMethodDecorator')]
 	public function testGetMethodDecorator($class, $name) {
 		
-		$modelBuilder = $this->getMockBuilder(ModelBuilderInterface::class)->getMockForAbstractClass();
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 		
 		$rClass = new \ReflectionClass($class);
 		$rMethod = $rClass->getMethod('dummyMethod');

@@ -8,6 +8,7 @@ use GollumSF\RestDocBundle\Annotation\ApiProperty;
 use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\TypeDiscover\Handler\AnnotationHandler;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DummyClassAnno {
 	private $dummyProp;
@@ -18,20 +19,18 @@ class AnnotationHandlerTest extends TestCase {
 	
 	use ReflectionPropertyTrait;
 	
-	public function provideGetDecorator() {
+	public static function provideGetDecorator() {
 		return [
 			[ new ApiProperty() ],
 			[ null ]
 		];
 	}
 	
-	/**
-	 * @dataProvider provideGetDecorator
-	 */
+	#[DataProvider('provideGetDecorator')]
 	public function testGetPropertyDecorator($annotation) {
 		
 		$reader = $this->getMockBuilder(Reader::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockBuilder(ModelBuilderInterface::class)->getMockForAbstractClass();
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 		
 		$rClass = new \ReflectionClass(DummyClassAnno::class);
 		$rProperty = $rClass->getProperty('dummyProp');
@@ -59,13 +58,11 @@ class AnnotationHandlerTest extends TestCase {
 	}
 	
 	
-	/**
-	 * @dataProvider provideGetDecorator
-	 */
+	#[DataProvider('provideGetDecorator')]
 	public function testGetMethodDecorator($annotation) {
 		
 		$reader = $this->getMockBuilder(Reader::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockBuilder(ModelBuilderInterface::class)->getMockForAbstractClass();
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 		
 		$rClass = new \ReflectionClass(DummyClassAnno::class);
 		$rMethod = $rClass->getMethod('dummyMethod');

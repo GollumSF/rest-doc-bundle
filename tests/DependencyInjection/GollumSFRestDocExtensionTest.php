@@ -1,10 +1,13 @@
 <?php
 namespace Test\GollumSF\RestDocBundle\DependencyInjection;
 
+use Doctrine\Common\Annotations\Reader;
 use GollumSF\ControllerActionExtractorBundle\GollumSFControllerActionExtractorBundle;
 use GollumSF\RestDocBundle\Configuration\ApiDocConfigurationInterface;
 use GollumSF\RestDocBundle\DependencyInjection\GollumSFRestDocExtension;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\DependencyInjection\Definition;
 
 class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 
@@ -13,7 +16,15 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 			new GollumSFRestDocExtension()
 		];
 	}
-	
+
+	protected function setUp(): void {
+		parent::setUp();
+		// Register a fake annotation_reader service so annotation handlers are loaded
+		if (interface_exists(Reader::class)) {
+			$this->container->setDefinition('annotation_reader', new Definition(Reader::class));
+		}
+	}
+
 	public function testLoad() {
 
 		$this->setParameter('kernel.bundles', []);
@@ -74,7 +85,7 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 		$this->assertContainerBuilderNotHasService(\GollumSF\ControllerActionExtractorBundle\Extractor\ControllerActionExtractorInterface::class);
 	}
 
-	public function providerLoadConfiguration() {
+	public static function providerLoadConfiguration() {
 		return [
 			[ [], 'REST Api', '1.0.0', null, [], null, [], null, null, [] ],
 			[ [ 'title' => 'TITLE' ], 'TITLE', '1.0.0', null, [], null, [], null, null, [] ],
@@ -97,9 +108,7 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerLoadConfiguration
-	 */
+	#[DataProvider('providerLoadConfiguration')]
 	public function testLoadConfiguration(
 		$config,
 		$title,

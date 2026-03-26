@@ -20,7 +20,7 @@ class SwaggerUIControllerTest extends TestCase {
 			->willReturn('<html><body></body></html>')
 		;
 
-		$openApiGenerator = $this->getMockBuilder(OpenApiGeneratorInterface::class)->getMockForAbstractClass();
+		$openApiGenerator = $this->createMock(OpenApiGeneratorInterface::class);
 		$openApiGenerator
 			->expects($this->once())
 			->method('generate')
@@ -40,7 +40,7 @@ class SwaggerUIControllerTest extends TestCase {
 	}
 	
 	public function testInvokeNoTwig() {
-		$openApiGenerator = $this->getMockBuilder(OpenApiGeneratorInterface::class)->getMockForAbstractClass();
+		$openApiGenerator = $this->createMock(OpenApiGeneratorInterface::class);
 		$swaggerUIController = new SwaggerUIController(
 			$openApiGenerator
 		);

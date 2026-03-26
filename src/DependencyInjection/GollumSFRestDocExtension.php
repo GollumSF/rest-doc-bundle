@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class GollumSFRestDocExtension extends Extension {
 	
-	public function load(array $configs, ContainerBuilder $container) {
+	public function load(array $configs, ContainerBuilder $container): void {
 
 		$bundles = $container->getParameter('kernel.bundles');
 		if (!isset($bundles['GollumSFControllerActionExtractorBundle'])) {
@@ -24,11 +24,14 @@ class GollumSFRestDocExtension extends Extension {
 		
 		$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 		$loader->load('services.yml');
-		if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
-			// @codeCoverageIgnoreStart
-			$loader->load('services_php8.yml');
-			// @codeCoverageIgnoreEnd
+		$loader->load('services_php8.yml');
+
+		if (!interface_exists(\Doctrine\Common\Annotations\Reader::class) || !$container->has('annotation_reader')) {
+			$container->removeDefinition(\GollumSF\RestDocBundle\TypeDiscover\Handler\AnnotationHandler::class);
+			$container->removeDefinition(\GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\AnnotationHandler::class);
+			$container->removeDefinition(\GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\AnnotationDecorator::class);
 		}
+
 		$config = $this->processConfiguration(new Configuration(), $configs);
 
 		$container

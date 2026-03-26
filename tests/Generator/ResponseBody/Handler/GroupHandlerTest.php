@@ -15,7 +15,7 @@ class GroupHandlerTest extends TestCase {
 
 	public function testHasResponseBody() {
 
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 		$metadata
@@ -43,7 +43,7 @@ class GroupHandlerTest extends TestCase {
 			])
 		;
 		
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 		$modelBuilder
 			->expects($this->once())
 			->method('getModel')

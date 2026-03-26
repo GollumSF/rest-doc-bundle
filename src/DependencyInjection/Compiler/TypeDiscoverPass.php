@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class TypeDiscoverPass implements CompilerPassInterface
 {
-	public function process(ContainerBuilder $container)
+	public function process(ContainerBuilder $container): void
 	{
 		// always first check if the primary service is defined
 		if (!$container->has(TypeDiscoverInterface::class)) {

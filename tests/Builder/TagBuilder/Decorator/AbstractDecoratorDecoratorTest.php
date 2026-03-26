@@ -6,6 +6,7 @@ use GollumSF\RestDocBundle\Annotation\ApiEntity;
 use GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\AbstractDecoratorDecorator;
 use GollumSF\RestDocBundle\Builder\TagBuilder\Tag;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AbstractDecoratorDecoratorMockAbstract extends AbstractDecoratorDecorator {
 	
@@ -25,7 +26,7 @@ class AbstractDecoratorDecoratorMockAbstract extends AbstractDecoratorDecorator 
 
 class AbstractDecoratorDecoratorTest extends TestCase {
 	
-	public function providerDecorateTag() {
+	public static function providerDecorateTag() {
 		return [
 			[null, null, null, null ],
 			[ new ApiEntity([]), null, null, null ],
@@ -40,12 +41,10 @@ class AbstractDecoratorDecoratorTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerDecorateTag
-	 */
+	#[DataProvider('providerDecorateTag')]
 	public function testDecorateTag($annoApiEntity, $url, $description, $docDescription) {
 		
-		$mock = $this->getMockForAbstractClass(AbstractDecoratorDecorator::class);
+		$mock = $this->createMock(AbstractDecoratorDecorator::class);
 		
 		$tag = new Tag(\stdClass::class);
 		

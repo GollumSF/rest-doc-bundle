@@ -12,6 +12,7 @@ use GollumSF\RestDocBundle\TypeDiscover\Models\NativeType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use GollumSF\RestDocBundle\TypeDiscover\Models\TypeInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DummyClass {
 	private $dummyProp;
@@ -58,9 +59,9 @@ class AbstractDecoratorHandlerTest extends TestCase {
 	public function testGetTypeProperty() {
 
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$type = $this->createMock(TypeInterface::class);
 
 		$annotation = new ApiProperty('TYPE');
 		
@@ -91,9 +92,9 @@ class AbstractDecoratorHandlerTest extends TestCase {
 	public function testGetTypePropertyCollection() {
 		
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$type = $this->createMock(TypeInterface::class);
 
 		$annotation = new ApiProperty('TYPE', true);
 		
@@ -125,9 +126,9 @@ class AbstractDecoratorHandlerTest extends TestCase {
 	public function testGetTypeMethod() {
 		
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$type = $this->createMock(TypeInterface::class);
 
 		$annotation = new ApiProperty('TYPE');
 		
@@ -158,9 +159,9 @@ class AbstractDecoratorHandlerTest extends TestCase {
 	public function testGetTypeMethodCollection() {
 		
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$type = $this->createMock(TypeInterface::class);
 
 		$annotation = new ApiProperty('TYPE', true);
 		
@@ -192,7 +193,7 @@ class AbstractDecoratorHandlerTest extends TestCase {
 	public function testGetTypeNoFound() {
 		
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 		
 		$decorator = new AbstractDecoratorHandlerMockFromAbstract(
 			$modelBuilder,
@@ -207,7 +208,7 @@ class AbstractDecoratorHandlerTest extends TestCase {
 	public function testCreateTypeClass() {
 		
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$decorator = new AbstractDecoratorHandlerMockFromAbstract(
 			$modelBuilder,
@@ -230,7 +231,7 @@ class AbstractDecoratorHandlerTest extends TestCase {
 	public function testCreateTypeDate() {
 		
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$decorator = new AbstractDecoratorHandlerMockFromAbstract(
 			$modelBuilder,
@@ -248,7 +249,7 @@ class AbstractDecoratorHandlerTest extends TestCase {
 		);
 	}
 	
-	public function provideCreateTypeNative() {
+	public static function provideCreateTypeNative() {
 		return [
 			[ 'integer', 'integer' ],
 			[ 'float'   ,'number' ],
@@ -256,13 +257,11 @@ class AbstractDecoratorHandlerTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider provideCreateTypeNative
-	 */
+	#[DataProvider('provideCreateTypeNative')]
 	public function testCreateTypeNative($type, $result) {
 		
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$decorator = new AbstractDecoratorHandlerMockFromAbstract(
 			$modelBuilder,

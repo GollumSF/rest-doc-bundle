@@ -5,10 +5,11 @@ use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
 use GollumSF\RestDocBundle\Generator\RequestBody\Handler\RequestBodyPropertiesHandler;
 use GollumSF\RestDocBundle\Generator\RequestBody\RequestBodyPropertyCollection;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class RequestBodyPropertiesHandlerTest extends TestCase {
 	
-	public function providerHasRequestBody() {
+	public static function providerHasRequestBody() {
 		return [
 			[ [ 'body' => [ 'properties' => [ 'NAME' => [ 'key' =>'VALUE' ] ] ] ], true ],
 			[ [ 'body' => [ 'properties' => [] ] ], false ],
@@ -19,9 +20,7 @@ class RequestBodyPropertiesHandlerTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerHasRequestBody
-	 */
+	#[DataProvider('providerHasRequestBody')]
 	public function testHasRequestBody($requestProp, $result) {
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();

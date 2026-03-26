@@ -13,9 +13,9 @@ class ModelBuilderTest extends TestCase {
 	use ReflectionPropertyTrait;
 	
 	public function testAddDecorator() {
-		$decorator1 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
-		$decorator2 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
-		$decorator3 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
+		$decorator1 = $this->createMock(DecoratorInterface::class);
+		$decorator2 = $this->createMock(DecoratorInterface::class);
+		$decorator3 = $this->createMock(DecoratorInterface::class);
 		
 		$modelBuilder = new ModelBuilder();
 
@@ -28,8 +28,8 @@ class ModelBuilderTest extends TestCase {
 	}
 	
 	public function testGetModel() {
-		$decorator1 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
-		$decorator2 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
+		$decorator1 = $this->createMock(DecoratorInterface::class);
+		$decorator2 = $this->createMock(DecoratorInterface::class);
 
 		$model2 = new ObjectType(\stdClass::class);
 		$model3 = new ObjectType(\stdClass::class);

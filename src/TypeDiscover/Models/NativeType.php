@@ -15,7 +15,7 @@ class NativeType implements TypeInterface {
 		return $this->type;
 	}
 
-	public function toJson(array $groups = null): array {
+	public function toJson(?array $groups = null): array {
 		return [
 			'type' => $this->getType()
 		];

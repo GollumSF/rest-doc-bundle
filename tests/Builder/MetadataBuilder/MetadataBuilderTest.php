@@ -13,9 +13,9 @@ class MetadataBuilderTest extends TestCase {
 	
 	public function testAddHandler() {
 
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler3 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
+		$handler3 = $this->createMock(HandlerInterface::class);
 
 		$metadataBuilder = new MetadataBuilder();
 
@@ -32,8 +32,8 @@ class MetadataBuilderTest extends TestCase {
 
 	public function testGetMetadataCollection() {
 
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
 
 		$handler1
 			->method('getMetadataCollection')

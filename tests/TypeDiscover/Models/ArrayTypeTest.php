@@ -11,7 +11,7 @@ class ArrayTypeTest extends TestCase {
 	
 	public function testGetter() {
 
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$type = $this->createMock(TypeInterface::class);
 		
 		$arrayType1 = new ArrayType();
 		$arrayType2 = new ArrayType($type);
@@ -23,8 +23,8 @@ class ArrayTypeTest extends TestCase {
 
 	public function testToJson() {
 
-		$type2 = $this->getMockForAbstractClass(TypeInterface::class);
-		$type3 = $this->getMockForAbstractClass(TypeInterface::class);
+		$type2 = $this->createMock(TypeInterface::class);
+		$type3 = $this->createMock(TypeInterface::class);
 
 		$type2->expects($this->once())->method('toJson')->with(null)->willReturn([ 'SUB_TYPE' ]);
 		$type3->expects($this->once())->method('toJson')->with([ 'GROUP' ])->willReturn([ 'SUB_TYPE' ]);
@@ -49,9 +49,9 @@ class ArrayTypeTest extends TestCase {
 
 	public function testToJsonRef() {
 
-		$typeNative1 = $this->getMockForAbstractClass(TypeInterface::class);
+		$typeNative1 = $this->createMock(TypeInterface::class);
 		$typeArray1  = $this->getMockBuilder(ArrayType::class)->disableOriginalConstructor()->getMock();
-		$typeNative2 = $this->getMockForAbstractClass(TypeInterface::class);
+		$typeNative2 = $this->createMock(TypeInterface::class);
 		$typeArray2  = $this->getMockBuilder(ArrayType::class)->disableOriginalConstructor()->getMock();
 		$typeObject  = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
 

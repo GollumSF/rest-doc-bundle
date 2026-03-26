@@ -9,7 +9,7 @@ use Twig\Environment;
 
 class TwigBuilderPass implements CompilerPassInterface
 {
-	public function process(ContainerBuilder $container)
+	public function process(ContainerBuilder $container): void
 	{
 		if (!$container->hasDefinition(Environment::class) && !$container->hasAlias(Environment::class)) {
 			return;

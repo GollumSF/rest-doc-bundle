@@ -7,12 +7,13 @@ use GollumSF\RestBundle\Metadata\Unserialize\MetadataUnserialize;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Metadata;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Route;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class MetadataTest extends TestCase {
 
-	public function provideConstruct() {
-		$route = $this->getMockBuilder(Route::class)->disableOriginalConstructor()->getMock();
-		
+	public static function provideConstruct() {
+		$route = new Route('/test');
+
 		return [
 			[
 				$route,
@@ -45,9 +46,7 @@ class MetadataTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider provideConstruct
-	 */
+	#[DataProvider('provideConstruct')]
 	public function testConstruct(
 		Route $route,
 		string $controller,

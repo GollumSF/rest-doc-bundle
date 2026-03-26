@@ -11,7 +11,7 @@ class OpenApiControllerTest extends TestCase {
 	
 	public function testInvoke() {
 
-		$openApiGenerator = $this->getMockBuilder(OpenApiGeneratorInterface::class)->getMockForAbstractClass();
+		$openApiGenerator = $this->createMock(OpenApiGeneratorInterface::class);
 		$openApiGenerator
 			->expects($this->once())
 			->method('generate')

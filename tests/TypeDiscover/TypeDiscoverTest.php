@@ -14,9 +14,9 @@ class TypeDiscoverTest extends TestCase {
 	use ReflectionPropertyTrait;
 
 	public function testAddHandler() {
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler3 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
+		$handler3 = $this->createMock(HandlerInterface::class);
 
 		$typeDiscover = new TypeDiscover();
 
@@ -29,10 +29,10 @@ class TypeDiscoverTest extends TestCase {
 	}
 
 	public function testGenerateParameter() {
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
 
-		$type = $this->getMockForAbstractClass(TypeInterface::class);
+		$type = $this->createMock(TypeInterface::class);
 
 		$handler1
 			->expects($this->once())
@@ -56,8 +56,8 @@ class TypeDiscoverTest extends TestCase {
 	}
 
 	public function testGenerateParameterMixed() {
-		$handler1 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
-		$handler2 = $this->getMockBuilder(HandlerInterface::class)->getMockForAbstractClass();
+		$handler1 = $this->createMock(HandlerInterface::class);
+		$handler2 = $this->createMock(HandlerInterface::class);
 
 		$handler1
 			->expects($this->once())

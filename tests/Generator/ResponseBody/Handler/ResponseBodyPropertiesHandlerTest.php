@@ -6,10 +6,11 @@ use GollumSF\RestDocBundle\Builder\ModelBuilder\ModelBuilderInterface;
 use GollumSF\RestDocBundle\Generator\ResponseBody\Handler\ResponseBodyPropertiesHandler;
 use GollumSF\RestDocBundle\Generator\ResponseBody\ResponseBodyPropertyCollection;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ResponseBodyPropertiesHandlerTest extends TestCase {
 
-	public function providerHasRequestBody() {
+	public static function providerHasRequestBody() {
 		return [
 			[ [ 'body' => [ 'properties' => [ 'NAME' => [ 'key' =>'VALUE' ] ] ] ], true ],
 			[ [ 'body' => [ 'properties' => [] ] ], false ],
@@ -20,9 +21,7 @@ class ResponseBodyPropertiesHandlerTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerHasRequestBody
-	 */
+	#[DataProvider('providerHasRequestBody')]
 	public function testHasRequestBody($requestProp, $result) {
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
@@ -57,7 +56,7 @@ class ResponseBodyPropertiesHandlerTest extends TestCase {
 			])
 		;
 
-		$modelBuilder = $this->getMockForAbstractClass(ModelBuilderInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		$handler = new ResponseBodyPropertiesHandler($modelBuilder);
 		$handler->generateProperties($collection, $metadata, 'GET');

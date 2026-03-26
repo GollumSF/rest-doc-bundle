@@ -13,9 +13,9 @@ class TagBuilderTest extends TestCase {
 	use ReflectionPropertyTrait;
 
 	public function testAddDecorator() {
-		$decorator1 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
-		$decorator2 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
-		$decorator3 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
+		$decorator1 = $this->createMock(DecoratorInterface::class);
+		$decorator2 = $this->createMock(DecoratorInterface::class);
+		$decorator3 = $this->createMock(DecoratorInterface::class);
 
 		$tagBuilder = new TagBuilder();
 
@@ -28,8 +28,8 @@ class TagBuilderTest extends TestCase {
 	}
 
 	public function testGetTag() {
-		$decorator1 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
-		$decorator2 = $this->getMockBuilder(DecoratorInterface::class)->getMockForAbstractClass();
+		$decorator1 = $this->createMock(DecoratorInterface::class);
+		$decorator2 = $this->createMock(DecoratorInterface::class);
 
 		$tag2 = new Tag(\stdClass::class);
 		$tag3 = new Tag(\stdClass::class);

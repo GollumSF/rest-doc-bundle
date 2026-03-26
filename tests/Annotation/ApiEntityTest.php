@@ -4,10 +4,11 @@ namespace Test\GollumSF\RestDocBundle\Annotation;
 
 use GollumSF\RestDocBundle\Annotation\ApiEntity;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ApiEntityTest extends TestCase {
 	
-	public function provideConstructLegacy() {
+	public static function provideConstructLegacy() {
 		return [
 			[ [], null, null, null ],
 			[ [ 'description' => 'DESCRIPTION' ], 'DESCRIPTION', null, null ],
@@ -16,9 +17,7 @@ class ApiEntityTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider provideConstructLegacy
-	 */
+	#[DataProvider('provideConstructLegacy')]
 	public function testConstructLegacy($param, $description, $url, $docDescription) {
 		$annotation = new ApiEntity($param);
 		$this->assertEquals($annotation->getDescription()   , $description);
@@ -26,7 +25,7 @@ class ApiEntityTest extends TestCase {
 		$this->assertEquals($annotation->getDocDescription(), $docDescription);
 	}
 	
-	public function provideConstruct() {
+	public static function provideConstruct() {
 		return [
 			[ null, null, null ],
 			[ 'DESCRIPTION', null, null ],
@@ -35,9 +34,7 @@ class ApiEntityTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider provideConstruct
-	 */
+	#[DataProvider('provideConstruct')]
 	public function testConstruct($description, $url, $docDescription) {
 		$annotation = new ApiEntity($description, $url, $docDescription);
 		$this->assertEquals($annotation->getDescription()   , $description);

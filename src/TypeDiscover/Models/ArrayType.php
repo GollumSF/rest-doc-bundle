@@ -19,7 +19,7 @@ class ArrayType implements TypeInterface {
 		return $this->subType;
 	}
 
-	public function toJson(array $groups = null): array {
+	public function toJson(?array $groups = null): array {
 		$json = [
 			'type' => $this->getType(),
 		];
@@ -29,7 +29,7 @@ class ArrayType implements TypeInterface {
 		return $json;
 	}
 	
-	public function toJsonRef(array $groups = null): array {
+	public function toJsonRef(?array $groups = null): array {
 		$json = [
 			'type' => $this->getType(),
 		];

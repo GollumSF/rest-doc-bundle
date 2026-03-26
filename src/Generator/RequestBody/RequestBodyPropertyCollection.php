@@ -16,9 +16,8 @@ class RequestBodyPropertyCollection implements \Iterator {
 		return $this->properties[$this->key()];
 	}
 
-	public function next(): bool {
+	public function next(): void {
 		++$this->position;
-		return $this->valid();
 	}
 
 	public function key(): string {
@@ -29,9 +28,8 @@ class RequestBodyPropertyCollection implements \Iterator {
 		return isset($this->keys[$this->position]);
 	}
 
-	public function rewind(): self {
+	public function rewind(): void {
 		$this->position = 0;
-		return $this;
 	}
 
 	public function clear(): self {

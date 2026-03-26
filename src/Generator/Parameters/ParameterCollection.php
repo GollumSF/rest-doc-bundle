@@ -13,9 +13,8 @@ class ParameterCollection implements \Iterator {
 		return $this->parameters[$this->position];
 	}
 
-	public function next(): bool {
+	public function next(): void {
 		++$this->position;
-		return $this->valid();
 	}
 
 	public function key(): int {
@@ -26,9 +25,8 @@ class ParameterCollection implements \Iterator {
 		return isset($this->parameters[$this->position]);
 	}
 
-	public function rewind(): self {
+	public function rewind(): void {
 		$this->position = 0;
-		return $this;
 	}
 
 	public function clear(): self {

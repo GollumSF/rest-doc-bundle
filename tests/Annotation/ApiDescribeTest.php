@@ -4,10 +4,11 @@ namespace Test\GollumSF\RestDocBundle\Annotation;
 
 use GollumSF\RestDocBundle\Annotation\ApiDescribe;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ApiDescribeTest extends TestCase {
 	
-	public function provideConstructLagacy() {
+	public static function provideConstructLagacy() {
 		return [
 			[ [], null, null, [], [], [], [], null ],
 			
@@ -33,9 +34,7 @@ class ApiDescribeTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider provideConstructLagacy
-	 */
+	#[DataProvider('provideConstructLagacy')]
 	public function testConstructLagacy(
 		$param,
 		$entity,
@@ -57,7 +56,7 @@ class ApiDescribeTest extends TestCase {
 	}
 	
 	
-	public function provideConstruct() {
+	public static function provideConstruct() {
 		return [
 			[ null, false, [], [], [], [], null, [], [] ],
 			
@@ -83,9 +82,7 @@ class ApiDescribeTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider provideConstruct
-	 */
+	#[DataProvider('provideConstruct')]
 	public function testConstruct(
 		$entity,
 		$collection,

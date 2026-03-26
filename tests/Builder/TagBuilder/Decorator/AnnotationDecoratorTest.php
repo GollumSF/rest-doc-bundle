@@ -7,22 +7,21 @@ use GollumSF\ReflectionPropertyTest\ReflectionPropertyTrait;
 use GollumSF\RestDocBundle\Annotation\ApiEntity;
 use GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\AnnotationDecorator;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AnnotationDecoratorTest extends TestCase {
 	
 	
 	use ReflectionPropertyTrait;
 	
-	public function provideGetClassDecorator() {
+	public static function provideGetClassDecorator() {
 		return [
 			[ new ApiEntity() ],
 			[ null ]
 		];
 	}
 	
-	/**
-	 * @dataProvider provideGetClassDecorator
-	 */
+	#[DataProvider('provideGetClassDecorator')]
 	public function testGetClassDecorator($apiEntity) {
 		
 		$reader = $this->getMockBuilder(Reader::class)->disableOriginalConstructor()->getMock();

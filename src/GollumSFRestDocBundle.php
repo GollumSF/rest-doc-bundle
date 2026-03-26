@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class GollumSFRestDocBundle extends Bundle {
 	
-	public function build(ContainerBuilder $container) {
+	public function build(ContainerBuilder $container): void {
 		$container->addCompilerPass(new MetadataBuilderPass());
 		$container->addCompilerPass(new TagBuilderPass());
 		$container->addCompilerPass(new ModelBuilderPass());

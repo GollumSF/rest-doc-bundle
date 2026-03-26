@@ -44,7 +44,7 @@ class ObjectType implements TypeInterface {
 		return $this->properties;
 	}
 
-	public function getPropertiesJson(array $groups = null) {
+	public function getPropertiesJson(?array $groups = null) {
 		/** @var ObjectProperty[] $properties */
 		$properties = array_filter($this->getProperties(), function (ObjectProperty $property) use ($groups) {
 			return
@@ -65,7 +65,7 @@ class ObjectType implements TypeInterface {
 		return $json;
 	}
 
-	public function toJson(array $groups = null): array {
+	public function toJson(?array $groups = null): array {
 		if (in_array($this->getClass(), ObjectType::$circularRef)) {
 			return [
 				'type' => 'integer',

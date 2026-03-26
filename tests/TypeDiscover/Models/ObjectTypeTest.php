@@ -5,6 +5,7 @@ namespace Test\GollumSF\RestDocBundle\TypeDiscover\Models;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectProperty;
 use GollumSF\RestDocBundle\TypeDiscover\Models\ObjectType;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ObjectTypeTest extends TestCase {
 	
@@ -73,7 +74,7 @@ class ObjectTypeTest extends TestCase {
 		]);
 	}
 
-	public function providerToJson() {
+	public static function providerToJson() {
 		return [
 			[ null, [
 				'type' => 'object',
@@ -112,9 +113,7 @@ class ObjectTypeTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider providerToJson
-	 */
+	#[DataProvider('providerToJson')]
 	public function testToJson($groups, $result)
 	{
 		$prop1 = $this->getMockBuilder(ObjectProperty::class)->disableOriginalConstructor()->getMock();

@@ -27,6 +27,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Route;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class OpenApiGeneratorTestGenerate extends OpenApiGenerator {
 	
@@ -52,11 +53,29 @@ class OpenApiGeneratorTestGenerate extends OpenApiGenerator {
 class OpenApiGeneratorTestGetBasePath extends OpenApiGenerator {
 
 	public $basePath = '';
-	
+
+	/** @var \SplObjectStorage */
+	public $hasRequestBodyMap;
+
+	public function __construct(
+		$metadataBuilder,
+		$modelBuilder,
+		$tagBuilder,
+		$requestStack,
+		$parametersGenerator,
+		$responseBodyGenerator,
+		$requestBodyGenerator,
+		$securityGenerator,
+		$apiDocConfiguration
+	) {
+		parent::__construct($metadataBuilder, $modelBuilder, $tagBuilder, $requestStack, $parametersGenerator, $responseBodyGenerator, $requestBodyGenerator, $securityGenerator, $apiDocConfiguration);
+		$this->hasRequestBodyMap = new \SplObjectStorage();
+	}
+
 	protected function getBasePath(): string {
 		return $this->basePath;
 	}
-	
+
 	protected function generateParameters($url, Metadata $metadata, string $method): array {
 		return [ 'PARAMETER' => $url, 'METHOD' => $method ];
 	}
@@ -70,7 +89,7 @@ class OpenApiGeneratorTestGetBasePath extends OpenApiGenerator {
 	}
 
 	protected function hasRequestBody(Metadata $metadata, string $method): bool {
-		return $metadata->hasRequestBody;
+		return $this->hasRequestBodyMap[$metadata];
 	}
 }
 
@@ -95,18 +114,18 @@ class OpenApiGeneratorTest extends TestCase {
 	private $apiDocConfiguration;
 
 	public function setUp(): void {
-		$this->metadataBuilder             = $this->getMockForAbstractClass(MetadataBuilderInterface::class);
-		$this->modelbuilder                = $this->getMockForAbstractClass(ModelBuilderInterface::class);
-		$this->tagbuilder                  = $this->getMockForAbstractClass(TagBuilderInterface::class);
+		$this->metadataBuilder             = $this->createMock(MetadataBuilderInterface::class);
+		$this->modelbuilder                = $this->createMock(ModelBuilderInterface::class);
+		$this->tagbuilder                  = $this->createMock(TagBuilderInterface::class);
 		$this->requestStack                = $this->getMockBuilder(RequestStack::class)->disableOriginalConstructor()->getMock();
-		$this->parametersGenerator         = $this->getMockForAbstractClass(ParametersGeneratorInterface::class);
-		$this->responseBodyPropertiesGenerator = $this->getMockForAbstractClass(ResponseBodyGeneratorInterface::class);
-		$this->requestBodyGenerator        = $this->getMockForAbstractClass(RequestBodyGeneratorInterface::class);
-		$this->securityGenerator           = $this->getMockForAbstractClass(SecurityGeneratorInterface::class);
-		$this->apiDocConfiguration         = $this->getMockForAbstractClass(ApiDocConfigurationInterface::class);
+		$this->parametersGenerator         = $this->createMock(ParametersGeneratorInterface::class);
+		$this->responseBodyPropertiesGenerator = $this->createMock(ResponseBodyGeneratorInterface::class);
+		$this->requestBodyGenerator        = $this->createMock(RequestBodyGeneratorInterface::class);
+		$this->securityGenerator           = $this->createMock(SecurityGeneratorInterface::class);
+		$this->apiDocConfiguration         = $this->createMock(ApiDocConfigurationInterface::class);
 	}
 	
-	public function providerGenerate() {
+	public static function providerGenerate() {
 		return [
 			[
 				[ 'EXTERNAL_DOCS' ], [
@@ -156,9 +175,7 @@ class OpenApiGeneratorTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * @dataProvider providerGenerate
-	 */
+	#[DataProvider('providerGenerate')]
 	public function testGenerate($externalDocs, $result) {
 		
 		$openApiGenerator = new OpenApiGeneratorTestGenerate(
@@ -216,7 +233,7 @@ class OpenApiGeneratorTest extends TestCase {
 		$this->assertEquals($json, $result);
 	}
 
-	public function providerBasePath() {
+	public static function providerBasePath() {
 		return [
 			[ [], '' ],
 			[ [ '/api' ], '/api' ],
@@ -230,9 +247,7 @@ class OpenApiGeneratorTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerBasePath
-	 */
+	#[DataProvider('providerBasePath')]
 	public function testGetBasePath($urls, $result) {
 
 		$openApiGenerator = new OpenApiGenerator(
@@ -275,7 +290,7 @@ class OpenApiGeneratorTest extends TestCase {
 		);
 	}
 
-	public function providerGeneratePaths() {
+	public static function providerGeneratePaths() {
 		return [
 			[ '', [], [] ],
 			
@@ -365,9 +380,7 @@ class OpenApiGeneratorTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerGeneratePaths
-	 */
+	#[DataProvider('providerGeneratePaths')]
 	public function testGeneratePaths($basePath, $metadataInfos, $result) {
 		
 		$openApiGenerator = new OpenApiGeneratorTestGetBasePath (
@@ -414,7 +427,7 @@ class OpenApiGeneratorTest extends TestCase {
 				->method('getSummary')
 				->willReturn($metadataInfo[4])
 			;
-			$metadata->hasRequestBody = $metadataInfo[3];
+			$openApiGenerator->hasRequestBodyMap[$metadata] = $metadataInfo[3];
 			$metadatas[] = $metadata;
 			
 			$tag = $this->getMockBuilder(Tag::class)->disableOriginalConstructor()->getMock();
@@ -482,7 +495,7 @@ class OpenApiGeneratorTest extends TestCase {
 		);
 	}
 
-	public function providerGenerateResponse() {
+	public static function providerGenerateResponse() {
 		return [
 			[ null, [] ],
 			[ new MetadataSerialize(200, [], []), [
@@ -518,9 +531,7 @@ class OpenApiGeneratorTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerGenerateResponse
-	 */
+	#[DataProvider('providerGenerateResponse')]
 	public function testGenerateResponse($serialize, $result) {
 		$openApiGenerator = new OpenApiGenerator (
 			$this->metadataBuilder,
@@ -576,17 +587,15 @@ class OpenApiGeneratorTest extends TestCase {
 
 		$metadata = $this->getMockBuilder(Metadata::class)->disableOriginalConstructor()->getMock();
 
+		$hasRequestBodyCallCount = 0;
 		$this->requestBodyGenerator
 			->expects($this->exactly(2))
 			->method('hasRequestBody')
-			->withConsecutive(
-				[ $metadata, 'GET' ],
-				[ $metadata, 'GET' ]
-			)
-			->willReturnOnConsecutiveCalls(
-				true,
-				false
-			)
+			->willReturnCallback(function ($meta, $method) use (&$hasRequestBodyCallCount, $metadata) {
+				$this->assertSame($metadata, $meta);
+				$this->assertSame('GET', $method);
+				return [true, false][$hasRequestBodyCallCount++];
+			})
 		;
 
 		$this->assertEquals(
@@ -691,7 +700,7 @@ class OpenApiGeneratorTest extends TestCase {
 		);
 	}
 
-	public function providerGenerateExternalDocs() {
+	public static function providerGenerateExternalDocs() {
 		return [
 			[ [ 'url' => 'URL' ], [ 'url' => 'URL' ] ],
 			[ [ 'url' => 'URL', 'description' => null ], [ 'url' => 'URL' ] ],
@@ -699,9 +708,7 @@ class OpenApiGeneratorTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerGenerateExternalDocs
-	 */
+	#[DataProvider('providerGenerateExternalDocs')]
 	public function testGenerateExternalDocs($externalDoc, $result) {
 
 		$openApiGenerator = new OpenApiGenerator (
@@ -742,7 +749,7 @@ class OpenApiGeneratorTest extends TestCase {
 		);
 	}
 	
-	public function providerGenerateServers() {
+	public static function providerGenerateServers() {
 		return [
 			[ [], null, [], null, [
 				[
@@ -804,9 +811,7 @@ class OpenApiGeneratorTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider providerGenerateServers
-	 */
+	#[DataProvider('providerGenerateServers')]
 	public function testGenerateServers($hosts, $defaultHost, $protocols, $defaultProtocol, $result) {
 
 		$openApiGenerator = new OpenApiGeneratorTestGenerateServers (

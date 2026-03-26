@@ -11,6 +11,7 @@ use GollumSF\RestDocBundle\Annotation\ApiDescribe;
 use GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\AttributeHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\RouterInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AnnoDummyNull {
 	public function action() {}
@@ -27,29 +28,24 @@ class AnnoDummyMethod {
 }
 
 
-/**
- * @requires PHP 8.0.0
- */
 class AttributeHandlerTest extends TestCase {
 	
 	use ReflectionPropertyTrait;
 	
-	public function provideGetClassDecorator() {
+	public static function provideGetClassDecorator() {
 		return [
 			[ AnnoDummyClass::class, 'CLASS' ],
 			[ AnnoDummyNull::class, null ]
 		];
 	}
 	
-	/**
-	 * @dataProvider provideGetClassDecorator
-	 */
+	#[DataProvider('provideGetClassDecorator')]
 	public function testGetClassDecorator($class, $name) {
 		
-		$router = $this->getMockForAbstractClass(RouterInterface::class);
-		$metadataSerializeManager = $this->getMockForAbstractClass(MetadataSerializeManagerInterface::class);
-		$metadataUnserializeManager = $this->getMockForAbstractClass(MetadataUnserializeManagerInterface::class);
-		$controllerActionExtractor = $this->getMockBuilder(ControllerActionExtractorInterface::class)->getMockForAbstractClass();
+		$router = $this->createMock(RouterInterface::class);
+		$metadataSerializeManager = $this->createMock(MetadataSerializeManagerInterface::class);
+		$metadataUnserializeManager = $this->createMock(MetadataUnserializeManagerInterface::class);
+		$controllerActionExtractor = $this->createMock(ControllerActionExtractorInterface::class);
 		
 		$rClass = new \ReflectionClass($class);
 		
@@ -69,22 +65,20 @@ class AttributeHandlerTest extends TestCase {
 		}
 	}
 	
-	public function provideGetMethodDecorator() {
+	public static function provideGetMethodDecorator() {
 		return [
 			[ AnnoDummyMethod::class, 'METHOD' ],
 			[ AnnoDummyNull::class, null ]
 		];
 	}
 	
-	/**
-	 * @dataProvider provideGetMethodDecorator
-	 */
+	#[DataProvider('provideGetMethodDecorator')]
 	public function testGetMethodDecorator($class, $name) {
 		
-		$router = $this->getMockForAbstractClass(RouterInterface::class);
-		$metadataSerializeManager = $this->getMockForAbstractClass(MetadataSerializeManagerInterface::class);
-		$metadataUnserializeManager = $this->getMockForAbstractClass(MetadataUnserializeManagerInterface::class);
-		$controllerActionExtractor = $this->getMockBuilder(ControllerActionExtractorInterface::class)->getMockForAbstractClass();
+		$router = $this->createMock(RouterInterface::class);
+		$metadataSerializeManager = $this->createMock(MetadataSerializeManagerInterface::class);
+		$metadataUnserializeManager = $this->createMock(MetadataUnserializeManagerInterface::class);
+		$controllerActionExtractor = $this->createMock(ControllerActionExtractorInterface::class);
 		
 		$rClass = new \ReflectionClass($class);
 		$rMethod = $rClass->getMethod('action');

@@ -28,20 +28,19 @@ class ParameterCollectionTest extends TestCase {
 	}
 
 	public function testNextAndValid() {
-		$this->assertEquals($this->collection->key(), 0); $this->assertEquals($this->collection->next(), true);
-		$this->assertEquals($this->collection->key(), 1); $this->assertEquals($this->collection->next(), true);
-		$this->assertEquals($this->collection->key(), 2); $this->assertEquals($this->collection->next(), true);
-		$this->assertEquals($this->collection->key(), 3); $this->assertEquals($this->collection->next(), false);
+		$this->assertEquals($this->collection->key(), 0); $this->collection->next(); $this->assertTrue($this->collection->valid());
+		$this->assertEquals($this->collection->key(), 1); $this->collection->next(); $this->assertTrue($this->collection->valid());
+		$this->assertEquals($this->collection->key(), 2); $this->collection->next(); $this->assertTrue($this->collection->valid());
+		$this->assertEquals($this->collection->key(), 3); $this->collection->next(); $this->assertFalse($this->collection->valid());
 	}
 
 
-	public function testRewind(): self {
+	public function testRewind(): void {
 		$this->collection->next();
 		$this->collection->next();
 		$this->collection->next();
-		$this->assertEquals($this->collection->rewind(), $this->collection);
+		$this->collection->rewind();
 		$this->assertEquals($this->collection->key(), 0);
-		return $this;
 	}
 
 	public function testClear() {
