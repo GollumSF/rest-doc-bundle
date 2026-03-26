@@ -108,6 +108,23 @@ class GollumSFRestDocExtensionTest extends AbstractExtensionTestCase {
 		];
 	}
 
+	public function testLoadWithoutAnnotationReader() {
+		// Do NOT register annotation_reader - test the removal branch
+		$this->container->removeDefinition('annotation_reader');
+
+		$this->setParameter('kernel.bundles', []);
+
+		$this->load();
+
+		$this->assertContainerBuilderNotHasService(\GollumSF\RestDocBundle\TypeDiscover\Handler\AnnotationHandler::class);
+		$this->assertContainerBuilderNotHasService(\GollumSF\RestDocBundle\Builder\MetadataBuilder\Handler\AnnotationHandler::class);
+		$this->assertContainerBuilderNotHasService(\GollumSF\RestDocBundle\Builder\TagBuilder\Decorator\AnnotationDecorator::class);
+
+		// Other services should still exist
+		$this->assertContainerBuilderHasService(\GollumSF\RestDocBundle\Controller\OpenApiController::class);
+		$this->assertContainerBuilderHasService(ApiDocConfigurationInterface::class);
+	}
+
 	#[DataProvider('providerLoadConfiguration')]
 	public function testLoadConfiguration(
 		$config,

@@ -1,9 +1,8 @@
 # GollumSF/RestDocBundle
 
-[![Build Status](https://github.com/GollumSF/rest-doc-bundle/actions/workflows/symfony_4.4.yml/badge.svg?branch=master)](https://github.com/GollumSF/rest-doc-bundle/actions)
-[![Build Status](https://github.com/GollumSF/rest-doc-bundle/actions/workflows/symfony_5.4.yml/badge.svg?branch=master)](https://github.com/GollumSF/rest-doc-bundle/actions)
-[![Build Status](https://github.com/GollumSF/rest-doc-bundle/actions/workflows/symfony_6.0.yml/badge.svg?branch=master)](https://github.com/GollumSF/rest-doc-bundle/actions)
-[![Build Status](https://github.com/GollumSF/rest-doc-bundle/actions/workflows/symfony_6.3.yml/badge.svg?branch=master)](https://github.com/GollumSF/rest-doc-bundle/actions)
+[![Build Status](https://github.com/GollumSF/rest-doc-bundle/actions/workflows/symfony_6.4.yml/badge.svg?branch=master)](https://github.com/GollumSF/rest-doc-bundle/actions)
+[![Build Status](https://github.com/GollumSF/rest-doc-bundle/actions/workflows/symfony_7.4.yml/badge.svg?branch=master)](https://github.com/GollumSF/rest-doc-bundle/actions)
+[![Build Status](https://github.com/GollumSF/rest-doc-bundle/actions/workflows/symfony_8.0.yml/badge.svg?branch=master)](https://github.com/GollumSF/rest-doc-bundle/actions)
 
 [![Coverage](https://coveralls.io/repos/github/GollumSF/rest-doc-bundle/badge.svg?branch=master)](https://coveralls.io/github/GollumSF/rest-doc-bundle)
 [![License](https://poser.pugx.org/gollumsf/rest-doc-bundle/license)](https://packagist.org/packages/gollumsf/rest-doc-bundle)
@@ -12,6 +11,11 @@
 [![Discord](https://img.shields.io/discord/671741944149573687?color=purple&label=discord)](https://discord.gg/xMBc5SQ)
 
 Auto-Generate documentation API for GollumSF\RestBundle : https://github.com/GollumSF/rest-bundle
+
+## Requirements:
+
+- PHP >= 8.2
+- Symfony 6.4, 7.x or 8.0
 
 ## Installation:
 
@@ -27,7 +31,7 @@ return [
 ];
 ```
 
-## Configuration: 
+## Configuration:
 
 All configurations is optionals. Edit file `config/packages/gollum_sf_rest_doc.yaml` :
 ```yaml
@@ -44,21 +48,21 @@ gollum_sf_rest_doc:
     external_docs:                                          # optional
         url: 'https://github.com/GollumSF/rest-doc-bundle'  # required
         description: 'External documentation description'   # optional, default : null
-    
+
     ##############
     # Host / URL #
     ################
-    
+
     host:                                  # optional, default : null (return current host url)
         - 'dev.api.com'
         - 'preprod.api.com'
         - 'prod.api.com'
     default_host: 'dev.api.com'            # optional, default : null (return first item to host list)
     protocol:                              # optional, default : null (return current sheme url)
-        - 'http'                           
+        - 'http'
         - 'https'
     default_protocol: 'http'               # optional, default : null (return first item to protocol list)
-    
+
     ############
     # Security #
     ############
@@ -66,10 +70,10 @@ gollum_sf_rest_doc:
     security:                              # optional (No security token if not defined)
         my_first_configuration:
             type: 'authorization_bearer'   # required, authorization_bearer generate classic authorization bearer
-            name: 'Authorization'          # optional, default: Authorization, the header name 
+            name: 'Authorization'          # optional, default: Authorization, the header name
             scheme: 'BEARER'               # optional, default: BEARER, the scheme in header value
             defaultValue: 'TOKEN_DEMO'     # optional, the default token value for demo
-            
+
         my_second_configuration:
             type: 'query_param'            # required, query_param generate query string token
             name: 'token'                  # optional, default: token, the query name
@@ -77,13 +81,13 @@ gollum_sf_rest_doc:
         my_custom_configuration:
             type: 'custom'                 # required, custom generate a custom configuration based on:
             defaultValue: 'TOKEN_DEMO'     # optional, the default token value for demo
-            data:                          # required, Data based on securitySchemes content 
+            data:                          # required, Data based on securitySchemes content
                 type: 'http'               #  - show : https://swagger.io/docs/specification/authentication/
                 scheme: 'basic'
 
 ```
 
-## Integration with [Swagger](https://github.com/swagger-api/swagger-ui): 
+## Integration with [Swagger](https://github.com/swagger-api/swagger-ui):
 
 ```yaml
 #app/config/routing.yml
@@ -92,7 +96,7 @@ gsf_restbundle_swagger:
     prefix: /api-docs
 ```
 
-## Integration with OpenApi JSON: 
+## Integration with OpenApi JSON:
 
 ```yaml
 gsf_restbundle_openapi:
@@ -100,4 +104,48 @@ gsf_restbundle_openapi:
     prefix: /api-docs.json
 ```
 
-## Annotations: 
+## Attributes:
+
+The documentation is automatically generated from your controllers using `#[Serialize]` and `#[Unserialize]` attributes from [RestBundle](https://github.com/GollumSF/rest-bundle). No additional configuration is needed for basic API documentation.
+
+You can optionally enrich the generated documentation with these attributes:
+
+### ApiDescribe (on controller methods)
+
+Override or add metadata for a specific route:
+
+```php
+use GollumSF\RestDocBundle\Annotation\ApiDescribe;
+
+#[ApiDescribe(entity: Book::class, serializeGroups: ['book_get'])]
+public function list() { ... }
+```
+
+### ApiEntity (on entity classes)
+
+Add description and URL metadata to an entity:
+
+```php
+use GollumSF\RestDocBundle\Annotation\ApiEntity;
+
+#[ApiEntity(description: 'A book entity', url: '/api/books')]
+class Book {
+    // ...
+}
+```
+
+### ApiProperty (on entity properties)
+
+Override the auto-detected type or description of a property:
+
+```php
+use GollumSF\RestDocBundle\Annotation\ApiProperty;
+
+class Book {
+    #[ApiProperty(type: 'integer')]
+    private int $id;
+
+    #[ApiProperty(type: 'string')]
+    private string $title;
+}
+```

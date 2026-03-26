@@ -30,7 +30,6 @@ class PropertyInfosHandlerTest extends TestCase {
 		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
 
 		if (self::usesTypeInfo()) {
-			// Symfony 7.1+/8.0+ - uses getType() returning a TypeInfo Type
 			$typeInfoType = \Symfony\Component\TypeInfo\Type::int();
 			$propertyInfoExtractor
 				->expects($this->once())
@@ -39,7 +38,6 @@ class PropertyInfosHandlerTest extends TestCase {
 				->willReturn($typeInfoType)
 			;
 		} else {
-			// Symfony 6.4/7.0 - uses getTypes() returning PropertyInfo Type[]
 			$legacyType = new \Symfony\Component\PropertyInfo\Type('int');
 			$propertyInfoExtractor
 				->expects($this->once())
@@ -158,7 +156,6 @@ class PropertyInfosHandlerTest extends TestCase {
 
 	public static function providerCreateTypeNull() {
 		if (self::usesTypeInfo()) {
-			// TypeInfo types that should return null
 			return [
 				[ \Symfony\Component\TypeInfo\Type::null() ],
 			];
@@ -303,5 +300,263 @@ class PropertyInfosHandlerTest extends TestCase {
 		}
 
 		$this->assertInstanceOf(DateTimeType::class, $result);
+	}
+
+	// ==========================================
+	// Additional tests for TypeInfo code paths
+	// ==========================================
+
+	public function testCreateTypeFromTypeInfoNullable() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		// ?int => should unwrap to int => NativeType('integer')
+		$type = \Symfony\Component\TypeInfo\Type::nullable(\Symfony\Component\TypeInfo\Type::int());
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $type ]);
+		$this->assertInstanceOf(NativeType::class, $result);
+		$this->assertEquals('integer', $result->getType());
+	}
+
+	public function testCreateTypeFromTypeInfoArrayStringFallback() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		// Test plain array type (no getCollectionValueType method) via mock
+		$mockType = new class {
+			public function __toString(): string { return 'array'; }
+			public function isNullable(): bool { return false; }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertInstanceOf(ArrayType::class, $result);
+		$this->assertNull($result->getSubType());
+	}
+
+	public function testCreateTypeFromTypeInfoCollectionExceptionPath() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		// Mock a type that has getCollectionValueType but throws
+		$mockType = new class {
+			public function __toString(): string { return 'list<mixed>'; }
+			public function isNullable(): bool { return false; }
+			public function getCollectionValueType(): never { throw new \LogicException('No value type'); }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertInstanceOf(ArrayType::class, $result);
+		$this->assertNull($result->getSubType());
+	}
+
+	public function testCreateTypeFromTypeInfoNativeAlreadyMapped() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		// Test types that match in_array check (already OpenAPI names)
+		$mockType = new class {
+			public function __toString(): string { return 'integer'; }
+			public function isNullable(): bool { return false; }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertInstanceOf(NativeType::class, $result);
+		$this->assertEquals('integer', $result->getType());
+	}
+
+	public function testCreateTypeFromTypeInfoGetClassNameDateTime() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$modelBuilder
+			->expects($this->never())
+			->method('getModel')
+		;
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		// Mock a type whose string representation is not a class but getClassName returns DateTime
+		$mockType = new class {
+			public function __toString(): string { return 'some_unknown_type'; }
+			public function isNullable(): bool { return false; }
+			public function getClassName(): string { return \DateTime::class; }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertInstanceOf(DateTimeType::class, $result);
+	}
+
+	public function testCreateTypeFromTypeInfoGetClassNameSubDateTime() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$modelBuilder
+			->expects($this->never())
+			->method('getModel')
+		;
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		$mockType = new class {
+			public function __toString(): string { return 'some_unknown_type'; }
+			public function isNullable(): bool { return false; }
+			public function getClassName(): string { return SubDateTime::class; }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertInstanceOf(DateTimeType::class, $result);
+	}
+
+	public function testCreateTypeFromTypeInfoGetClassNameModel() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$model = $this->getMockBuilder(ObjectType::class)->disableOriginalConstructor()->getMock();
+
+		$modelBuilder
+			->expects($this->once())
+			->method('getModel')
+			->with(\stdClass::class)
+			->willReturn($model)
+		;
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		$mockType = new class {
+			public function __toString(): string { return 'some_unknown_type'; }
+			public function isNullable(): bool { return false; }
+			public function getClassName(): string { return \stdClass::class; }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertEquals($result, $model);
+	}
+
+	public function testCreateTypeFromTypeInfoGetClassNameNull() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		// Mock a type whose getClassName returns null
+		$mockType = new class {
+			public function __toString(): string { return 'some_unknown_type'; }
+			public function isNullable(): bool { return false; }
+			public function getClassName(): ?string { return null; }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertNull($result);
+	}
+
+	public function testCreateTypeFromTypeInfoUnknownTypeNoGetClassName() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		// Mock a type with unknown string and no getClassName method
+		$mockType = new class {
+			public function __toString(): string { return 'some_unknown_type'; }
+			public function isNullable(): bool { return false; }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertNull($result);
+	}
+
+	public function testCreateTypeFromTypeInfoCollectionWithNullValueType() {
+		if (!self::usesTypeInfo()) {
+			$this->markTestSkipped('Only for Symfony 7.1+ with TypeInfo');
+		}
+
+		$propertyInfoExtractor = $this->createMock(PropertyInfoExtractorInterface::class);
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$handler = new PropertyInfosHandler(
+			$propertyInfoExtractor,
+			$modelBuilder
+		);
+
+		// Mock a type that has getCollectionValueType returning null
+		$mockType = new class {
+			public function __toString(): string { return 'list'; }
+			public function isNullable(): bool { return false; }
+			public function getCollectionValueType(): ?object { return null; }
+		};
+
+		$result = $this->reflectionCallMethod($handler, 'createTypeFromTypeInfo', [ $mockType ]);
+		$this->assertInstanceOf(ArrayType::class, $result);
+		$this->assertNull($result->getSubType());
 	}
 }
