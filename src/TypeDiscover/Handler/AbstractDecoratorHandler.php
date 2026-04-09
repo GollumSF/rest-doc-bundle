@@ -25,12 +25,12 @@ abstract class AbstractDecoratorHandler implements HandlerInterface
 	protected abstract function getMethodDecorator(\ReflectionMethod $rMethod): ?ApiProperty;
 	
 	public function getType(string $class, string $targetName): ?TypeInterface {
-		
+
 		$rClass = new \ReflectionClass($class);
 		$type = null;
-		
-		if ($rClass->hasProperty($targetName)) {
-			$rProperty = $rClass->getProperty($targetName);
+
+		$rProperty = $this->findProperty($rClass, $targetName);
+		if ($rProperty) {
 			$annotation = $this->getPropertyDecorator($rProperty);
 			if ($annotation && $annotation->type) {
 				$type = $this->createType($annotation->type);
@@ -51,8 +51,19 @@ abstract class AbstractDecoratorHandler implements HandlerInterface
 				$type = new ArrayType($type);
 			}
 		}
-		
+
 		return $type;
+	}
+
+	private function findProperty(\ReflectionClass $rClass, string $name): ?\ReflectionProperty {
+		if ($rClass->hasProperty($name)) {
+			return $rClass->getProperty($name);
+		}
+		$parent = $rClass->getParentClass();
+		if ($parent) {
+			return $this->findProperty($parent, $name);
+		}
+		return null;
 	}
 	
 	protected function createType(string $type): ?TypeInterface {

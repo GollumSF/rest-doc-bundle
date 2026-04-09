@@ -17,7 +17,15 @@ use PHPUnit\Framework\Attributes\DataProvider;
 class DummyClass {
 	private $dummyProp;
 	private function dummyMethod() {}
-	
+
+}
+
+class DummyParentClass {
+	private $parentProp;
+}
+
+class DummyChildClass extends DummyParentClass {
+	private $childProp;
 }
 
 class AbstractDecoratorHandlerMockFromAbstract extends AbstractDecoratorHandler {
@@ -190,6 +198,73 @@ class AbstractDecoratorHandlerTest extends TestCase {
 		$this->assertEquals($result->getSubType(), $type);
 	}
 	
+	public function testGetTypeParentProperty() {
+
+		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$type = $this->createMock(TypeInterface::class);
+
+		$annotation = new ApiProperty('TYPE');
+
+		$mock
+			->expects($this->once())
+			->method('getPropertyDecorator')
+			->willReturnCallback(function ($rProperty) use ($annotation) {
+				$this->assertInstanceOf(\ReflectionProperty::class, $rProperty);
+				$this->assertEquals($rProperty->getName(), 'parentProp');
+				return $annotation;
+			})
+		;
+
+		$decorator = new AnnotationHandlerTestGetType(
+			$modelBuilder,
+			$mock
+		);
+		$decorator->getType = function (string $typeStr) use ($type, $annotation) {
+			$this->assertEquals($typeStr, $annotation->type);
+			return $type;
+		};
+
+		$this->assertEquals(
+			$decorator->getType(DummyChildClass::class, 'parentProp'), $type
+		);
+	}
+
+	public function testGetTypeParentPropertyCollection() {
+
+		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
+		$modelBuilder = $this->createMock(ModelBuilderInterface::class);
+
+		$type = $this->createMock(TypeInterface::class);
+
+		$annotation = new ApiProperty('TYPE', true);
+
+		$mock
+			->expects($this->once())
+			->method('getPropertyDecorator')
+			->willReturnCallback(function ($rProperty) use ($annotation) {
+				$this->assertInstanceOf(\ReflectionProperty::class, $rProperty);
+				$this->assertEquals($rProperty->getName(), 'parentProp');
+				return $annotation;
+			})
+		;
+
+		$decorator = new AnnotationHandlerTestGetType(
+			$modelBuilder,
+			$mock
+		);
+		$decorator->getType = function (string $typeStr) use ($type, $annotation) {
+			$this->assertEquals($typeStr, $annotation->type);
+			return $type;
+		};
+
+		/** @var ArrayType $result */
+		$result = $decorator->getType(DummyChildClass::class, 'parentProp');
+		$this->assertInstanceOf(ArrayType::class, $result);
+		$this->assertEquals($result->getSubType(), $type);
+	}
+
 	public function testGetTypeNoFound() {
 		
 		$mock = $this->getMockBuilder(AbstractDecoratorHandler::class)->disableOriginalConstructor()->getMock();
