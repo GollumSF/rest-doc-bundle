@@ -19,8 +19,7 @@ class GroupHandler implements HandlerInterface {
 	}
 
 	public function generateProperties(RequestBodyPropertyCollection $requestBodyPropertyCollection, Metadata $metadata, string $method): void {
-		$entity = $metadata->getEntity();
-		$model  = $this->modelbuilder->getModel($entity);
+		$model  = $this->modelbuilder->getModel($this->getUnserializeType($metadata));
 
 		$groups = array_merge([strtolower($method)], $metadata->getUnserializeGroups());
 		$groups = array_unique($groups);
@@ -28,5 +27,18 @@ class GroupHandler implements HandlerInterface {
 		foreach ($model->getPropertiesJson($groups) as $name => $json) {
 			$requestBodyPropertyCollection->add($name, $json);
 		}
+	}
+
+	/**
+	 * The request body describes what the action actually unserializes: the type of the
+	 * targeted controller parameter. Only falls back on the described entity when the
+	 * RestBundle could not resolve one.
+	 */
+	private function getUnserializeType(Metadata $metadata): string {
+		$unserialize = $metadata->getUnserialize();
+		if ($unserialize && $unserialize->getType()) {
+			return $unserialize->getType();
+		}
+		return $metadata->getEntity();
 	}
 }
