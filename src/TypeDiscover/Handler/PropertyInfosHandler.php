@@ -33,13 +33,13 @@ class PropertyInfosHandler implements HandlerInterface {
 				if ($type) {
 					return $this->createTypeFromTypeInfo($type);
 				} // @codeCoverageIgnoreEnd
-			} elseif (method_exists($this->propertyInfoExtractor, 'getTypes')) {
+			} elseif (method_exists($this->propertyInfoExtractor, 'getTypes')) { // @codeCoverageIgnoreStart
 				// Symfony 6.4 / 7.0 with legacy PropertyInfo Type
 				$types = $this->propertyInfoExtractor->getTypes($class, $targetName);
 				if ($types) {
 					return $this->createTypeLegacy($types);
 				}
-			}
+			} // @codeCoverageIgnoreEnd
 		} catch (\Throwable $e) {
 		}
 		return null;
@@ -120,6 +120,7 @@ class PropertyInfosHandler implements HandlerInterface {
 
 	/**
 	 * Create type from legacy PropertyInfo Type (Symfony 6.4/7.0)
+	 * @codeCoverageIgnore
 	 */
 	protected function createTypeLegacy(array $types): ?TypeInterface {
 		foreach ($types as $type) {
