@@ -24,7 +24,7 @@
     },
     "require" : {
         "php": ">=8.2",
-        "gollumsf/rest-bundle": "^5.0",
+        "gollumsf/rest-bundle": "^4.1",
         "gollumsf/controller-action-extractor-bundle": "^1.0|^2.0",
         "symfony/twig-bundle": "^6.4|^7.0|^8.0"
     },
